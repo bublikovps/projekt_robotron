@@ -1,0 +1,85 @@
+<div class="product-details-container">
+
+  <a
+    routerLink="/"
+    class="back-link">
+
+    ← Zurück zum Katalog
+
+  </a>
+
+  <div
+    *ngIf="isLoading"
+    class="loading">
+
+    Produkt wird geladen...
+
+  </div>
+
+  <div
+    *ngIf="errorMessage"
+    class="error">
+
+    {{ errorMessage }}
+
+  </div>
+
+  <div
+    *ngIf="product"
+    class="product-card">
+
+    <div class="product-header">
+
+      <h1>
+        {{ product.name }}
+      </h1>
+
+      <span class="category-badge">
+
+        {{ product.categoryName }}
+
+      </span>
+
+    </div>
+
+    <div class="product-content">
+
+      <div class="info-row">
+
+        <strong>Hersteller:</strong>
+
+        {{ product.manufacturer }}
+
+      </div>
+
+      <div class="info-row">
+
+        <strong>SKU:</strong>
+
+        {{ product.sku }}
+
+      </div>
+
+      <div class="info-row">
+
+        <strong>Preis:</strong>
+
+        {{ product.price | currency:'EUR' }}
+
+      </div>
+
+      <div class="description">
+
+        <h3>Beschreibung</h3>
+
+        <p>
+          {{ product.description }}
+        </p>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>

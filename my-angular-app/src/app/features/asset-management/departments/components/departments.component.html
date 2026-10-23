@@ -1,0 +1,160 @@
+<div class="departments-container">
+
+  <div class="page-header">
+
+    <h1>Department Management</h1>
+
+    <p>
+      Verwaltung von Abteilungen
+    </p>
+
+  </div>
+
+  <div
+    *ngIf="successMessage"
+    class="alert success">
+
+    {{ successMessage }}
+
+  </div>
+
+  <div
+    *ngIf="errorMessage"
+    class="alert error">
+
+    {{ errorMessage }}
+
+  </div>
+
+  <div class="card">
+
+    <h2>
+      {{ isEditMode
+      ? 'Abteilung bearbeiten'
+      : 'Neue Abteilung erstellen' }}
+    </h2>
+
+    <form (ngSubmit)="saveDepartment()">
+
+      <div class="form-group">
+
+        <label>Abteilungscode</label>
+
+        <input
+          type="text"
+          name="departmentCode"
+          [(ngModel)]="departmentForm.departmentCode">
+
+      </div>
+
+      <div class="form-group">
+
+        <label>Name</label>
+
+        <input
+          type="text"
+          name="name"
+          [(ngModel)]="departmentForm.name">
+
+      </div>
+
+      <div class="form-group">
+
+        <label>Beschreibung</label>
+
+        <textarea
+          rows="4"
+          name="description"
+          [(ngModel)]="departmentForm.description">
+        </textarea>
+
+      </div>
+
+      <div class="button-group">
+
+        <button
+          type="submit"
+          class="btn-primary">
+
+          {{ isEditMode
+          ? 'Speichern'
+          : 'Erstellen' }}
+
+        </button>
+
+        <button
+          *ngIf="isEditMode"
+          type="button"
+          class="btn-secondary"
+          (click)="cancelEdit()">
+
+          Abbrechen
+
+        </button>
+
+      </div>
+
+    </form>
+
+  </div>
+
+  <div class="card">
+
+    <h2>Abteilungen</h2>
+
+    <table
+      *ngIf="departments.length > 0">
+
+      <thead>
+
+      <tr>
+        <th>ID</th>
+        <th>Code</th>
+        <th>Name</th>
+        <th>Beschreibung</th>
+        <th>Aktionen</th>
+      </tr>
+
+      </thead>
+
+      <tbody>
+
+      <tr *ngFor="let department of departments">
+
+        <td>{{ department.id }}</td>
+
+        <td>{{ department.departmentCode }}</td>
+
+        <td>{{ department.name }}</td>
+
+        <td>{{ department.description }}</td>
+
+        <td>
+
+          <button
+            class="btn-edit"
+            (click)="editDepartment(department)">
+
+            Bearbeiten
+
+          </button>
+
+          <button
+            class="btn-danger"
+            (click)="archiveDepartment(department)">
+
+            Archivieren
+
+          </button>
+
+        </td>
+
+      </tr>
+
+      </tbody>
+
+    </table>
+
+  </div>
+
+</div>

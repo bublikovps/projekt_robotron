@@ -1,0 +1,61 @@
+.devices-container {
+  padding: 24px;
+}
+
+.card {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 24px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+input,
+select,
+textarea {
+  padding: 10px;
+  border: 1px solid #dcdcdc;
+  border-radius: 8px;
+}
+
+textarea {
+  min-height: 100px;
+}
+
+.button-group {
+  display: flex;
+  gap: 12px;
+}
+
+button {
+  padding: 10px 16px;
+  cursor: pointer;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th,
+td {
+  padding: 10px;
+  border-bottom: 1px solid #e5e5e5;
+  text-align: left;
+}
+
+.success-message {
+  color: green;
+  margin-bottom: 12px;
+}
+
+.error-message {
+  color: red;
+  margin-bottom: 12px;
+}

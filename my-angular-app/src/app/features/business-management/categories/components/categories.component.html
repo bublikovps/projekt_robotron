@@ -1,0 +1,114 @@
+<div class="categories-container">
+
+  <h1>Category Management</h1>
+
+  <div
+    *ngIf="successMessage"
+    class="success-message">
+
+    {{ successMessage }}
+
+  </div>
+
+  <div
+    *ngIf="errorMessage"
+    class="error-message">
+
+    {{ errorMessage }}
+
+  </div>
+
+  <div class="card">
+
+    <h2>
+      {{ isEditMode
+        ? 'Kategorie bearbeiten'
+        : 'Kategorie erstellen'
+      }}
+    </h2>
+
+    <form (ngSubmit)="saveCategory()">
+
+      <input
+        type="text"
+        placeholder="Kategoriename"
+        [(ngModel)]="categoryForm.name"
+        name="name">
+
+      <div class="button-group">
+
+        <button type="submit">
+
+          {{ isEditMode
+            ? 'Speichern'
+            : 'Erstellen'
+          }}
+
+        </button>
+
+        <button
+          *ngIf="isEditMode"
+          type="button"
+          (click)="cancelEdit()">
+
+          Abbrechen
+
+        </button>
+
+      </div>
+
+    </form>
+
+  </div>
+
+  <div class="card">
+
+    <h2>Kategorien</h2>
+
+    <table>
+
+      <thead>
+
+      <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Aktionen</th>
+      </tr>
+
+      </thead>
+
+      <tbody>
+
+      <tr *ngFor="let category of categories">
+
+        <td>{{ category.id }}</td>
+
+        <td>{{ category.name }}</td>
+
+        <td>
+
+          <button
+            (click)="editCategory(category)">
+
+            Bearbeiten
+
+          </button>
+
+          <button
+            (click)="archiveCategory(category)">
+
+            Archivieren
+
+          </button>
+
+        </td>
+
+      </tr>
+
+      </tbody>
+
+    </table>
+
+  </div>
+
+</div>

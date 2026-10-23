@@ -1,0 +1,103 @@
+<div class="admin-container">
+  <div class="admin-header bento-card">
+    <h2>Admin-Panel: Systemverwaltung</h2>
+    <p>Zentrale Verwaltung der Benutzerkonten und Berechtigungen (RBAC-Kontrollzentrum).</p>
+  </div>
+
+  <!-- Всплывающие уведомления об успехе или ошибках -->
+  <div *ngIf="successMessage" class="alert success-msg">{{ successMessage }}</div>
+  <div *ngIf="errorMessage" class="alert error-msg">{{ errorMessage }}</div>
+
+  <!-- ФОРМА СОЗДАНИЯ СОТРУДНИКА (BENTO-БЛОК) -->
+  <div class="bento-card form-section" *ngIf="users.length > 0 && !errorMessage">
+    <h3>➕ Neuen Mitarbeiter im System registrieren</h3>
+    <form (ngSubmit)="onCreateEmployee()" #empForm="ngForm" class="admin-form-grid">
+      
+      <div class="form-group">
+        <label for="empLogin">Benutzername (Login) *</label>
+        <input type="text" id="empLogin" name="login" [(ngModel)]="newEmployee.login" required class="admin-input" placeholder="z.B. lager_manager">
+      </div>
+
+      <div class="form-group">
+        <label for="empEmail">E-Mail-Adresse *</label>
+        <input type="email" id="empEmail" name="email" [(ngModel)]="newEmployee.email" required class="admin-input" placeholder="z.B. manager@it-portal.de">
+      </div>
+
+      <div class="form-group">
+        <label for="empRole">Systemrolle zuweisen *</label>
+        <select id="empRole" name="role" [(ngModel)]="newEmployee.role" required class="admin-input admin-select">
+          <option value="" disabled selected>-- Rolle wählen --</option>
+          <option value="ROLE_CUSTOMER">ROLE_CUSTOMER (B2B-Kunde)</option>
+          <option value="ROLE_MANAGER">ROLE_MANAGER (Lagerist)</option>
+        </select>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn-action btn-role" [disabled]="isLoading || !empForm.form.valid">
+          <span *ngIf="!isLoading">Mitarbeiter anlegen & Passwort senden</span>
+          <span *ngIf="isLoading">Wird verarbeitet...</span>
+        </button>
+      </div>
+
+    </form>
+  </div>
+
+  <!-- Таблица управления пользователями -->
+  <div class="table-responsive bento-card" *ngIf="users.length > 0">
+    <h3>Benutzerverwaltung (Управление пользователями)</h3>
+    
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Benutzername (Login)</th>
+          <th>E-Mail-Adresse</th>
+          <th>Registriert am</th>
+          <th>Systemrolle</th>
+          <th>Aktionen</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let user of users">
+          <td>{{ user.id }}</td>
+          <td class="user-login">{{ user.login }}</td>
+          <td>{{ user.email }}</td>
+          <td>{{ user.createdAt | date:'dd.MM.yyyy HH:mm' }}</td>
+          <td>
+            <span class="role-badge" [ngClass]="{
+              'badge-admin': user.role === 'ROLE_ADMIN',
+              'badge-director': user.role === 'ROLE_DIRECTOR',
+              'badge-manager': user.role === 'ROLE_MANAGER',
+              'badge-customer': user.role === 'ROLE_CUSTOMER'
+            }">
+              {{ user.role }}
+            </span>
+          </td>
+          <td class="action-buttons">
+            <ng-container *ngIf="user.role !== 'ROLE_ADMIN' && user.role !== 'ROLE_DIRECTOR'; else protectedTemplate">
+              <button 
+                (click)="onChangeRole(user.id, user.role)" 
+                class="btn-action btn-role"
+                title="Rolle umschalten"
+              >
+                🔄 Rolle ändern
+              </button>
+              
+              <button 
+                (click)="onDeleteUser(user.id)" 
+                class="btn-action btn-delete"
+                title="Benutzer löschen"
+              >
+                🗑️ Löschen
+              </button>
+            </ng-container>
+
+            <ng-template #protectedTemplate>
+              <span class="system-protected">🛡️ Systemschutz</span>
+            </ng-template>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

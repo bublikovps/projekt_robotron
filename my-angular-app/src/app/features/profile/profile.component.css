@@ -1,0 +1,187 @@
+.profile-container {
+
+  max-width: 900px;
+
+  margin: 0 auto;
+
+  padding: 30px 0;
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 24px;
+}
+
+.profile-card {
+
+  background: var(--bg-card);
+
+  border: 1px solid var(--border-color);
+
+  border-radius: 16px;
+
+  padding: 30px;
+
+  box-shadow:
+    0 4px 8px rgba(15, 23, 42, 0.04);
+}
+
+.profile-header {
+
+  text-align: center;
+}
+
+.profile-header h2 {
+
+  margin: 0 0 10px;
+
+  color: var(--primary-color);
+
+  font-size: 2rem;
+}
+
+.profile-header p {
+
+  color: var(--text-muted);
+}
+
+.profile-card h3 {
+
+  margin-top: 0;
+
+  margin-bottom: 20px;
+
+  color: var(--primary-color);
+}
+
+.profile-info {
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 18px;
+}
+
+.info-row {
+
+  display: flex;
+
+  justify-content: space-between;
+
+  border-bottom:
+      1px solid var(--border-color);
+
+  padding-bottom: 10px;
+}
+
+.label {
+
+  color: var(--text-muted);
+
+  font-weight: 500;
+}
+
+.value {
+
+  color: var(--primary-color);
+
+  font-weight: 600;
+}
+
+.form-group {
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 8px;
+
+  margin-bottom: 18px;
+}
+
+.profile-input {
+
+  padding: 12px;
+
+  border: 1px solid var(--border-color);
+
+  border-radius: 8px;
+
+  font-size: 14px;
+}
+
+.profile-input:focus {
+
+  outline: none;
+
+  border-color: var(--accent-color);
+}
+
+.btn-profile-save {
+
+  width: 100%;
+
+  padding: 12px;
+
+  border: none;
+
+  border-radius: 8px;
+
+  background: var(--primary-color);
+
+  color: white;
+
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition: .2s;
+}
+
+.btn-profile-save:hover {
+
+  background: var(--primary-light);
+}
+
+.form-hint {
+
+  display: block;
+
+  margin-bottom: 16px;
+
+  color: var(--text-muted);
+
+  font-size: 12px;
+}
+
+.warning-text {
+
+  color: var(--warning-color);
+
+  font-weight: 600;
+}
+
+.alert {
+
+  padding: 14px;
+
+  border-radius: 10px;
+
+  font-weight: 500;
+}
+
+.success-msg {
+
+  background: #d1fae5;
+
+  color: #065f46;
+}
+
+.error-msg {
+
+  background: #fee2e2;
+
+  color: #991b1b;
+}

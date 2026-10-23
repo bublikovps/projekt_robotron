@@ -1,0 +1,220 @@
+<div class="devices-container">
+
+  <h1>Devices</h1>
+
+  <div
+    *ngIf="successMessage"
+    class="success-message">
+
+    {{ successMessage }}
+
+  </div>
+
+  <div
+    *ngIf="errorMessage"
+    class="error-message">
+
+    {{ errorMessage }}
+
+  </div>
+
+  <div class="card">
+
+    <h2>
+      {{
+        isEditMode
+          ? 'Gerät bearbeiten'
+          : 'Gerät erstellen'
+      }}
+    </h2>
+
+    <form (ngSubmit)="saveDevice()">
+
+      <select
+        [(ngModel)]="deviceForm.productId"
+        name="productId">
+
+        <option [value]="0">
+          Produkt auswählen
+        </option>
+
+        <option
+          *ngFor="let product of products"
+          [value]="product.id">
+
+          {{ product.name }}
+
+        </option>
+
+      </select>
+
+      <input
+        type="text"
+        placeholder="Inventarnummer"
+        [(ngModel)]="deviceForm.inventoryNumber"
+        name="inventoryNumber">
+
+      <input
+        type="text"
+        placeholder="Seriennummer"
+        [(ngModel)]="deviceForm.serialNumber"
+        name="serialNumber">
+
+      <input
+        type="text"
+        placeholder="Manufacturer Asset Tag"
+        [(ngModel)]="deviceForm.manufacturerAssetTag"
+        name="manufacturerAssetTag">
+
+      <input
+        type="date"
+        [(ngModel)]="deviceForm.purchaseDate"
+        name="purchaseDate">
+
+      <input
+        type="number"
+        placeholder="Purchase Price"
+        [(ngModel)]="deviceForm.purchasePrice"
+        name="purchasePrice">
+
+      <input
+        type="date"
+        [(ngModel)]="deviceForm.warrantyUntil"
+        name="warrantyUntil">
+
+      <select
+        [(ngModel)]="deviceForm.status"
+        name="status">
+
+        <option
+          *ngFor="let status of statuses"
+          [value]="status">
+
+          {{ status }}
+
+        </option>
+
+      </select>
+
+      <input
+        type="text"
+        placeholder="Standort"
+        [(ngModel)]="deviceForm.location"
+        name="location">
+
+      <textarea
+        placeholder="Notizen"
+        [(ngModel)]="deviceForm.notes"
+        name="notes">
+      </textarea>
+
+      <div class="button-group">
+
+        <button type="submit">
+
+          {{
+            isEditMode
+              ? 'Speichern'
+              : 'Erstellen'
+          }}
+
+        </button>
+
+        <button
+          *ngIf="isEditMode"
+          type="button"
+          (click)="cancelEdit()">
+
+          Abbrechen
+
+        </button>
+
+      </div>
+
+    </form>
+
+  </div>
+
+  <div class="card">
+
+    <h2>Geräte</h2>
+
+    <table>
+
+      <thead>
+
+      <tr>
+
+        <th>Inventarnummer</th>
+
+        <th>Produkt</th>
+
+        <th>Seriennummer</th>
+
+        <th>Asset Tag</th>
+
+        <th>Status</th>
+
+        <th>Standort</th>
+
+        <th>Aktionen</th>
+
+      </tr>
+
+      </thead>
+
+      <tbody>
+
+      <tr *ngFor="let device of devices">
+
+        <td>
+          {{ device.inventoryNumber }}
+        </td>
+
+        <td>
+          {{ device.productName }}
+        </td>
+
+        <td>
+          {{ device.serialNumber }}
+        </td>
+
+        <td>
+          {{ device.manufacturerAssetTag }}
+        </td>
+
+        <td>
+          {{ device.status }}
+        </td>
+
+        <td>
+          {{ device.location }}
+        </td>
+
+        <td>
+
+          <button
+            (click)="editDevice(device)">
+
+            Bearbeiten
+
+          </button>
+
+          <button
+            (click)="archiveDevice(device)">
+
+            Archivieren
+
+          </button>
+
+        </td>
+
+      </tr>
+
+      </tbody>
+
+    </table>
+
+  </div>
+
+</div>

@@ -1,0 +1,26 @@
+<div class="auth-container">
+  <div class="auth-card">
+    <h2>IT-Portal Login</h2>
+    
+    <!-- Вывод ошибок или успехов на немецком -->
+    <div *ngIf="errorMessage" class="alert error-msg">{{ errorMessage }}</div>
+    <div *ngIf="successMessage" class="alert success-msg">{{ successMessage }}</div>
+
+    <form (ngSubmit)="onLogin()">
+      <div class="form-group">
+        <label>Benutzername (Login):</label>
+        <input type="text" [(ngModel)]="loginData.login" name="login" required />
+      </div>
+      <div class="form-group">
+        <label>Passwort:</label>
+        <input type="password" [(ngModel)]="loginData.password" name="password" required />
+      </div>
+      <button type="submit" class="auth-btn">Einloggen</button>
+    </form>
+    <div class="login-actions">
+      <!-- Ссылка на наш новый настроенный роут сброса пароля -->
+      <a routerLink="/forgot-password" class="forgot-pwd-link">Passwort vergessen?</a>
+    </div>
+    <p class="auth-footer">Noch kein Konto? <a routerLink="/register">Jetzt registrieren</a></p>
+  </div>
+</div>

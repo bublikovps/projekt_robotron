@@ -1,0 +1,185 @@
+<div class="employees-container">
+
+  <h1>Employee Management</h1>
+
+  <div
+    *ngIf="successMessage"
+    class="success-message">
+
+    {{ successMessage }}
+
+  </div>
+
+  <div
+    *ngIf="errorMessage"
+    class="error-message">
+
+    {{ errorMessage }}
+
+  </div>
+
+  <div class="card">
+
+    <h2>
+      {{ isEditMode
+        ? 'Mitarbeiter bearbeiten'
+        : 'Mitarbeiter erstellen'
+      }}
+    </h2>
+
+    <form (ngSubmit)="saveEmployee()">
+
+      <select
+        [(ngModel)]="employeeForm.departmentId"
+        name="departmentId">
+
+        <option [value]="0">
+          Abteilung auswählen
+        </option>
+
+        <option
+          *ngFor="let department of departments"
+          [value]="department.id">
+
+          {{ department.name }}
+
+        </option>
+
+      </select>
+
+      <input
+        type="text"
+        placeholder="Mitarbeiternummer"
+        [(ngModel)]="employeeForm.employeeNumber"
+        name="employeeNumber">
+
+      <input
+        type="text"
+        placeholder="Vorname"
+        [(ngModel)]="employeeForm.firstName"
+        name="firstName">
+
+      <input
+        type="text"
+        placeholder="Nachname"
+        [(ngModel)]="employeeForm.lastName"
+        name="lastName">
+
+      <input
+        type="email"
+        placeholder="E-Mail"
+        [(ngModel)]="employeeForm.email"
+        name="email">
+
+      <input
+        type="text"
+        placeholder="Telefon"
+        [(ngModel)]="employeeForm.phone"
+        name="phone">
+
+      <input
+        type="text"
+        placeholder="Position"
+        [(ngModel)]="employeeForm.position"
+        name="position">
+
+      <input
+        type="date"
+        [(ngModel)]="employeeForm.hireDate"
+        name="hireDate">
+      
+        <button type="submit">
+
+            {{ isEditMode
+            ? 'Speichern'
+            : 'Erstellen'
+            }}
+
+        </button>
+
+        <button
+            *ngIf="isEditMode"
+            type="button"
+            (click)="cancelEdit()">
+
+            Abbrechen
+
+        </button>
+      
+
+    </form>
+
+  </div>
+
+  <div class="card">
+
+    <h2>Mitarbeiter</h2>
+
+    <table>
+
+      <thead>
+
+      <tr>
+        <th>Nr.</th>
+        <th>Name</th>
+        <th>Abteilung</th>
+        <th>E-Mail</th>
+        <th>Position</th>
+        <th>Aktionen</th>
+      </tr>
+
+      </thead>
+
+      <tbody>
+
+      <tr
+        *ngFor="let employee of employees">
+
+        <td>
+          {{ employee.employeeNumber }}
+        </td>
+
+        <td>
+          {{ employee.firstName }}
+          {{ employee.lastName }}
+        </td>
+
+        <td>
+          {{ employee.departmentName }}
+        </td>
+
+        <td>
+          {{ employee.email }}
+        </td>
+
+        <td>
+          {{ employee.position }}
+        </td>
+
+        <td>
+
+          <button
+            (click)="editEmployee(employee)">
+
+            Bearbeiten
+
+          </button>
+
+          <button
+            (click)="archiveEmployee(employee)">
+
+            Archivieren
+
+          </button>
+
+        </td>
+
+      </tr>
+
+      </tbody>
+
+    </table>
+
+  </div>
+
+</div>

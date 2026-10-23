@@ -1,0 +1,52 @@
+<div class="asset-container">
+
+  <div class="asset-header">
+
+    <h1>Warehouse Management</h1>
+
+    <p>
+      Verwaltung von Kategorien,
+      Produktkatalogen und Lagerdaten.
+    </p>
+
+  </div>
+
+  <section>
+
+    <h2 class="section-title">
+      Verfügbare Bereiche
+    </h2>
+
+    <div class="asset-grid">
+
+      <div
+        class="asset-card"
+        *ngFor="let module of modules">
+
+        <div class="card-icon">
+          {{ module.icon }}
+        </div>
+
+        <h3>
+          {{ module.title }}
+        </h3>
+
+        <p>
+          {{ module.description }}
+        </p>
+
+        <a
+          [routerLink]="module.route"
+          class="card-button">
+
+          Öffnen
+
+        </a>
+
+      </div>
+
+    </div>
+
+  </section>
+
+</div>

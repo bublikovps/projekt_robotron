@@ -1,0 +1,120 @@
+<div class="profile-container">
+
+  <div class="profile-card profile-header">
+
+    <h2>Mein Konto</h2>
+
+    <p *ngIf="!isEnforcedChange">
+      Verwalten Sie Ihre persönlichen Daten und Sicherheitseinstellungen.
+    </p>
+
+    <p *ngIf="isEnforcedChange" class="warning-text">
+      ⚠️ Erstanmeldung erkannt. Passwortänderung erforderlich.
+    </p>
+
+  </div>
+
+  <div *ngIf="successMessage" class="alert success-msg">
+    {{ successMessage }}
+  </div>
+
+  <div *ngIf="errorMessage" class="alert error-msg">
+    {{ errorMessage }}
+  </div>
+
+  <div
+    class="profile-card"
+    *ngIf="user && !isEnforcedChange">
+
+    <h3>📋 Allgemeine Stammdaten</h3>
+
+    <div class="profile-info">
+
+      <div class="info-row">
+        <span class="label">Benutzername</span>
+        <span class="value">{{ user.login }}</span>
+      </div>
+
+      <div class="info-row">
+        <span class="label">E-Mail</span>
+        <span class="value">{{ user.email }}</span>
+      </div>
+
+      <div class="info-row">
+        <span class="label">Mitglied seit</span>
+        <span class="value">
+          {{ user.createdAt | date:'dd.MM.yyyy' }}
+        </span>
+      </div>
+
+    </div>
+
+  </div>
+
+  <div
+    class="profile-card"
+    *ngIf="user">
+
+    <h3>🔒 Sicherheitskonfiguration</h3>
+
+    <form
+      (ngSubmit)="onChangePassword()"
+      #pwdForm="ngForm">
+
+      <div class="form-group">
+
+        <label for="oldPassword">
+          Aktuelles Passwort
+        </label>
+
+        <input
+          type="password"
+          id="oldPassword"
+          name="oldPassword"
+          [(ngModel)]="pwdData.oldPassword"
+          required
+          class="profile-input">
+
+      </div>
+
+      <div class="form-group">
+
+        <label for="newPassword">
+          Neues Passwort
+        </label>
+
+        <input
+          type="password"
+          id="newPassword"
+          name="newPassword"
+          [(ngModel)]="pwdData.newPassword"
+          required
+          class="profile-input">
+
+      </div>
+
+      <small
+        *ngIf="isEnforcedChange"
+        class="form-hint">
+
+        Mindestens 8 Zeichen,
+        Großbuchstabe,
+        Kleinbuchstabe,
+        Zahl und Sonderzeichen.
+
+      </small>
+
+      <button
+        type="submit"
+        class="btn-profile-save"
+        [disabled]="!pwdForm.form.valid">
+
+        Passwort speichern
+
+      </button>
+
+    </form>
+
+  </div>
+
+</div>

@@ -1,0 +1,193 @@
+<div class="products-container">
+
+  <h1>Products</h1>
+
+  <div
+    *ngIf="successMessage"
+    class="success-message">
+
+    {{ successMessage }}
+
+  </div>
+
+  <div
+    *ngIf="errorMessage"
+    class="error-message">
+
+    {{ errorMessage }}
+
+  </div>
+
+  <div class="card">
+
+    <h2>
+      {{ isEditMode
+        ? 'Produkt bearbeiten'
+        : 'Produkt erstellen'
+      }}
+    </h2>
+
+    <form (ngSubmit)="saveProduct()">
+
+      <select
+        [(ngModel)]="productForm.categoryId"
+        name="categoryId">
+
+        <option [value]="0">
+          Kategorie auswählen
+        </option>
+
+        <option
+          *ngFor="let category of categories"
+          [value]="category.id">
+
+          {{ category.name }}
+
+        </option>
+
+      </select>
+
+      <input
+        type="text"
+        placeholder="SKU"
+        [(ngModel)]="productForm.sku"
+        name="sku"
+        [readonly]="isEditMode">
+
+      <input
+        type="text"
+        placeholder="Produktname"
+        [(ngModel)]="productForm.name"
+        name="name">
+
+      <input
+        type="text"
+        placeholder="Hersteller"
+        [(ngModel)]="productForm.manufacturer"
+        name="manufacturer">
+
+      <textarea
+        placeholder="Beschreibung"
+        [(ngModel)]="productForm.description"
+        name="description">
+      </textarea>
+
+      <input
+        type="number"
+        placeholder="Preis"
+        [(ngModel)]="productForm.price"
+        name="price">
+
+      <input
+        type="number"
+        placeholder="Lagerbestand"
+        [(ngModel)]="productForm.lagerbestand"
+        name="lagerbestand">
+
+      <input
+        type="number"
+        placeholder="Minimum Stock"
+        [(ngModel)]="productForm.minimumStock"
+        name="minimumStock">
+
+      <div class="button-group">
+
+        <button type="submit">
+
+          {{ isEditMode
+            ? 'Speichern'
+            : 'Erstellen'
+          }}
+
+        </button>
+
+        <button
+          *ngIf="isEditMode"
+          type="button"
+          (click)="cancelEdit()">
+
+          Abbrechen
+
+        </button>
+
+      </div>
+
+    </form>
+
+  </div>
+
+  <div class="card">
+
+    <h2>Produkte</h2>
+
+    <table>
+
+      <thead>
+
+      <tr>
+
+        <th>SKU</th>
+
+        <th>Name</th>
+
+        <th>Hersteller</th>
+
+        <th>Kategorie</th>
+
+        <th>Preis</th>
+
+        <th>Bestand</th>
+
+        <th>Min.</th>
+
+        <th>Aktionen</th>
+
+      </tr>
+
+      </thead>
+
+      <tbody>
+
+      <tr *ngFor="let product of products">
+
+        <td>{{ product.sku }}</td>
+
+        <td>{{ product.name }}</td>
+
+        <td>{{ product.manufacturer }}</td>
+
+        <td>{{ product.categoryName }}</td>
+
+        <td>{{ product.price }}</td>
+
+        <td>{{ product.lagerbestand }}</td>
+
+        <td>{{ product.minimumStock }}</td>
+
+        <td>
+
+          <button
+            (click)="editProduct(product)">
+
+            Bearbeiten
+
+          </button>
+
+          <button
+            (click)="archiveProduct(product)">
+
+            Archivieren
+
+          </button>
+
+        </td>
+
+      </tr>
+
+      </tbody>
+
+    </table>
+
+  </div>
+
+</div>

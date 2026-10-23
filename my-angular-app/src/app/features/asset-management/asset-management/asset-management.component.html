@@ -1,0 +1,100 @@
+<div class="asset-container">
+
+  <div class="asset-header">
+
+    <h1>Asset Management</h1>
+
+    <p>
+      Verwaltung von Unternehmensressourcen,
+      Mitarbeitern, Geräten und Softwarelizenzen.
+    </p>
+
+  </div>
+
+  <section>
+
+    <h2 class="section-title">
+      Verfügbare Bereiche
+    </h2>
+
+    <div class="asset-grid">
+
+      <div
+        class="asset-card"
+        *ngFor="let module of modules">
+
+        <div class="card-icon">
+          {{ module.icon }}
+        </div>
+
+        <h3>
+          {{ module.title }}
+        </h3>
+
+        <p>
+          {{ module.description }}
+        </p>
+
+        <a
+          *ngIf="module.route"
+          [routerLink]="module.route"
+          class="card-button">
+
+          Öffnen
+
+        </a>
+
+        <button
+          *ngIf="!module.route"
+          class="card-button"
+          disabled>
+
+          In Entwicklung
+
+        </button>
+
+      </div>
+
+    </div>
+
+  </section>
+
+  <section class="info-card">
+
+    <h2>Asset Management Domain</h2>
+
+    <div class="domain-grid">
+
+      <div class="domain-item">
+        Department
+      </div>
+
+      <div class="domain-item">
+        Employee
+      </div>
+
+      <div class="domain-item">
+        Employment Contract
+      </div>
+
+      <div class="domain-item">
+        Device
+      </div>
+
+      <div class="domain-item">
+        Software License
+      </div>
+
+      <div class="domain-item">
+        Device Assignment
+      </div>
+
+      <div class="domain-item">
+        License Assignment
+      </div>
+
+    </div>
+
+  </section>
+
+</div>

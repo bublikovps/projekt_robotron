@@ -1,0 +1,28 @@
+<div class="auth-container">
+  <div class="auth-card">
+    <h2>IT-Portal Registrierung</h2>
+    
+    <div *ngIf="errorMessage" class="alert error-msg">{{ errorMessage }}</div>
+    <div *ngIf="successMessage" class="alert success-msg">{{ successMessage }}</div>
+
+    <form (ngSubmit)="onRegister()">
+      <div class="form-group">
+        <label>Benutzername (Login):</label>
+        <input type="text" [(ngModel)]="registerData.login" name="login" required />
+      </div>
+      <div class="form-group">
+        <label>E-Mail-Adresse:</label>
+        <input type="email" [(ngModel)]="registerData.email" name="email" required />
+      </div>
+      <div class="form-group">
+        <label>Passwort:</label>
+        <input type="password" id="password" name="password" [(ngModel)]="registerData.password" required placeholder="Sicheres Passwort eingeben"/>
+        <small class="form-hint">Mindestens 8 Zeichen, 1 Großbuchstabe, 1 Zahl, 1 Sonderzeichen.</small>
+      </div>
+
+
+      <button type="submit" class="auth-btn">Konto erstellen</button>
+    </form>
+    <p class="auth-footer">Bereits registriert? <a routerLink="/login">Hier einloggen</a></p>
+  </div>
+</div>
