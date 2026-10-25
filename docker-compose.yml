@@ -1,8 +1,6 @@
-yaml
 version: '3.8'
 
 services:
-  # Наша домашняя изолированная база данных
   postgres-db:
     image: postgres:15-alpine
     container_name: devzone-postgres
@@ -11,17 +9,16 @@ services:
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: mysecretpassword
-      POSTGRES_DB: robotron_db  # Назовите как в школе или как хотите
+      POSTGRES_DB: robotron_db
     volumes:
       - pgdata:/var/lib/postgresql/data
 
-  # Наш домашний почтовый сервер вместо школьного батника
   mailpit:
     image: axllent/mailpit
     container_name: devzone-mailpit
     ports:
-      - "1025:1025" # Сюда Спринг Бут будет слать письма
-      - "8025:8025" # Сюда вы зайдете через браузер (localhost:8025) смотреть письма
-      
+      - "1025:1025"
+      - "8025:8025"
+
 volumes:
   pgdata:
