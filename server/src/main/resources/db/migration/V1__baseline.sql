@@ -1,0 +1,2 @@
+-- Robotron baseline
+-- Existing database imported from legacy PostgreSQL installation
