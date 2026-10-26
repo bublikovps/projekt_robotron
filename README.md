@@ -1,6 +1,6 @@
 # Robotron
 
-## Enterprise IT Resource & Asset Management Platform
+## IT Resource & Asset Management Platform
 
 Robotron ist eine Full-Stack-Webanwendung zur Verwaltung von IT-Ressourcen, Mitarbeitern, Benutzerkonten, Verträgen, Geräten, Software-Lizenzen und Berechtigungen innerhalb eines Unternehmens.
 
