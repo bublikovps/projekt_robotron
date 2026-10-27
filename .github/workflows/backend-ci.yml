@@ -1,0 +1,47 @@
+name: Backend CI
+
+on:
+  push:
+    branches:
+      - develop
+      - main
+      - feature/**
+  pull_request:
+    branches:
+      - develop
+      - main
+
+jobs:
+  backend-build:
+
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: server
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Java 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: maven
+
+      - name: Verify Maven Wrapper
+        run: chmod +x mvnw
+
+      - name: Compile
+        run: ./mvnw clean compile
+
+      - name: Build and Package Application
+        run: ./mvnw package -DskipTests
+
+      - name: Upload JAR Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: robotron-backend
+          path: server/target/*.jar
