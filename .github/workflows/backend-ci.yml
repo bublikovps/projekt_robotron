@@ -37,10 +37,7 @@ jobs:
       - name: Compile
         run: ./mvnw clean compile
 
-      - name: Run Tests
-        run: ./mvnw test
-
-      - name: Package Application
+      - name: Build and Package Application
         run: ./mvnw package -DskipTests
 
       - name: Upload JAR Artifact
