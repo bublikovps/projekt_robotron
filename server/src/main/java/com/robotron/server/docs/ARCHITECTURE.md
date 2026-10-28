@@ -62,3 +62,30 @@ Employees
 Devices
 Licenses
 Assignments
+
+PUBLIC DOMAIN
+
+- Catalog
+- About
+- News
+- Support
+
+INVENTORY DOMAIN
+
+- Products
+- Categories
+- Warehouse
+
+ASSET DOMAIN
+
+- Devices
+- Employees
+- Departments
+- Contracts
+
+ADMIN DOMAIN
+
+- Users
+- Roles
+- Permissions
+- System Settings
