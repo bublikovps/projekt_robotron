@@ -54,8 +54,11 @@
 
     <h2>Produkte</h2>
 
-    <p>Produkte gefunden: </p>
-    
+    <p>
+      Produkte gefunden:
+      {{ products.length }}
+    </p>
+    <pre>{{ products | json }}</pre>
     <div
       class="empty-state"
       *ngIf="products.length === 0">
@@ -108,7 +111,7 @@
 
           <a
             [routerLink]="[
-              '/products',
+              '/catalog/products',
               product.id
             ]"
             class="details-btn">

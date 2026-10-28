@@ -9,17 +9,17 @@ from './product-details/product-details.component';
 export const CATALOG_ROUTES: Routes = [
 
   {
-    path: '',
+    path: 'catalog',
     component: CatalogComponent
   },
 
   {
-    path: 'category/:id',
+    path: 'catalog/category/:id',
     component: CatalogComponent
   },
 
   {
-    path: 'products/:id',
+    path: 'catalog/products/:id',
     component: ProductDetailsComponent
   }
 

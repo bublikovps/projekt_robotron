@@ -42,10 +42,11 @@ export class ProductDetailsComponent
 
   ngOnInit(): void {
 
-    const id =
-      Number(
-        this.route.snapshot.paramMap.get('id')
-      );
+    const id = Number(
+      this.route.snapshot.paramMap.get('id')
+    );
+
+    
 
     this.productService
       .getProductById(id)
@@ -57,6 +58,8 @@ export class ProductDetailsComponent
 
           this.isLoading = false;
 
+          
+
         },
 
         error: () => {
@@ -65,11 +68,7 @@ export class ProductDetailsComponent
             'Produkt nicht gefunden.';
 
           this.isLoading = false;
-
         }
-
       });
-
   }
-
 }
