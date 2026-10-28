@@ -24,17 +24,37 @@ from './features/business-management/business-management.routes';
 import { ASSET_MANAGEMENT_ROUTES }
 from './features/asset-management/asset-management.routes';
 import { CATALOG_ROUTES } from './features/catalog/catalog.routes';
+import { HomepageComponent } from './features/homepage/homepage.component';
+import { AboutComponent } from './features/about/about.component';
+import { NewsComponent } from './features/news/news.component';
+import { SupportComponent } from './features/support/support.component';
 
 export const routes: Routes = [
 
+  {
+    path: '',
+    component: HomepageComponent
+  },
+
+  {
+    path: 'about',
+    component: AboutComponent
+  },
+
+  {
+    path: 'news',
+    component: NewsComponent
+  },
+
+  {
+    path: 'support',
+    component: SupportComponent
+  },
 
   {
     path: 'dashboard',
-
     component: DashboardComponent,
-
     canActivate: [roleGuard],
-
     data: {
       expectedRoles: [
         'ROLE_CUSTOMER',
@@ -47,11 +67,8 @@ export const routes: Routes = [
 
   {
     path: 'profile',
-
     component: ProfileComponent,
-
     canActivate: [roleGuard],
-
     data: {
       expectedRoles: [
         'ROLE_CUSTOMER',
@@ -63,13 +80,9 @@ export const routes: Routes = [
   },
 
   ...AUTH_ROUTES,
-
   ...ADMINISTRATION_ROUTES,
-
   ...BUSINESS_MANAGEMENT_ROUTES,
-
   ...ASSET_MANAGEMENT_ROUTES,
-
   ...CATALOG_ROUTES,
 
   {

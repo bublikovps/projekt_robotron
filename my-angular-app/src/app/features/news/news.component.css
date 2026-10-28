@@ -1,0 +1,29 @@
+.page-container {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 60px 20px;
+}
+
+.page-container h1 {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.news-card {
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 24px;
+}
+
+.version {
+  font-weight: 700;
+  margin-bottom: 16px;
+  color: #2563eb;
+}
