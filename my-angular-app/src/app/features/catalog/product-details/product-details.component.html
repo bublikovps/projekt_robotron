@@ -1,84 +1,38 @@
 <div class="product-details-container">
 
-  <a
-    routerLink="/"
-    class="back-link">
+  <h1>DEBUG</h1>
 
+  <p>Loading: {{ isLoading }}</p>
+
+  <p>Product Name: {{ product?.name }}</p>
+
+  <p>Product ID: {{ product?.id }}</p>
+
+  <p>Error: {{ errorMessage }}</p>
+
+  <hr>
+
+  <a routerLink="/" class="back-link">
     ← Zurück zum Katalog
-
   </a>
 
-  <div
-    *ngIf="isLoading"
-    class="loading">
-
+  <div *ngIf="isLoading">
     Produkt wird geladen...
-
   </div>
 
-  <div
-    *ngIf="errorMessage"
-    class="error">
-
+  <div *ngIf="errorMessage">
     {{ errorMessage }}
-
   </div>
 
-  <div
-    *ngIf="product"
-    class="product-card">
+  <div *ngIf="product">
 
-    <div class="product-header">
+    <h1>{{ product.name }}</h1>
 
-      <h1>
-        {{ product.name }}
-      </h1>
+    <p>{{ product.manufacturer }}</p>
 
-      <span class="category-badge">
+    <p>{{ product.sku }}</p>
 
-        {{ product.categoryName }}
-
-      </span>
-
-    </div>
-
-    <div class="product-content">
-
-      <div class="info-row">
-
-        <strong>Hersteller:</strong>
-
-        {{ product.manufacturer }}
-
-      </div>
-
-      <div class="info-row">
-
-        <strong>SKU:</strong>
-
-        {{ product.sku }}
-
-      </div>
-
-      <div class="info-row">
-
-        <strong>Preis:</strong>
-
-        {{ product.price | currency:'EUR' }}
-
-      </div>
-
-      <div class="description">
-
-        <h3>Beschreibung</h3>
-
-        <p>
-          {{ product.description }}
-        </p>
-
-      </div>
-
-    </div>
+    <p>{{ product.price }}</p>
 
   </div>
 

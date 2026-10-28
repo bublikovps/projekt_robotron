@@ -1,19 +1,12 @@
-
 <nav class="main-nav">
 
   <div class="container nav-container">
 
-     
-
     <div
       class="logo"
       routerLink="/">
-
       IT-Portal
-
     </div>
-
-     
 
     <button
       class="burger-menu"
@@ -26,20 +19,16 @@
 
     </button>
 
-     
-
     <div
       class="nav-links"
       [class.mobile-open]="isMobileMenuOpen">
-
-       
 
       <div class="menu-center">
 
         <div class="dropdown">
 
           <a
-            routerLink="/"
+            routerLink="/catalog"
             class="nav-item dropdown-toggle"
             (click)="isMobileMenuOpen = false">
 
@@ -51,7 +40,7 @@
 
             <a
               *ngFor="let cat of categories"
-              [routerLink]="['/category', cat.id]"
+              [routerLink]="['/catalog/category', cat.id]"
               class="dropdown-item"
               (click)="isMobileMenuOpen = false">
 
@@ -64,6 +53,7 @@
         </div>
 
         <a
+          routerLink="/about"
           class="nav-item"
           (click)="isMobileMenuOpen = false">
 
@@ -72,6 +62,7 @@
         </a>
 
         <a
+          routerLink="/news"
           class="nav-item"
           (click)="isMobileMenuOpen = false">
 
@@ -80,6 +71,7 @@
         </a>
 
         <a
+          routerLink="/support"
           class="nav-item"
           (click)="isMobileMenuOpen = false">
 
@@ -89,11 +81,7 @@
 
       </div>
 
-      <!-- Правая часть -->
-
       <div class="menu-right">
-
-        <!-- ГОСТИ -->
 
         <ng-container *ngIf="!isLoggedIn()">
 
@@ -117,100 +105,97 @@
 
         </ng-container>
 
-         
+        <ng-container *ngIf="isLoggedIn()">
 
-          <ng-container *ngIf="isLoggedIn()">
+          <div class="user-menu">
 
-            <div class="user-menu">
+            <button
+              class="user-menu-button"
+              (click)="toggleUserMenu()">
 
-              <button
-                class="user-menu-button"
-                (click)="toggleUserMenu()">
+              <div class="user-avatar">
+                👤
+              </div>
 
-                <div class="user-avatar">
+              <div class="user-info">
+
+                <span class="user-login">
+                  {{ getUsername() }}
+                </span>
+
+                <span class="user-role">
+                  {{ getRoleDisplayName() }}
+                </span>
+
+              </div>
+
+              <span
+                class="user-arrow"
+                [class.user-arrow-open]="isUserMenuOpen">
+
+                ▼
+
+              </span>
+
+            </button>
+
+            <div
+              class="user-dropdown"
+              *ngIf="isUserMenuOpen">
+
+              <div class="user-dropdown-header">
+
+                <div class="user-dropdown-avatar">
                   👤
                 </div>
 
-                <div class="user-info">
+                <div>
 
-                  <span class="user-login">
+                  <strong>
                     {{ getUsername() }}
-                  </span>
+                  </strong>
 
-                  <span class="user-role">
+                  <span>
                     {{ getRoleDisplayName() }}
                   </span>
 
                 </div>
 
-                <span
-                  class="user-arrow"
-                  [class.user-arrow-open]="isUserMenuOpen">
-
-                  ▼
-
-                </span>
-
-              </button>
-
-              <div
-                class="user-dropdown"
-                *ngIf="isUserMenuOpen">
-
-                <div class="user-dropdown-header">
-
-                  <div class="user-dropdown-avatar">
-                    👤
-                  </div>
-
-                  <div>
-
-                    <strong>
-                      {{ getUsername() }}
-                    </strong>
-
-                    <span>
-                      {{ getRoleDisplayName() }}
-                    </span>
-
-                  </div>
-
-                </div>
-
-                <a
-                  routerLink="/dashboard"
-                  class="user-dropdown-item"
-                  (click)="isUserMenuOpen = false">
-
-                  🚀 Arbeitsbereich
-
-                </a>
-
-                <a
-                  routerLink="/profile"
-                  class="user-dropdown-item"
-                  (click)="isUserMenuOpen = false">
-
-                  👤 Mein Profil
-
-                </a>
-
-                <div class="dropdown-divider"></div>
-
-                <a
-                  class="user-dropdown-item logout-item"
-                  (click)="onLogout()">
-
-                  🚪 Abmelden
-
-                </a>
-
               </div>
+
+              <a
+                routerLink="/dashboard"
+                class="user-dropdown-item"
+                (click)="isUserMenuOpen = false">
+
+                🚀 Arbeitsbereich
+
+              </a>
+
+              <a
+                routerLink="/profile"
+                class="user-dropdown-item"
+                (click)="isUserMenuOpen = false">
+
+                👤 Mein Profil
+
+              </a>
+
+              <div class="dropdown-divider"></div>
+
+              <a
+                class="user-dropdown-item logout-item"
+                (click)="onLogout()">
+
+                🚪 Abmelden
+
+              </a>
 
             </div>
 
-          </ng-container>
+          </div>
 
+        </ng-container>
 
       </div>
 

@@ -6,6 +6,7 @@ import {
 import { CommonModule } from '@angular/common';
 
 import {
+  Router,
   RouterLink,
   ActivatedRoute
 } from '@angular/router';
@@ -33,7 +34,7 @@ from '../../business-management/products/models/product-response.model';
   styleUrls: ['./catalog.component.css']
 })
 export class CatalogComponent
-  implements OnInit {
+implements OnInit {
 
   categories: CategoryResponse[] = [];
 
@@ -44,6 +45,7 @@ export class CatalogComponent
 
   constructor(
     private route: ActivatedRoute,
+    private router: Router,
     private categoryService: CategoryService,
     private productService: ProductService
   ) {}
@@ -57,22 +59,13 @@ export class CatalogComponent
       const categoryId =
         params.get('id');
 
-      if (categoryId) {
-
-        this.selectedCategoryId =
-          Number(categoryId);
-
-      } else {
-
-        this.selectedCategoryId =
-          null;
-
-      }
+      this.selectedCategoryId =
+        categoryId
+          ? Number(categoryId)
+          : null;
 
       this.loadProducts();
-
     });
-
   }
 
   loadCategories(): void {
@@ -81,71 +74,59 @@ export class CatalogComponent
       .getAllCategories()
       .subscribe({
 
-        next: (data) => {
-
+        next: data => {
           this.categories = data;
-
         },
 
-        error: (err) => {
-
+        error: err => {
           console.error(
             'Fehler beim Laden der Kategorien',
             err
           );
-
         }
-
       });
-
   }
 
   loadProducts(): void {
-
-  this.productService
-    .getAllProducts(
-      '',
+    console.log(
+      'LOAD PRODUCTS:',
       this.selectedCategoryId
-    )
-    .subscribe({
+    );
 
-      next: (data) => {
+    this.productService
+      .getAllProducts(
+        '',
+        null
+      )
+      .subscribe({
 
-         this.products = data;
+        next: data => {
+          console.log('PRODUCTS', data);
+          console.log('COUNT = ', data.length);
+          this.products = data;
+        },
 
-      },
-
-      error: (err) => {
-
-        console.error(
-          'Fehler beim Laden der Produkte',
-          err
-        );
-
-      }
-
-    });
-
-}
+        error: err => {
+          console.error(
+            'Fehler beim Laden der Produkte',
+            err
+          );
+        }
+      });
+  }
 
   filterByCategory(
     categoryId: number
   ): void {
 
-    this.selectedCategoryId =
-      categoryId;
-
-    this.loadProducts();
-
+    this.router.navigate([
+      '/category',
+      categoryId
+    ]);
   }
 
   showAllProducts(): void {
 
-    this.selectedCategoryId =
-      null;
-
-    this.loadProducts();
-
+    this.router.navigate(['/']);
   }
-
 }
