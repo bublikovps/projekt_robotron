@@ -1,6 +1,6 @@
 # Enterprise IT Resource & Asset Management Platform
 
-# Architecture Constitution v1.0
+# Architecture Constitution v2.0
 
 ---
 
@@ -31,6 +31,7 @@ Forbidden:
 
 ```text
 Backend-driven database design.
+
 Frontend-driven backend design.
 ```
 
@@ -76,6 +77,8 @@ Asset Management
 Product Catalog
 +
 Business Management
++
+Financial Management
 ```
 
 are parts of one platform.
@@ -826,7 +829,300 @@ Next Planned Phases:
 Reporting
 Audit
 Dashboard
+Financial Management
 Advanced Assignment Workflows
+```
+
+---
+
+# ADR-024
+
+## Swagger Documentation Standard
+
+Every controller must define:
+
+```text
+@Tag
+```
+
+Every endpoint must define:
+
+```text
+@Operation
+```
+
+Naming format:
+
+```text
+< Entity > Management
+
+Department Management
+Employee Management
+Contract Management
+Device Management
+Software License Management
+
+Device Assignment Management
+License Assignment Management
+```
+
+---
+
+# ADR-025
+
+## Inventory and Asset Separation
+
+Status:
+
+```text
+Accepted
+```
+
+Decision:
+
+```text
+Products and Devices are separated lifecycle entities.
+```
+
+Product Purpose:
+
+```text
+Products represent commercial items
+available in warehouse and catalog.
+```
+
+Device Purpose:
+
+```text
+Devices represent physical company assets.
+```
+
+Product Lifecycle:
+
+```text
+Catalog
+↓
+Warehouse
+↓
+Sale
+```
+
+or
+
+```text
+Catalog
+↓
+Warehouse
+↓
+Device Creation
+```
+
+Device Lifecycle:
+
+```text
+IN_STOCK
+↓
+ASSIGNED
+↓
+RETURNED
+↓
+REPAIR
+```
+
+or
+
+```text
+IN_STOCK
+↓
+ASSIGNED
+↓
+RETURNED
+↓
+RETIRED
+↓
+DISPOSED
+```
+
+Rules:
+
+```text
+Creating a Device decreases Product stock.
+
+A Device never becomes a Product again.
+
+Returned Devices remain company assets.
+
+Disposed Devices remain archived
+for reporting and audit purposes.
+```
+
+---
+
+# ADR-026
+
+## Finance Readiness
+
+Status:
+
+```text
+Accepted
+```
+
+Purpose:
+
+```text
+Every inventory and asset object
+must be financially traceable.
+```
+
+Product Financial Data:
+
+```text
+purchase_price
+
+sale_price
+
+supplier
+```
+
+Device Financial Data:
+
+```text
+purchase_price
+
+current_value
+
+depreciation_rate
+
+retirement_date
+```
+
+Financial Reporting Targets:
+
+```text
+Inventory Value
+
+Asset Value
+
+Department Asset Value
+
+License Costs
+
+Disposed Asset Value
+
+Depreciation Reports
+```
+
+---
+
+# Enterprise Platform Domains
+
+## PUBLIC DOMAIN
+
+```text
+Catalog
+
+About
+
+News
+
+Support
+```
+
+---
+
+## SALES DOMAIN
+
+```text
+Products
+
+Categories
+
+Orders
+
+Customers
+```
+
+---
+
+## INVENTORY DOMAIN
+
+```text
+Warehouse
+
+Stock Operations
+
+Goods Receipt
+
+Inventory Control
+
+Stock Movement
+```
+
+---
+
+## ASSET DOMAIN
+
+```text
+Departments
+
+Employees
+
+Employment Contracts
+
+Devices
+
+Software Licenses
+
+Device Assignments
+
+License Assignments
+```
+
+---
+
+## FINANCIAL DOMAIN
+
+```text
+Inventory Valuation
+
+Asset Valuation
+
+Depreciation
+
+Cost Centers
+
+Budget Tracking
+
+Financial Reports
+```
+
+---
+
+## ADMIN DOMAIN
+
+```text
+Users
+
+Roles
+
+Permissions
+
+System Settings
+```
+
+---
+
+## GOVERNANCE DOMAIN
+
+```text
+Audit Log
+
+Reporting
+
+Analytics
+
+Compliance
 ```
 
 ---
@@ -845,6 +1141,8 @@ Employee
 User
 
 Product
+↓
+Warehouse Stock
 ↓
 Device
 ↓
@@ -886,26 +1184,3 @@ Frontend
 ```
 
 This rule is mandatory for the entire platform.
-
-ADR-024
-
-Swagger Documentation Standard
-Every controller must define:
-
-@Tag
-
-Every endpoint must define:
-
-@Operation
-
-Naming format:
-
-<Entity> Management
-Department Management
-Employee Management
-Contract Management
-Device Management
-Software License Management
-
-Device Assignment Management
-License Assignment Management
