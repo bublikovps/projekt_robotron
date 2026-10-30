@@ -99,6 +99,18 @@ public class ProductService {
                 request.getPrice()
         );
 
+        product.setPurchasePrice(
+                request.getPurchasePrice()
+        );
+
+        product.setSalePrice(
+                request.getSalePrice()
+        );
+
+        product.setSupplier(
+                request.getSupplier()
+        );
+
         product.setLagerbestand(
                 request.getLagerbestand()
         );
@@ -151,6 +163,18 @@ public class ProductService {
 
         product.setPrice(
                 request.getPrice()
+        );
+
+        product.setPurchasePrice(
+                request.getPurchasePrice()
+        );
+
+        product.setSalePrice(
+                request.getSalePrice()
+        );
+
+        product.setSupplier(
+                request.getSupplier()
         );
 
         product.setLagerbestand(
