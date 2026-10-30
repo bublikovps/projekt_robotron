@@ -47,6 +47,12 @@ public class Device {
     @Column(name = "purchase_price")
     private BigDecimal purchasePrice;
 
+    @Column(name = "current_value")
+    private BigDecimal currentValue;
+
+    @Column(name = "retirement_date")
+    private LocalDate retirementDate;
+
     @Column(name = "warranty_until")
     private LocalDate warrantyUntil;
 
@@ -130,6 +136,22 @@ public class Device {
 
     public void setPurchasePrice(BigDecimal purchasePrice) {
         this.purchasePrice = purchasePrice;
+    }
+
+    public BigDecimal getCurrentValue() {
+        return currentValue;
+    }
+
+    public void setCurrentValue(BigDecimal currentValue) {
+        this.currentValue = currentValue;
+    }
+
+    public LocalDate getRetirementDate() {
+        return retirementDate;
+    }
+
+    public void setRetirementDate(LocalDate retirementDate) {
+        this.retirementDate = retirementDate;
     }
 
     public LocalDate getWarrantyUntil() {

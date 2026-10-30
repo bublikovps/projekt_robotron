@@ -28,6 +28,15 @@ public class Product {
     @Column(nullable = false)
     private BigDecimal price;
 
+    @Column(name = "purchase_price")
+    private BigDecimal purchasePrice;
+
+    @Column(name = "sale_price")
+    private BigDecimal salePrice;
+
+    @Column(name = "supplier")
+    private String supplier;
+
     @Column(nullable = false)
     private int lagerbestand;
 
@@ -80,6 +89,31 @@ public class Product {
 
     public BigDecimal getPrice() { return price; }
     public void setPrice(BigDecimal price) { this.price = price; }
+
+    public BigDecimal getPurchasePrice() {
+        return purchasePrice;
+    }
+
+    public void setPurchasePrice(BigDecimal purchasePrice) {
+        this.purchasePrice = purchasePrice;
+    }
+
+    public BigDecimal getSalePrice() {
+        return salePrice;
+    }
+
+    public void setSalePrice(BigDecimal salePrice) {
+        this.salePrice = salePrice;
+    }
+
+    public String getSupplier() {
+        return supplier;
+    }
+
+    public void setSupplier(String supplier) {
+        this.supplier = supplier;
+    }
+
 
     public int getLagerbestand() { return lagerbestand; }
     public void setLagerbestand(int lagerbestand) { this.lagerbestand = lagerbestand; }

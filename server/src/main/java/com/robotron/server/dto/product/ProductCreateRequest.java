@@ -23,6 +23,18 @@ public class ProductCreateRequest {
     @PositiveOrZero(message = "Preis darf nicht negativ sein.")
     private BigDecimal price;
 
+    @PositiveOrZero(
+        message = "Einkaufspreis darf nicht negativ sein."
+    )
+    private BigDecimal purchasePrice;
+
+    @PositiveOrZero(
+        message = "Verkaufspreis darf nicht negativ sein."
+    )
+    private BigDecimal salePrice;
+
+    private String supplier;
+
     @PositiveOrZero(message = "Lagerbestand darf nicht negativ sein.")
     private int lagerbestand;
 
@@ -73,6 +85,32 @@ public class ProductCreateRequest {
 
     public void setPrice(BigDecimal price) {
         this.price = price;
+    }
+
+    public BigDecimal getPurchasePrice() {
+        return purchasePrice;
+    }
+
+    public void setPurchasePrice(
+            BigDecimal purchasePrice) {
+        this.purchasePrice = purchasePrice;
+    }
+
+    public BigDecimal getSalePrice() {
+        return salePrice;
+    }
+
+    public void setSalePrice(
+            BigDecimal salePrice) {
+        this.salePrice = salePrice;
+    }
+
+    public String getSupplier() {
+        return supplier;
+    }
+
+    public void setSupplier(String supplier) {
+        this.supplier = supplier;
     }
 
     public int getLagerbestand() {

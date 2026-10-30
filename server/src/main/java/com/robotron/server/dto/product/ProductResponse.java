@@ -17,6 +17,12 @@ public class ProductResponse {
 
     private BigDecimal price;
 
+    private BigDecimal purchasePrice;
+
+    private BigDecimal salePrice;
+
+    private String supplier;
+
     private int lagerbestand;
 
     private int minimumStock;
@@ -41,6 +47,9 @@ public class ProductResponse {
             String manufacturer,
             String description,
             BigDecimal price,
+            BigDecimal purchasePrice,
+            BigDecimal salePrice,
+            String supplier,
             int lagerbestand,
             int minimumStock,
             boolean active,
@@ -55,6 +64,9 @@ public class ProductResponse {
         this.manufacturer = manufacturer;
         this.description = description;
         this.price = price;
+        this.purchasePrice = purchasePrice;
+        this.salePrice = salePrice;
+        this.supplier = supplier;
         this.lagerbestand = lagerbestand;
         this.minimumStock = minimumStock;
         this.active = active;
@@ -110,6 +122,32 @@ public class ProductResponse {
 
     public void setPrice(BigDecimal price) {
         this.price = price;
+    }
+
+    public BigDecimal getPurchasePrice() {
+        return purchasePrice;
+    }
+
+    public void setPurchasePrice(
+            BigDecimal purchasePrice) {
+        this.purchasePrice = purchasePrice;
+    }
+
+    public BigDecimal getSalePrice() {
+        return salePrice;
+    }
+
+    public void setSalePrice(
+            BigDecimal salePrice) {
+        this.salePrice = salePrice;
+    }
+
+    public String getSupplier() {
+        return supplier;
+    }
+
+    public void setSupplier(String supplier) {
+        this.supplier = supplier;
     }
 
     public int getLagerbestand() {
