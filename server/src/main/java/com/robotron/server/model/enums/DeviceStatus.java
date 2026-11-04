@@ -1,10 +1,10 @@
 package com.robotron.server.model.enums;
 
 public enum DeviceStatus {
-
-    AVAILABLE,
+    IN_STOCK,
     ASSIGNED,
+    RETURNED,
     REPAIR,
-    RETIRED
-
+    RETIRED,
+    DISPOSED
 }

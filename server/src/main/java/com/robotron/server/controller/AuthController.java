@@ -15,6 +15,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import com.robotron.server.dto.auth.LoginRequest;
 import com.robotron.server.dto.auth.RegisterRequest;
 import com.robotron.server.dto.auth.ChangePasswordRequest;
+import com.robotron.server.dto.auth.CurrentUserResponse;
 import com.robotron.server.dto.auth.ForgotPasswordRequest;
 import com.robotron.server.dto.auth.ResetPasswordRequest;
 import com.robotron.server.service.SecurityService;
@@ -25,6 +26,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 import java.util.Map;
 import java.util.UUID;
 
@@ -34,7 +37,8 @@ import java.util.UUID;
 )
 @RestController
 @RequestMapping("/api/auth")
-@CrossOrigin(origins = "http://localhost:4200")
+@CrossOrigin(origins = "http://localhost:4200",
+    allowCredentials = "true")
 public class AuthController {
 
     private static final Logger log = LoggerFactory.getLogger(AuthController.class);
@@ -129,48 +133,122 @@ public class AuthController {
         description = "Authentifiziert den Benutzer und liefert einen JWT-Token zurück."
     )
     @PostMapping("/login")
-    public ResponseEntity<?> loginUser(@RequestBody LoginRequest request) {
-        log.info("Login-Versuch fuer Benutzer: {}", request.getLogin());
+    public ResponseEntity<?> loginUser(
+            @RequestBody LoginRequest request
+    ) {
 
-        User user = userRepository.findByLogin(request.getLogin())
-                .orElse(null);
+        log.info(
+            "Login-Versuch fuer Benutzer: {}",
+            request.getLogin()
+        );
 
-        if (user == null || !passwordEncoder.matches(request.getPassword(), user.getPasswordHash())) {
-            log.warn("Login fehlgeschlagen: Ungueltige Anmeldedaten fuer {}", request.getLogin());
-            return ResponseEntity.status(401).body(Map.of("error", "Ungueltiger Login oder Passwort!"));
-        }
+        User user =
+                userRepository
+                        .findByLogin(
+                                request.getLogin()
+                        )
+                        .orElse(null);
 
-        if (!user.isActive()) {
+        if (
+                user == null ||
+                !passwordEncoder.matches(
+                        request.getPassword(),
+                        user.getPasswordHash()
+                )
+        ) {
+
             log.warn(
-                "Login abgelehnt: Benutzer {} ist gesperrt.",
-                user.getLogin()
+                    "Login fehlgeschlagen: Ungueltige Anmeldedaten fuer {}",
+                    request.getLogin()
             );
 
-            return ResponseEntity.status(403)
+            return ResponseEntity
+                    .status(401)
                     .body(
-                        Map.of(
-                            "error",
-                            "Ihr Benutzerkonto wurde gesperrt. Bitte wenden Sie sich an den Administrator."
-                        )
+                            Map.of(
+                                    "error",
+                                    "Ungueltiger Login oder Passwort!"
+                            )
                     );
         }
 
-        String roleName = user.getRoles().stream()
-                .findFirst()
-                .map(Role::getName)
-                .orElse(SecurityRoles.CUSTOMER);
-                
-        java.util.Set<String> permissions = securityService.getPermissionsForUser(user.getLogin());
-        String token = jwtUtils.generateToken(user.getLogin(), roleName, permissions);
-        log.info("Benutzer {} успешно вошел. Сгенерирован JWT для роли: {}", request.getLogin(), roleName);
-        
-        // Передаем флаг passwordChangeRequired на фронтенд, чтобы Angular заставил сменить пароль!
-        return ResponseEntity.ok(Map.of(
-            "token", token,
-            "login", user.getLogin(),
-            "role", roleName,
-            "passwordChangeRequired", user.isPasswordChangeRequired() // ОБЯЗАТЕЛЬНО ОТПРАВЛЯЕМ ФЛАГ!
-        ));
+        if (!user.isActive()) {
+
+            log.warn(
+                    "Login abgelehnt: Benutzer {} ist gesperrt.",
+                    user.getLogin()
+            );
+
+            return ResponseEntity
+                    .status(403)
+                    .body(
+                            Map.of(
+                                    "error",
+                                    "Ihr Benutzerkonto wurde gesperrt. Bitte wenden Sie sich an den Administrator."
+                            )
+                    );
+        }
+
+        String roleName =
+                user.getRoles()
+                        .stream()
+                        .findFirst()
+                        .map(Role::getName)
+                        .orElse(SecurityRoles.CUSTOMER);
+
+        java.util.Set<String> permissions =
+                securityService.getPermissionsForUser(
+                        user.getLogin()
+                );
+
+        String token =
+                jwtUtils.generateToken(
+                        user.getLogin(),
+                        roleName,
+                        permissions
+                );
+
+        log.info(
+                "Benutzer {} erfolgreich eingeloggt. JWT erstellt fuer Rolle {}",
+                request.getLogin(),
+                roleName
+        );
+
+        ResponseCookie cookie =
+
+                ResponseCookie
+                        .from(
+                                "access_token",
+                                token
+                        )
+                        .httpOnly(true)
+                        .secure(false)
+                        .sameSite("Lax")
+                        .path("/")
+                        .maxAge(86400)
+                        .build();
+
+        return ResponseEntity
+                .ok()
+
+                .header(
+                        HttpHeaders.SET_COOKIE,
+                        cookie.toString()
+                )
+
+                .body(
+                        Map.of(
+
+                                "login",
+                                user.getLogin(),
+
+                                "role",
+                                roleName,
+
+                                "passwordChangeRequired",
+                                user.isPasswordChangeRequired()
+                        )
+                );
     }
 
     // 3. ПОЛУЧЕНИЕ ПРОФИЛЯ
@@ -327,5 +405,117 @@ public class AuthController {
         log.info("Passwort erfolgreich zurueckgesetzt fuer User-ID: {}", user.getId());
         return ResponseEntity.ok(Map.of("message", "Passwort erfolgreich zurueckgesetzt!"));
     }
+
+    @GetMapping("/me")
+    public ResponseEntity<?> getCurrentUser() {
+
+        Authentication auth =
+            SecurityContextHolder
+                .getContext()
+                .getAuthentication();
+
+        String login =
+            auth.getName();
+
+                    if (
+                    auth == null ||
+                    !auth.isAuthenticated() ||
+                    "anonymousUser".equals(login)
+            ) {
+
+                return ResponseEntity
+                        .status(401)
+                        .body(
+                                Map.of(
+                                        "error",
+                                        "Unauthorized"
+                                )
+                        );
+            }
+
+        User user =
+            userRepository
+                .findByLogin(login)
+                .orElse(null);
+
+        if (user == null) {
+
+            return ResponseEntity
+                .status(404)
+                .body(
+                    Map.of(
+                        "error",
+                        "User not found"
+                    )
+                );
+        }
+
+        String role =
+            user.getRoles()
+                .stream()
+                .findFirst()
+                .map(Role::getName)
+                .orElse("");
+
+        CurrentUserResponse response =
+            new CurrentUserResponse();
+
+        response.setId(
+            user.getId()
+        );
+
+        response.setLogin(
+            user.getLogin()
+        );
+
+        response.setRole(
+            role
+        );
+
+        response.setPasswordChangeRequired(
+            user.isPasswordChangeRequired()
+        );
+
+        return ResponseEntity.ok(
+            response
+        );
+    }
+
+    @Operation(
+        summary = "Benutzer abmelden",
+        description = "Löscht das JWT-Cookie des aktuell angemeldeten Benutzers."
+    )
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout() {
+
+        ResponseCookie cookie =
+                ResponseCookie
+                        .from(
+                                "access_token",
+                                ""
+                        )
+                        .httpOnly(true)
+                        .secure(false)
+                        .sameSite("Lax")
+                        .path("/")
+                        .maxAge(0)
+                        .build();
+
+        return ResponseEntity
+                .ok()
+                .header(
+                        HttpHeaders.SET_COOKIE,
+                        cookie.toString()
+                )
+                .body(
+                        Map.of(
+                                "message",
+                                "Logout erfolgreich."
+                        )
+                );
+    }
+
+
+
 }
 

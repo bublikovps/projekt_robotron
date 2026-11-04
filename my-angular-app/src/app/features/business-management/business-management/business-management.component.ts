@@ -3,23 +3,23 @@ import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 
 @Component({
-  selector: 'app-warehouse',
+  selector: 'app-business-management',
   standalone: true,
   imports: [
     CommonModule,
     RouterLink
   ],
-  templateUrl: './warehouse.component.html',
-  styleUrls: ['./warehouse.component.css']
+  templateUrl: './business-management.component.html',
+  styleUrls: ['./business-management.component.css']
 })
-export class WarehouseComponent {
+export class BusinessManagementComponent {
 
   modules = [
 
     {
       icon: '🗂️',
       title: 'Categories',
-      route: '/lager-management/categories',
+      route: '/business-management/categories',
       description:
         'Produktkategorien verwalten.'
     },
@@ -27,9 +27,17 @@ export class WarehouseComponent {
     {
       icon: '📦',
       title: 'Products',
-      route: '/lager-management/products',
+      route: '/business-management/products',
       description:
         'Produktkatalog verwalten.'
+    },
+
+    {
+      icon: '📊',
+      title: 'Reports',
+      route: '/business-management/reports',
+      description:
+        'Bestände, Margen und Kennzahlen analysieren.'
     }
 
   ];

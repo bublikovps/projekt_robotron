@@ -7,6 +7,9 @@ import {
   AdminUserData
 } from '../../core/services/admin.service';
 
+import { AuthService }
+from '../../core/services/auth.service';
+
 @Component({
   selector: 'app-administration',
   standalone: true,
@@ -35,34 +38,46 @@ export class AdministrationComponent implements OnInit {
 
   constructor(
     private adminService: AdminService,
+    private authService: AuthService,
     private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
 
-    const token =
-      sessionStorage.getItem('jwtToken');
+    this.authService
+      .getCurrentUser()
+      .subscribe({
 
-    const role =
-      sessionStorage.getItem('userRole');
+        next: user => {
 
-    if (
-      token &&
-      (
-        role === 'ROLE_ADMIN' ||
-        role === 'ROLE_DIRECTOR'
-      )
-    ) {
+          if (
+            user.role === 'ROLE_ADMIN' ||
+            user.role === 'ROLE_DIRECTOR'
+          ) {
 
-      this.loadUsers();
+            this.loadUsers();
 
-    } else {
+          } else {
 
-      this.users = [];
+            this.users = [];
 
-      this.errorMessage =
-        'Zugriff verweigert! Sie haben keine Berechtigung für dieses Panel.';
-    }
+            this.errorMessage =
+              'Zugriff verweigert! Sie haben keine Berechtigung für dieses Panel.';
+
+            this.cdr.detectChanges();
+          }
+        },
+
+        error: () => {
+
+          this.users = [];
+
+          this.errorMessage =
+            'Zugriff verweigert! Sie haben keine Berechtigung für dieses Panel.';
+
+          this.cdr.detectChanges();
+        }
+      });
   }
 
   loadUsers(): void {
@@ -88,10 +103,6 @@ export class AdministrationComponent implements OnInit {
             err.error?.error ||
             'Fehler beim Laden der Benutzerdaten vom Server.';
 
-          console.error(
-            'Administration Error:',
-            err
-          );
 
           this.cdr.detectChanges();
         }

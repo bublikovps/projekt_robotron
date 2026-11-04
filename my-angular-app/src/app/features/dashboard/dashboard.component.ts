@@ -1,34 +1,70 @@
-import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router';
+import {
+  Component,
+  OnInit
+} from '@angular/core';
+
+import { CommonModule }
+from '@angular/common';
+
+import { RouterLink }
+from '@angular/router';
+
+import { AuthService }
+from '../../core/services/auth.service';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [
+    CommonModule,
+    RouterLink
+  ],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css']
 })
-export class DashboardComponent implements OnInit {
+export class DashboardComponent
+implements OnInit {
 
   login = '';
+
   role = '';
+
+  passwordChangeRequired = false;
+
+  constructor(
+    private authService: AuthService
+  ) {}
 
   ngOnInit(): void {
 
-    const userJson =
-      sessionStorage.getItem('currentUser');
+    this.authService
+      .currentUser$
+      .subscribe(user => {
 
-    if (userJson) {
+        if (!user) {
 
-      const user = JSON.parse(userJson);
+          this.login = '';
 
-      this.login = user.login;
-      this.role = user.role;
-    }
+          this.role = '';
+
+          this.passwordChangeRequired = false;
+
+          return;
+        }
+
+        this.login = user.login;
+
+        this.role = user.role;
+
+        this.passwordChangeRequired =
+          user.passwordChangeRequired;
+      });
   }
 
-  hasRole(roleName: string): boolean {
+  hasRole(
+    roleName: string
+  ): boolean {
+
     return this.role === roleName;
   }
 

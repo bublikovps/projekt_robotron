@@ -31,20 +31,24 @@ export class DeviceService {
   getAllDevices():
     Observable<DeviceResponse[]> {
 
-    return this.http.get<
-      DeviceResponse[]
-    >(this.apiUrl);
+    return this.http.get<DeviceResponse[]>(
+      this.apiUrl,
+      {
+        withCredentials: true
+      }
+    );
   }
 
   createDevice(
     request: DeviceCreateRequest
   ): Observable<DeviceResponse> {
 
-    return this.http.post<
-      DeviceResponse
-    >(
+    return this.http.post<DeviceResponse>(
       this.apiUrl,
-      request
+      request,
+      {
+        withCredentials: true
+      }
     );
   }
 
@@ -53,11 +57,12 @@ export class DeviceService {
     request: DeviceUpdateRequest
   ): Observable<DeviceResponse> {
 
-    return this.http.put<
-      DeviceResponse
-    >(
+    return this.http.put<DeviceResponse>(
       `${this.apiUrl}/${id}`,
-      request
+      request,
+      {
+        withCredentials: true
+      }
     );
   }
 
@@ -65,10 +70,11 @@ export class DeviceService {
     id: number
   ): Observable<ApiMessageResponse> {
 
-    return this.http.delete<
-      ApiMessageResponse
-    >(
-      `${this.apiUrl}/${id}`
+    return this.http.delete<ApiMessageResponse>(
+      `${this.apiUrl}/${id}`,
+      {
+        withCredentials: true
+      }
     );
   }
 
@@ -76,11 +82,12 @@ export class DeviceService {
     id: number
   ): Observable<ApiMessageResponse> {
 
-    return this.http.put<
-      ApiMessageResponse
-    >(
+    return this.http.put<ApiMessageResponse>(
       `${this.apiUrl}/${id}/restore`,
-      {}
+      {},
+      {
+        withCredentials: true
+      }
     );
   }
 
@@ -88,11 +95,11 @@ export class DeviceService {
     id: number
   ): Observable<ApiMessageResponse> {
 
-    return this.http.delete<
-      ApiMessageResponse
-    >(
-      `${this.apiUrl}/${id}/permanent`
+    return this.http.delete<ApiMessageResponse>(
+      `${this.apiUrl}/${id}/permanent`,
+      {
+        withCredentials: true
+      }
     );
   }
-
 }

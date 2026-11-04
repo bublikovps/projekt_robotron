@@ -1,24 +1,122 @@
-import { inject } from '@angular/core';
-import { CanActivateFn, Router } from '@angular/router';
+import {
+  inject,
+  PLATFORM_ID
+} from '@angular/core';
 
-export const roleGuard: CanActivateFn = (route, state) => {
-  const router = inject(Router);
-  
-  // 1. Вытаскиваем цифровой паспорт и роль текущей сессии
-  const token = sessionStorage.getItem('jwtToken');
-  const userRole = sessionStorage.getItem('userRole');
+import {
+  isPlatformBrowser
+} from '@angular/common';
 
-  // 2. Считываем массив ролей, которым разрешен доступ на эту страницу
-  const expectedRoles = route.data['expectedRoles'] as Array<string>;
+import {
+  CanActivateFn,
+  Router
+} from '@angular/router';
 
-  // 3. Проверяем валидность сессии и вхождение роли в белый список
-  if (token && userRole && expectedRoles && expectedRoles.includes(userRole)) {
-    console.log(`[ROLE GUARD] Доступ разрешен для ${userRole} на адрес: ${state.url}`);
-    return true; // Пропускаем пользователя на страницу!
+import {
+  map,
+  catchError,
+  of
+} from 'rxjs';
+
+import { AuthService }
+from '../services/auth.service';
+
+export const roleGuard:
+CanActivateFn = (route, state) => {
+
+  const router =
+    inject(Router);
+
+  const authService =
+    inject(AuthService);
+
+  const platformId =
+    inject(PLATFORM_ID);
+
+  if (
+    !isPlatformBrowser(
+      platformId
+    )
+  ) {
+
+    return true;
   }
 
-  // 4. Если токена нет или роль "чужая" — блокируем переход и выкидываем на главную
-  console.warn(`[ROLE GUARD БЛОКИРОВКА] Доступ запрещен для роли [${userRole || 'Гость'}] на адрес: ${state.url}`);
-  router.navigate(['/']);
-  return false; // Отменяем рендеринг страницы
+  const expectedRoles =
+    route.data[
+      'expectedRoles'
+    ] as string[];
+
+  const currentUser =
+    authService.getCurrentUserValue();
+
+  /**
+   * Уже есть пользователь в памяти
+   */
+  if (currentUser) {
+
+    if (
+      expectedRoles?.includes(
+        currentUser.role
+      )
+    ) {
+
+      return true;
+    }
+
+    console.warn(
+      `[ROLE GUARD DENIED] Access blocked for role [${currentUser.role}] to: ${state.url}`
+    );
+
+    router.navigate(['/']);
+
+    return false;
+  }
+
+  /**
+   * Пользователь ещё не загружен.
+   * Загружаем через /api/auth/me.
+   */
+  return authService
+    .getCurrentUser()
+    .pipe(
+
+      map(user => {
+
+        if (!user) {
+
+          router.navigate(['/']);
+
+          return false;
+        }
+
+        if (
+          expectedRoles?.includes(
+            user.role
+          )
+        ) {
+
+          return true;
+        }
+
+        console.warn(
+          `[ROLE GUARD DENIED] Access blocked for role [${user.role}] to: ${state.url}`
+        );
+
+        router.navigate(['/']);
+
+        return false;
+      }),
+
+      catchError(() => {
+
+        console.warn(
+          `[ROLE GUARD DENIED] Guest access blocked to: ${state.url}`
+        );
+
+        router.navigate(['/']);
+
+        return of(false);
+      })
+    );
 };

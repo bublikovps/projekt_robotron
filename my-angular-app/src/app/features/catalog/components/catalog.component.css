@@ -63,15 +63,23 @@
   background: #ffffff;
   border-radius: 12px;
   padding: 12px 20px;
-  cursor: pointer;
   transition: 0.2s ease;
   font-size: 0.95rem;
+  text-decoration: none;
+  color: #0f172a;
+  cursor: pointer;
 }
 
 .category-card:hover {
   border-color: #2563eb;
   color: #2563eb;
   transform: translateY(-2px);
+}
+
+.active-category {
+  background: #2563eb;
+  color: #ffffff !important;
+  border-color: #2563eb;
 }
 
 .all-category {
@@ -89,6 +97,7 @@
   display: grid;
   grid-template-columns:
     repeat(auto-fill, minmax(280px, 1fr));
+
   gap: 24px;
 }
 
@@ -97,7 +106,9 @@
   border: 1px solid #e2e8f0;
   border-radius: 16px;
   padding: 20px;
+
   transition: 0.2s ease;
+
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -105,7 +116,10 @@
 
 .product-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+
+  box-shadow:
+    0 10px 30px
+    rgba(0, 0, 0, 0.08);
 }
 
 .product-header {
@@ -115,8 +129,11 @@
 .product-category {
   background: #eff6ff;
   color: #2563eb;
+
   padding: 6px 10px;
+
   border-radius: 999px;
+
   font-size: 0.8rem;
   font-weight: 600;
 }
@@ -140,6 +157,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+
   margin-top: 20px;
 }
 
@@ -152,9 +170,13 @@
 .details-btn {
   background: #2563eb;
   color: #ffffff;
+
   text-decoration: none;
+
   padding: 10px 18px;
+
   border-radius: 8px;
+
   transition: 0.2s ease;
 }
 
@@ -166,4 +188,82 @@
   text-align: center;
   padding: 40px;
   color: #64748b;
+}
+
+.catalog-search {
+
+  display: flex;
+
+  gap: 12px;
+
+  margin-bottom: 24px;
+
+  flex-wrap: wrap;
+}
+
+.catalog-search input {
+
+  flex: 1;
+
+  min-width: 260px;
+
+  padding: 12px 16px;
+
+  border: 1px solid #e2e8f0;
+
+  border-radius: 10px;
+
+  font-size: 1rem;
+
+  outline: none;
+
+  transition: 0.2s ease;
+}
+
+.catalog-search input:focus {
+
+  border-color: #2563eb;
+
+  box-shadow:
+    0 0 0 3px
+    rgba(37, 99, 235, 0.15);
+}
+
+.catalog-search button {
+
+  border: none;
+
+  border-radius: 10px;
+
+  padding: 12px 20px;
+
+  cursor: pointer;
+
+  font-weight: 600;
+
+  transition: 0.2s ease;
+}
+
+.catalog-search button:first-of-type {
+
+  background: #2563eb;
+
+  color: #ffffff;
+}
+
+.catalog-search button:first-of-type:hover {
+
+  background: #1d4ed8;
+}
+
+.catalog-search button:last-of-type {
+
+  background: #e2e8f0;
+
+  color: #334155;
+}
+
+.catalog-search button:last-of-type:hover {
+
+  background: #cbd5e1;
 }

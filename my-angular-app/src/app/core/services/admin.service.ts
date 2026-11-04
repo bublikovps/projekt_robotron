@@ -2,12 +2,16 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
-
 export interface AdminUserData {
+
   id: number;
+
   login: string;
+
   email: string;
+
   createdAt: string;
+
   role: string;
 }
 
@@ -15,28 +19,66 @@ export interface AdminUserData {
   providedIn: 'root'
 })
 export class AdminService {
-  private apiUrl = 'http://localhost:8080/api/admin/users';
 
-  constructor(private http: HttpClient) { }
+  private apiUrl =
+    'http://localhost:8080/api/admin/users';
 
-  
+  constructor(
+    private http: HttpClient
+  ) {}
+
   getAllUsers(): Observable<AdminUserData[]> {
-    return this.http.get<AdminUserData[]>(this.apiUrl);
+
+    return this.http.get<AdminUserData[]>(
+      this.apiUrl,
+      {
+        withCredentials: true
+      }
+    );
   }
 
-  
-  changeUserRole(userId: number, newRoleName: string): Observable<any> {
-    return this.http.put(`${this.apiUrl}/${userId}/role`, {newRoleName: newRoleName });
+  changeUserRole(
+    userId: number,
+    newRoleName: string
+  ): Observable<any> {
+
+    return this.http.put(
+      `${this.apiUrl}/${userId}/role`,
+      {
+        newRoleName
+      },
+      {
+        withCredentials: true
+      }
+    );
   }
 
-  
-  deleteUser(userId: number): Observable<any> {
-    return this.http.delete(`${this.apiUrl}/${userId}`);
+  deleteUser(
+    userId: number
+  ): Observable<any> {
+
+    return this.http.delete(
+      `${this.apiUrl}/${userId}`,
+      {
+        withCredentials: true
+      }
+    );
   }
 
-  
-  createEmployee(employeeData: { login: string, email: string, role: string }): Observable<any> {
-    console.log('[ADMIN SERVICE] Отправка данных нового сотрудника на бэкенд:', employeeData);
-    return this.http.post<any>(this.apiUrl, employeeData);
+  createEmployee(
+    employeeData: {
+      login: string;
+      email: string;
+      role: string;
+    }
+  ): Observable<any> {
+
+    return this.http.post<any>(
+      this.apiUrl,
+      employeeData,
+      {
+        withCredentials: true
+      }
+    );
   }
 }
