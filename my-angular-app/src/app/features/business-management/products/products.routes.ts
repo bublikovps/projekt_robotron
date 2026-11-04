@@ -6,7 +6,7 @@ from './components/products.component';
 export const PRODUCTS_ROUTES: Routes = [
 
   {
-    path: 'lager-management/products',
+    path: 'business-management/products',
     component: ProductsComponent
   }
 

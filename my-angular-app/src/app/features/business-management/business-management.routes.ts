@@ -1,19 +1,21 @@
 import { Routes } from '@angular/router';
 
-import { WarehouseComponent } from './warehouse/warehouse.component';
+
 
 import { CATEGORIES_ROUTES } from './categories/categories.routes';
 import { PRODUCTS_ROUTES } from './products/products.routes';
+import { REPORTS_ROUTES } from './reports/reports.routes';
 
 import { roleGuard } from '../../core/guards/role.guard';
 import { passwordChangeGuard } from '../../core/guards/password-change.guard';
+import { BusinessManagementComponent } from './business-management/business-management.component';
 
 export const BUSINESS_MANAGEMENT_ROUTES: Routes = [
 
   {
-    path: 'lager-management',
+    path: 'business-management',
 
-    component: WarehouseComponent,
+    component: BusinessManagementComponent,
 
     canActivate: [
       passwordChangeGuard,
@@ -30,6 +32,8 @@ export const BUSINESS_MANAGEMENT_ROUTES: Routes = [
 
   ...CATEGORIES_ROUTES,
 
-...PRODUCTS_ROUTES
+  ...PRODUCTS_ROUTES,
+
+  ...REPORTS_ROUTES
 
 ];

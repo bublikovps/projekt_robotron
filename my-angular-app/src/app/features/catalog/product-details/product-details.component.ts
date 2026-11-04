@@ -10,11 +10,11 @@ import {
   RouterLink
 } from '@angular/router';
 
-import { ProductService }
-from '../../business-management/products/services/product.service';
+import { CatalogService }
+from '../services/catalog.service';
 
-import { ProductResponse }
-from '../../business-management/products/models/product-response.model';
+import { CatalogProductResponse }
+from '../models/catalog-product-response.model';
 
 @Component({
   selector: 'app-product-details',
@@ -27,9 +27,9 @@ from '../../business-management/products/models/product-response.model';
   styleUrls: ['./product-details.component.css']
 })
 export class ProductDetailsComponent
-  implements OnInit {
+implements OnInit {
 
-  product?: ProductResponse;
+  product?: CatalogProductResponse;
 
   isLoading = true;
 
@@ -37,7 +37,7 @@ export class ProductDetailsComponent
 
   constructor(
     private route: ActivatedRoute,
-    private productService: ProductService
+    private catalogService: CatalogService
   ) {}
 
   ngOnInit(): void {
@@ -46,23 +46,20 @@ export class ProductDetailsComponent
       this.route.snapshot.paramMap.get('id')
     );
 
-    
-
-    this.productService
+    this.catalogService
       .getProductById(id)
       .subscribe({
 
         next: product => {
 
-          this.product = product;
 
-          this.isLoading = false;
+        this.product = product;
 
-          
+        this.isLoading = false;
 
-        },
+      },
 
-        error: () => {
+        error: err => {
 
           this.errorMessage =
             'Produkt nicht gefunden.';

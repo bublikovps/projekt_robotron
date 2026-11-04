@@ -1,24 +1,40 @@
 import { inject } from '@angular/core';
-import { CanActivateFn, Router } from '@angular/router';
 
-export const passwordChangeGuard: CanActivateFn = (route, state) => {
+import {
+  CanActivateFn,
+  Router
+} from '@angular/router';
 
-  const router = inject(Router);
+import { AuthService }
+from '../services/auth.service';
 
-  const passwordChangeRequired =
-    sessionStorage.getItem('passwordChangeRequired');
+export const passwordChangeGuard:
+CanActivateFn =
+  (route, state) => {
 
-  // Если флаг установлен и пользователь пытается открыть
-  // что-либо кроме профиля
-  if (passwordChangeRequired === 'true') {
+    const router =
+      inject(Router);
 
-    console.warn(
-      `[PASSWORD GUARD] Zugriff blockiert. Passwortänderung erforderlich. Ziel: ${state.url}`
-    );
+    const authService =
+      inject(AuthService);
 
-    router.navigate(['/profile']);
-    return false;
-  }
+    const currentUser =
+      authService.getCurrentUserValue();
 
-  return true;
-};
+    if (
+      currentUser?.passwordChangeRequired
+    ) {
+
+      console.warn(
+        `[PASSWORD GUARD] Zugriff blockiert. Passwortänderung erforderlich. Ziel: ${state.url}`
+      );
+
+      router.navigate([
+        '/profile'
+      ]);
+
+      return false;
+    }
+
+    return true;
+  };

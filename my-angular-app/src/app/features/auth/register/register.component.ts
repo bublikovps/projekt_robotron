@@ -13,7 +13,6 @@ import { RegisterRequest } from '../../../core/models/register-request.model';
   styleUrls: ['./register.component.css']
 })
 export class RegisterComponent {
-  // СТАЛО: Имя поля строго совпадает с RegisterRequest DTO на бэкенде Java!
   registerData: RegisterRequest  = {
     login: '',
     email: '',
@@ -31,7 +30,6 @@ export class RegisterComponent {
     this.successMessage = '';
     this.isLoading = true;
 
-    console.log('[AUTH UI] Sende Registrierungsdaten an Backend...');
 
     this.authService.register(this.registerData).subscribe({
       next: (res) => {
@@ -44,7 +42,7 @@ export class RegisterComponent {
       error: (err) => {
         this.isLoading = false;
         this.errorMessage = err.error?.error || 'Registrierung fehlgeschlagen. Bitte überprüfen Sie Ihre Daten.';
-        console.error('Registrierungsfehler:', err);
+        
       }
     });
   }

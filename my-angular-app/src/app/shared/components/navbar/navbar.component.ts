@@ -1,114 +1,185 @@
-import { Component, OnInit, Inject, PLATFORM_ID } from '@angular/core';
-import { CommonModule, isPlatformBrowser } from '@angular/common';
-import { Router, RouterLink } from '@angular/router';
-import { CategoryService } from '../../../features/business-management/categories/services/category.service';
-import { CategoryResponse } from '../../../features/business-management/categories/models/category-response.model';
+import {
+  Component,
+  OnInit,
+  inject,
+  ChangeDetectorRef,
+  signal
+} from '@angular/core';
+
+import {
+  CommonModule
+} from '@angular/common';
+
+import {
+  Router,
+  RouterLink
+} from '@angular/router';
+
+import { CatalogService }
+from '../../../features/catalog/services/catalog.service';
+
+import { AuthService }
+from '../../../core/services/auth.service';
+
+import { CurrentUserResponse }
+from '../../../core/models/current-user-response.model';
 
 @Component({
   selector: 'app-navbar',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [
+    CommonModule,
+    RouterLink
+  ],
   templateUrl: './navbar.component.html',
-  styleUrls: ['./navbar.component.css'],
+  styleUrls: ['./navbar.component.css']
 })
-export class NavbarComponent implements OnInit {
-  categories: CategoryResponse[] = [];
+export class NavbarComponent
+implements OnInit {
+
+  private readonly router =
+    inject(Router);
+
+  private readonly catalogService =
+    inject(CatalogService);
+
+  private readonly authService =
+    inject(AuthService);
+
+  private readonly cdr =
+    inject(ChangeDetectorRef);
+
+  categories =
+    this.catalogService.categories;
+
+  currentUser =
+    signal<CurrentUserResponse | null>(
+      null
+    );
+
   isMobileMenuOpen = false;
+
   isUserMenuOpen = false;
 
-  // Injiziert PLATFORM_ID, um zwischen Browser- und SSR-Server-Umgebung zu unterscheiden
-  constructor(
-    private router: Router,
-    private categoryService: CategoryService,
-    @Inject(PLATFORM_ID) private platformId: Object,
-  ) {}
+  isCatalogMenuOpen = false;
 
   ngOnInit(): void {
-    // Kategorien nur im Browser laden, um unnoetige API-Aufrufe waehrend des Server-Side-Renderings zu vermeiden
-    if (isPlatformBrowser(this.platformId)) {
-      this.loadCategories();
-    }
+
+    this.catalogService
+      .loadCategoriesIfNeeded();
+
+    this.authService
+      .currentUser$
+      .subscribe(user => {
+
+        this.currentUser.set(user);
+
+        this.cdr.detectChanges();
+      });
   }
 
-  private loadCategories(): void {
-    this.categoryService.getAllCategories().subscribe({
-      next: (data) => {
-        this.categories = data;
-      },
-      error: (err) => {
-        console.error('Fehler beim Laden der Kategorien', err);
-      },
-    });
+  toggleCatalogMenu(): void {
+
+    this.isCatalogMenuOpen =
+      !this.isCatalogMenuOpen;
+  }
+
+  closeCatalogMenu(): void {
+
+    this.isCatalogMenuOpen = false;
   }
 
   toggleMobileMenu(): void {
-    this.isMobileMenuOpen = !this.isMobileMenuOpen;
+
+    this.isMobileMenuOpen =
+      !this.isMobileMenuOpen;
   }
+
   toggleUserMenu(): void {
-    this.isUserMenuOpen = !this.isUserMenuOpen;
+
+    this.isUserMenuOpen =
+      !this.isUserMenuOpen;
   }
 
   isLoggedIn(): boolean {
-    if (isPlatformBrowser(this.platformId)) {
-      return sessionStorage.getItem('jwtToken') !== null;
-    }
-    return false;
+
+    return !!this.currentUser();
   }
 
   getUsername(): string {
-    if (isPlatformBrowser(this.platformId)) {
-      const userJson = sessionStorage.getItem('currentUser');
-      if (userJson) {
-        const user = JSON.parse(userJson);
-        return user.login;
-      }
-    }
-    return '';
+
+    return this.currentUser()?.login ?? '';
   }
 
-  hasRole(role: string): boolean {
-    if (isPlatformBrowser(this.platformId)) {
-      return sessionStorage.getItem('userRole') === role;
-    }
-    return false;
+  hasRole(
+    role: string
+  ): boolean {
+
+    return this.currentUser()?.role === role;
   }
 
   getRoleDisplayName(): string {
-    if (isPlatformBrowser(this.platformId)) {
-      const role = sessionStorage.getItem('userRole');
-      switch (role) {
-        case 'ROLE_DIRECTOR':
-          return 'Director';
-        case 'ROLE_ADMIN':
-          return 'Administrator';
-        case 'ROLE_MANAGER':
-          return 'Lagerverwalter';
-        case 'ROLE_CUSTOMER':
-          return 'Kunde';
-        default:
-          return 'Benutzer';
-      }
+
+    switch (
+      this.currentUser()?.role
+    ) {
+
+      case 'ROLE_DIRECTOR':
+        return 'Director';
+
+      case 'ROLE_ADMIN':
+        return 'Administrator';
+
+      case 'ROLE_MANAGER':
+        return 'Lagerverwalter';
+
+      case 'ROLE_CUSTOMER':
+        return 'Kunde';
+
+      default:
+        return 'Benutzer';
     }
-    return 'Benutzer';
   }
 
-  isPasswordChangeRequired(): boolean {
-    if (isPlatformBrowser(this.platformId)) {
-      return sessionStorage.getItem('passwordChangeRequired') === 'true';
-    }
-    return false;
+  isPasswordChangeRequired():
+    boolean {
+
+    return (
+      this.currentUser()
+        ?.passwordChangeRequired
+      ?? false
+    );
   }
 
   onLogout(): void {
+
     this.isMobileMenuOpen = false;
+
     this.isUserMenuOpen = false;
 
-    if (isPlatformBrowser(this.platformId)) {
-      sessionStorage.removeItem('currentUser');
-      sessionStorage.removeItem('userRole');
-      sessionStorage.removeItem('jwtToken');
-      sessionStorage.removeItem('passwordChangeRequired');
-    }
-    this.router.navigate(['/login']);
+    this.authService
+      .logoutRequest()
+      .subscribe({
+
+        next: () => {
+
+          this.authService
+            .clearCurrentUser();
+
+          this.router.navigate([
+            '/login'
+          ]);
+        },
+
+        error: () => {
+
+          this.authService
+            .clearCurrentUser();
+
+          this.router.navigate([
+            '/login'
+          ]);
+        }
+      });
   }
 }

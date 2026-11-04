@@ -32,20 +32,18 @@ export class ForgotPasswordComponent {
     }
 
     this.isLoading = true;
-    console.log('[HTTP POST] Sende Passwort-Reset-Anforderung für Email:', this.email);
 
     this.authService.sendForgotPasswordLink(this.email).subscribe({
       next: (res) => {
         this.isLoading = false;
-        // Получаем безопасное общее сообщение от Java
         this.successMessage = res.message || 'Wenn die E-Mail existiert, wurde ein Link gesendet.';
-        this.email = ''; // Очищаем поле ввода
+        this.email = '';  
         this.cdr.detectChanges();
       },
       error: (err) => {
         this.isLoading = false;
         this.errorMessage = err.error?.error || 'Fehler beim Senden des Wiederherstellungslinks.';
-        console.error('Fehler bei Passwort-Reset-Anforderung:', err);
+        
         this.cdr.detectChanges();
       }
     });

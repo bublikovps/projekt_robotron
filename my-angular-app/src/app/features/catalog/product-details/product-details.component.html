@@ -1,38 +1,102 @@
+<h1 style="color:red">
+  TEST PRODUCT DETAIL PAGE
+</h1>
+
 <div class="product-details-container">
 
-  <h1>DEBUG</h1>
+  <a
+    routerLink="/catalog"
+    class="back-link">
 
-  <p>Loading: {{ isLoading }}</p>
-
-  <p>Product Name: {{ product?.name }}</p>
-
-  <p>Product ID: {{ product?.id }}</p>
-
-  <p>Error: {{ errorMessage }}</p>
-
-  <hr>
-
-  <a routerLink="/" class="back-link">
     ← Zurück zum Katalog
+
   </a>
 
-  <div *ngIf="isLoading">
+  <div
+    *ngIf="isLoading"
+    class="loading">
+
     Produkt wird geladen...
+
   </div>
 
-  <div *ngIf="errorMessage">
+  <div
+    *ngIf="errorMessage"
+    class="error">
+
     {{ errorMessage }}
+
   </div>
 
-  <div *ngIf="product">
+  <div
+    *ngIf="product && !isLoading"
+    class="product-card">
 
-    <h1>{{ product.name }}</h1>
+    <div class="product-header">
 
-    <p>{{ product.manufacturer }}</p>
+      <div>
 
-    <p>{{ product.sku }}</p>
+        <div class="category-badge">
 
-    <p>{{ product.price }}</p>
+          {{ product.categoryName }}
+
+        </div>
+
+        <h1>
+
+          {{ product.name }}
+
+        </h1>
+
+      </div>
+
+    </div>
+
+    <div class="info-row">
+
+      <strong>Hersteller:</strong>
+
+      {{ product.manufacturer }}
+
+    </div>
+
+    <div class="info-row">
+
+      <strong>SKU:</strong>
+
+      {{ product.sku }}
+
+    </div>
+
+    <div class="info-row">
+
+      <strong>Preis:</strong>
+
+      {{ product.price }} €
+
+    </div>
+
+    <div class="info-row">
+
+      <strong>Kategorie:</strong>
+
+      {{ product.categoryName }}
+
+    </div>
+
+    <div
+      class="description"
+      *ngIf="product.description">
+
+      <h3>Beschreibung</h3>
+
+      <p>
+
+        {{ product.description }}
+
+      </p>
+
+    </div>
 
   </div>
 
