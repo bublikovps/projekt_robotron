@@ -50,6 +50,13 @@ public class SoftwareLicenseMapper {
         response.setNotes(
                 entity.getNotes());
 
+        response.setLicenseNumber(
+                entity.getLicenseNumber());
+
+        response.setStatus(
+                entity.getStatus());
+
+
         return response;
     }
 }

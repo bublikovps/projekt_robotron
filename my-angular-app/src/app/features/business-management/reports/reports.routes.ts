@@ -8,6 +8,6 @@ export const REPORTS_ROUTES: Routes = [
   {
     path: 'business-management/reports',
     component: ReportsComponent
-  }
+  },
 
 ];

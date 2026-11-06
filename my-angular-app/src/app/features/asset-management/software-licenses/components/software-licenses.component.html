@@ -1,0 +1,315 @@
+<div class="page-content">
+
+  <div class="page-header">
+
+    <div>
+
+      <h1>
+        Software Licenses
+      </h1>
+
+      <p>
+        Manage software licenses,
+        subscriptions and vendors.
+      </p>
+
+    </div>
+
+    <button
+      class="primary-button"
+      (click)="openCreateDialog()">
+
+      + New License
+
+    </button>
+
+  </div>
+
+  <div
+    *ngIf="successMessage"
+    class="success-message">
+
+    {{ successMessage }}
+
+  </div>
+
+  <div
+    *ngIf="errorMessage"
+    class="error-message">
+
+    {{ errorMessage }}
+
+  </div>
+
+  <div class="toolbar">
+
+    <input
+      class="search-input"
+      type="text"
+      placeholder="Search software, vendor or license..."
+      [(ngModel)]="searchTerm">
+
+  </div>
+
+  @if (loading) {
+
+    <div class="loading-panel">
+
+      Loading licenses...
+
+    </div>
+
+  } @else {
+
+    <div class="table-wrapper">
+
+      <table class="data-table">
+
+        <thead>
+
+        <tr>
+
+          <th (click)="sortBy('licenseNumber')">
+            License No.
+          </th>
+
+          <th (click)="sortBy('softwareName')">
+            Software
+          </th>
+
+          <th (click)="sortBy('vendor')">
+            Vendor
+          </th>
+
+          <th (click)="sortBy('licenseType')">
+            Type
+          </th>
+
+          <th>
+            Usage
+          </th>
+
+          <th>
+            Available
+          </th>
+
+          <th (click)="sortBy('expirationDate')">
+            Expires
+          </th>
+
+          <th (click)="sortBy('status')">
+            Status
+          </th>
+
+          <th>
+            Actions
+          </th>
+
+        </tr>
+
+        </thead>
+
+        <tbody>
+
+        @for (
+          item of sortedData;
+          track item.id
+        ) {
+
+          <tr>
+
+            <td>
+              {{ item.licenseNumber }}
+            </td>
+
+            <td>
+              <strong>
+                {{ item.softwareName }}
+              </strong>
+            </td>
+
+            <td>
+              {{ item.vendor }}
+            </td>
+
+            <td>
+              {{ item.licenseType }}
+            </td>
+
+            <td>
+
+              <div class="usage-wrapper">
+
+                <div
+                  class="usage-bar"
+                  [style.width.%]="getUsagePercent(item)">
+                </div>
+
+                <span>
+
+                  {{ item.usedQuantity }}
+                  /
+                  {{ item.quantity }}
+
+                </span>
+
+              </div>
+
+            </td>
+
+            <td>
+              {{ item.availableQuantity }}
+            </td>
+
+            <td>
+
+              @if (item.expirationDate) {
+
+                {{ item.expirationDate }}
+
+              } @else {
+
+                <span
+                  class="perpetual-license">
+
+                  Unlimited
+
+                </span>
+
+              }
+
+            </td>
+
+            <td>
+
+              <span
+                class="status-badge"
+                [ngClass]="{
+
+                  'status-active':
+                    item.status === 'ACTIVE',
+
+                  'status-expired':
+                    item.status === 'EXPIRED'
+
+                }">
+
+                {{ item.status }}
+
+              </span>
+
+            </td>
+
+            <td>
+
+              <button
+                class="btn-edit"
+                (click)="editLicense(item)">
+
+                Edit
+
+              </button>
+
+            </td>
+
+          </tr>
+
+        }
+
+        </tbody>
+
+      </table>
+
+    </div>
+
+  }
+
+  @if (showDialog) {
+
+    <div class="dialog-backdrop">
+
+      <div class="dialog-window">
+
+        <h2>
+
+          {{ isEditMode
+            ? 'Edit License'
+            : 'New License' }}
+
+        </h2>
+
+        <form
+          (ngSubmit)="saveLicense()">
+
+          <input
+            type="text"
+            placeholder="License Number"
+            [(ngModel)]="licenseForm.licenseNumber"
+            name="licenseNumber">
+
+          <input
+            type="text"
+            placeholder="Software Name"
+            [(ngModel)]="licenseForm.softwareName"
+            name="softwareName">
+
+          <input
+            type="text"
+            placeholder="Vendor"
+            [(ngModel)]="licenseForm.vendor"
+            name="vendor">
+
+          <input
+            type="text"
+            placeholder="License Key"
+            [(ngModel)]="licenseForm.licenseKey"
+            name="licenseKey">
+
+          <input
+            type="text"
+            placeholder="License Type"
+            [(ngModel)]="licenseForm.licenseType"
+            name="licenseType">
+
+          <input
+            type="number"
+            [(ngModel)]="licenseForm.quantity"
+            name="quantity">
+
+          <textarea
+            rows="4"
+            [(ngModel)]="licenseForm.notes"
+            name="notes"
+            placeholder="Notes">
+          </textarea>
+
+          <div class="dialog-actions">
+
+            <button
+              type="submit"
+              class="primary-button">
+
+              Save
+
+            </button>
+
+            <button
+              type="button"
+              class="secondary-button"
+              (click)="closeDialog()">
+
+              Cancel
+
+            </button>
+
+          </div>
+
+        </form>
+
+      </div>
+
+    </div>
+
+  }
+
+</div>

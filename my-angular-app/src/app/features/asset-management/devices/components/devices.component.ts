@@ -3,9 +3,11 @@ import {
   OnInit
 } from '@angular/core';
 
-import { CommonModule } from '@angular/common';
+import { CommonModule }
+from '@angular/common';
 
-import { FormsModule } from '@angular/forms';
+import { FormsModule }
+from '@angular/forms';
 
 import { DeviceService }
 from '../services/device.service';
@@ -33,7 +35,7 @@ from '../../../business-management/products/models/product-response.model';
   styleUrls: ['./devices.component.css']
 })
 export class DevicesComponent
-  implements OnInit {
+implements OnInit {
 
   devices: DeviceResponse[] = [];
 
@@ -45,7 +47,10 @@ export class DevicesComponent
 
   isEditMode = false;
 
-  editingDeviceId: number | null = null;
+  showDialog = false;
+
+  editingDeviceId:
+    number | null = null;
 
   statuses = [
     'AVAILABLE',
@@ -54,7 +59,8 @@ export class DevicesComponent
     'RETIRED'
   ];
 
-  deviceForm: DeviceCreateRequest = {
+  deviceForm:
+    DeviceCreateRequest = {
 
     productId: 0,
 
@@ -79,8 +85,11 @@ export class DevicesComponent
   };
 
   constructor(
-    private deviceService: DeviceService,
-    private productService: ProductService
+    private deviceService:
+      DeviceService,
+
+    private productService:
+      ProductService
   ) {}
 
   ngOnInit(): void {
@@ -88,7 +97,6 @@ export class DevicesComponent
     this.loadDevices();
 
     this.loadProducts();
-
   }
 
   loadDevices(): void {
@@ -100,18 +108,15 @@ export class DevicesComponent
         next: (data) => {
 
           this.devices = data;
-
         },
 
         error: () => {
 
           this.errorMessage =
             'Fehler beim Laden der Geräte.';
-
         }
 
       });
-
   }
 
   loadProducts(): void {
@@ -123,11 +128,27 @@ export class DevicesComponent
         next: (data) => {
 
           this.products = data;
-
         }
 
       });
+  }
 
+  openCreateDialog(): void {
+
+    this.isEditMode = false;
+
+    this.editingDeviceId = null;
+
+    this.resetForm();
+
+    this.showDialog = true;
+  }
+
+  closeDialog(): void {
+
+    this.showDialog = false;
+
+    this.cancelEdit();
   }
 
   saveDevice(): void {
@@ -149,16 +170,16 @@ export class DevicesComponent
             this.successMessage =
               'Gerät aktualisiert.';
 
+            this.showDialog = false;
+
             this.cancelEdit();
 
             this.loadDevices();
-
           }
 
         });
 
       return;
-
     }
 
     this.deviceService
@@ -172,14 +193,14 @@ export class DevicesComponent
           this.successMessage =
             'Gerät erstellt.';
 
+          this.showDialog = false;
+
           this.resetForm();
 
           this.loadDevices();
-
         }
 
       });
-
   }
 
   editDevice(
@@ -225,6 +246,7 @@ export class DevicesComponent
 
     };
 
+    this.showDialog = true;
   }
 
   archiveDevice(
@@ -236,6 +258,7 @@ export class DevicesComponent
         `Gerät "${device.inventoryNumber}" archivieren?`
       )
     ) {
+
       return;
     }
 
@@ -249,11 +272,9 @@ export class DevicesComponent
             res.message;
 
           this.loadDevices();
-
         }
 
       });
-
   }
 
   cancelEdit(): void {
@@ -263,7 +284,6 @@ export class DevicesComponent
     this.editingDeviceId = null;
 
     this.resetForm();
-
   }
 
   private resetForm(): void {
@@ -291,7 +311,6 @@ export class DevicesComponent
       notes: ''
 
     };
-
   }
 
 }

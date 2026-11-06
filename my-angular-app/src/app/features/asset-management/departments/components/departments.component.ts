@@ -1,11 +1,21 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  ChangeDetectorRef
+} from '@angular/core';
+
 import { CommonModule } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
 
-import { DepartmentService } from '../services/department.service';
+import { DepartmentService }
+from '../services/department.service';
 
-import { DepartmentResponse } from '../models/department-response.model';
-import { DepartmentCreateRequest } from '../models/department-create-request.model';
+import { DepartmentResponse }
+from '../models/department-response.model';
+
+import { DepartmentCreateRequest }
+from '../models/department-create-request.model';
 
 @Component({
   selector: 'app-departments',
@@ -17,7 +27,8 @@ import { DepartmentCreateRequest } from '../models/department-create-request.mod
   templateUrl: './departments.component.html',
   styleUrls: ['./departments.component.css']
 })
-export class DepartmentsComponent implements OnInit {
+export class DepartmentsComponent
+implements OnInit {
 
   departments: DepartmentResponse[] = [];
 
@@ -29,20 +40,32 @@ export class DepartmentsComponent implements OnInit {
 
   isEditMode = false;
 
-  editingDepartmentId: number | null = null;
+  showDialog = false;
 
-  departmentForm: DepartmentCreateRequest = {
+  editingDepartmentId:
+    number | null = null;
+
+  departmentForm:
+    DepartmentCreateRequest = {
+
     departmentCode: '',
+
     name: '',
+
     description: ''
+
   };
 
   constructor(
-    private departmentService: DepartmentService,
-    private cdr: ChangeDetectorRef
+    private departmentService:
+      DepartmentService,
+
+    private cdr:
+      ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
+
     this.loadDepartments();
   }
 
@@ -77,13 +100,33 @@ export class DepartmentsComponent implements OnInit {
       });
   }
 
+  openCreateDialog(): void {
+
+    this.isEditMode = false;
+
+    this.editingDepartmentId = null;
+
+    this.resetForm();
+
+    this.showDialog = true;
+  }
+
+  closeDialog(): void {
+
+    this.showDialog = false;
+
+    this.cancelEdit();
+  }
+
   saveDepartment(): void {
 
     this.successMessage = '';
+
     this.errorMessage = '';
 
     if (
-      !this.departmentForm.departmentCode.trim() ||
+      !this.departmentForm.departmentCode.trim()
+      ||
       !this.departmentForm.name.trim()
     ) {
 
@@ -94,7 +137,8 @@ export class DepartmentsComponent implements OnInit {
     }
 
     if (
-      this.isEditMode &&
+      this.isEditMode
+      &&
       this.editingDepartmentId !== null
     ) {
 
@@ -109,6 +153,8 @@ export class DepartmentsComponent implements OnInit {
 
             this.successMessage =
               'Abteilung erfolgreich aktualisiert.';
+
+            this.showDialog = false;
 
             this.cancelEdit();
 
@@ -128,13 +174,17 @@ export class DepartmentsComponent implements OnInit {
     }
 
     this.departmentService
-      .createDepartment(this.departmentForm)
+      .createDepartment(
+        this.departmentForm
+      )
       .subscribe({
 
         next: () => {
 
           this.successMessage =
             'Abteilung erfolgreich erstellt.';
+
+          this.showDialog = false;
 
           this.resetForm();
 
@@ -152,7 +202,8 @@ export class DepartmentsComponent implements OnInit {
   }
 
   editDepartment(
-    department: DepartmentResponse
+    department:
+      DepartmentResponse
   ): void {
 
     this.isEditMode = true;
@@ -161,6 +212,7 @@ export class DepartmentsComponent implements OnInit {
       department.id;
 
     this.departmentForm = {
+
       departmentCode:
         department.departmentCode,
 
@@ -169,23 +221,31 @@ export class DepartmentsComponent implements OnInit {
 
       description:
         department.description
+
     };
+
+    this.showDialog = true;
   }
 
   archiveDepartment(
-    department: DepartmentResponse
+    department:
+      DepartmentResponse
   ): void {
 
-    const confirmed = confirm(
-      `Abteilung "${department.name}" archivieren?`
-    );
+    const confirmed =
+      confirm(
+        `Abteilung "${department.name}" archivieren?`
+      );
 
     if (!confirmed) {
+
       return;
     }
 
     this.departmentService
-      .archiveDepartment(department.id)
+      .archiveDepartment(
+        department.id
+      )
       .subscribe({
 
         next: (res) => {
@@ -218,9 +278,13 @@ export class DepartmentsComponent implements OnInit {
   private resetForm(): void {
 
     this.departmentForm = {
+
       departmentCode: '',
+
       name: '',
+
       description: ''
+
     };
   }
 

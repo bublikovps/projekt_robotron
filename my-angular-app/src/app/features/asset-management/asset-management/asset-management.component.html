@@ -1,100 +1,189 @@
-<div class="asset-container">
+<div class="asset-container page-content">
 
   <div class="asset-header">
 
     <h1>Asset Management</h1>
 
     <p>
-      Verwaltung von Unternehmensressourcen,
-      Mitarbeitern, Geräten und Softwarelizenzen.
+      Central workspace for managing enterprise assets,
+      employees, devices, software licenses and reporting.
     </p>
 
   </div>
 
-  <section>
+  <div class="workspace-tabs">
 
-    <h2 class="section-title">
-      Verfügbare Bereiche
-    </h2>
+    <button
+      class="workspace-tab"
+      [class.active]="selectedArea === 'master-data'"
+      (click)="selectArea('master-data')">
 
-    <div class="asset-grid">
+      Master Data
 
-      <div
-        class="asset-card"
-        *ngFor="let module of modules">
+    </button>
 
-        <div class="card-icon">
-          {{ module.icon }}
-        </div>
+    <button
+      class="workspace-tab"
+      [class.active]="selectedArea === 'operations'"
+      (click)="selectArea('operations')">
 
-        <h3>
-          {{ module.title }}
-        </h3>
+      Operations
 
-        <p>
-          {{ module.description }}
-        </p>
+    </button>
 
-        <a
-          *ngIf="module.route"
-          [routerLink]="module.route"
-          class="card-button">
+    <button
+      class="workspace-tab"
+      [class.active]="selectedArea === 'analytics'"
+      (click)="selectArea('analytics')">
 
-          Öffnen
+      Analytics
 
-        </a>
+    </button>
 
-        <button
-          *ngIf="!module.route"
-          class="card-button"
-          disabled>
+  </div>
 
-          In Entwicklung
+  @if (selectedArea === 'master-data') {
 
-        </button>
+    <div class="module-tabs">
 
-      </div>
+      <button
+        class="module-tab"
+        [class.active]="selectedModule === 'departments'"
+        (click)="selectModule('departments')">
 
-    </div>
+        Departments
 
-  </section>
+      </button>
 
-  <section class="info-card">
+      <button
+        class="module-tab"
+        [class.active]="selectedModule === 'employees'"
+        (click)="selectModule('employees')">
 
-    <h2>Asset Management Domain</h2>
+        Employees
 
-    <div class="domain-grid">
+      </button>
 
-      <div class="domain-item">
-        Department
-      </div>
+      <button
+        class="module-tab"
+        [class.active]="selectedModule === 'contracts'"
+        (click)="selectModule('contracts')">
 
-      <div class="domain-item">
-        Employee
-      </div>
+        Contracts
 
-      <div class="domain-item">
-        Employment Contract
-      </div>
-
-      <div class="domain-item">
-        Device
-      </div>
-
-      <div class="domain-item">
-        Software License
-      </div>
-
-      <div class="domain-item">
-        Device Assignment
-      </div>
-
-      <div class="domain-item">
-        License Assignment
-      </div>
+      </button>
 
     </div>
 
-  </section>
+  }
+
+  @if (selectedArea === 'operations') {
+
+    <div class="module-tabs">
+
+      <button
+        class="module-tab"
+        [class.active]="selectedModule === 'devices'"
+        (click)="selectModule('devices')">
+
+        Devices
+
+      </button>
+
+      <button
+        class="module-tab"
+        [class.active]="selectedModule === 'software-licenses'"
+        (click)="selectModule('software-licenses')">
+
+        Software Licenses
+
+      </button>
+
+      <button
+        class="module-tab disabled">
+
+        Device Assignments
+
+      </button>
+
+      <button
+        class="module-tab disabled">
+
+        License Assignments
+
+      </button>
+
+    </div>
+
+  }
+
+  @if (selectedArea === 'analytics') {
+
+    <div class="module-tabs">
+
+      <button
+        class="module-tab"
+        [class.active]="selectedModule === 'reports'"
+        (click)="selectModule('reports')">
+
+        Asset Reports
+
+      </button>
+
+    </div>
+
+  }
+
+  <div class="workspace-content">
+
+    @if (
+      selectedModule === 'departments'
+    ) {
+
+      <app-departments />
+
+    }
+
+    @else if (
+      selectedModule === 'employees'
+    ) {
+
+      <app-employees />
+
+    }
+
+    @else if (
+      selectedModule === 'contracts'
+    ) {
+
+      <app-contracts />
+
+    }
+
+    @else if (
+      selectedModule === 'devices'
+    ) {
+
+      <app-devices />
+
+    }
+
+    @else if (
+      selectedModule === 'software-licenses'
+    ) {
+
+      <app-software-licenses />
+
+    }
+
+    @else if (
+      selectedModule === 'reports'
+    ) {
+
+      <app-asset-reports />
+
+    }
+
+  </div>
 
 </div>

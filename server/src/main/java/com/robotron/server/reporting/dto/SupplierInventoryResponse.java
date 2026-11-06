@@ -12,7 +12,16 @@ public class SupplierInventoryResponse {
 
     private BigDecimal inventoryValue;
 
-    public SupplierInventoryResponse() {
+    public SupplierInventoryResponse(
+            String supplier,
+            Long productCount,
+            Long totalUnits,
+            BigDecimal inventoryValue) {
+
+        this.supplier = supplier;
+        this.productCount = productCount;
+        this.totalUnits = totalUnits;
+        this.inventoryValue = inventoryValue;
     }
 
     public String getSupplier() {

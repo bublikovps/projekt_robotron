@@ -1,0 +1,147 @@
+<div class="report-page">
+
+  <h1>Active Devices Report</h1>
+
+  <p class="report-date">
+    Letzte Aktualisierung:
+    {{ generatedAt | date:'dd.MM.yyyy HH:mm' }}
+  </p>
+
+  <p>
+    Übersicht aller aktiven Geräte.
+  </p>
+
+  <div class="kpi-container">
+
+    <div class="kpi-card">
+
+      <span class="kpi-label">
+        💻 Geräte
+      </span>
+
+      <span class="kpi-value">
+        {{ totalDevices }}
+      </span>
+
+    </div>
+
+    <div class="kpi-card">
+
+      <span class="kpi-label">
+        📍 Standorte
+      </span>
+
+      <span class="kpi-value">
+        {{ totalLocations }}
+      </span>
+
+    </div>
+
+    <div class="kpi-card">
+
+      <span class="kpi-label">
+        ✅ Aktiv
+      </span>
+
+      <span class="kpi-value">
+        {{ activeDevices }}
+      </span>
+
+    </div>
+
+  </div>
+
+  <div class="toolbar">
+
+    <input
+      class="search-input"
+      type="text"
+      placeholder="Gerät suchen..."
+      [(ngModel)]="searchTerm">
+
+  </div>
+
+  @if (loading) {
+
+    <p>Daten werden geladen...</p>
+
+  } @else {
+
+    <div class="table-wrapper">
+
+      <table class="report-table">
+
+        <thead>
+
+          <tr>
+
+            <th
+              (click)="sortBy('inventoryNumber')">
+
+              Inventarnummer
+
+            </th>
+
+            <th
+              (click)="sortBy('serialNumber')">
+
+              Seriennummer
+
+            </th>
+
+            <th
+              (click)="sortBy('status')">
+
+              Status
+
+            </th>
+
+            <th
+              (click)="sortBy('location')">
+
+              Standort
+
+            </th>
+
+          </tr>
+
+        </thead>
+
+        <tbody>
+
+          @for (
+            item of sortedData;
+            track item.deviceId
+          ) {
+
+            <tr>
+
+              <td>
+                {{ item.inventoryNumber }}
+              </td>
+
+              <td>
+                {{ item.serialNumber }}
+              </td>
+
+              <td>
+                {{ item.status }}
+              </td>
+
+              <td>
+                {{ item.location }}
+              </td>
+
+            </tr>
+
+          }
+
+        </tbody>
+
+      </table>
+
+    </div>
+
+  }
+
+</div>

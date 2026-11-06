@@ -18,6 +18,24 @@ public class InventoryValueResponse {
 
     private BigDecimal inventoryValue;
 
+    public InventoryValueResponse(
+            Long productId,
+            String sku,
+            String name,
+            String manufacturer,
+            Integer lagerbestand,
+            BigDecimal purchasePrice,
+            BigDecimal inventoryValue) {
+
+        this.productId = productId;
+        this.sku = sku;
+        this.name = name;
+        this.manufacturer = manufacturer;
+        this.lagerbestand = lagerbestand;
+        this.purchasePrice = purchasePrice;
+        this.inventoryValue = inventoryValue;
+    }
+
     public InventoryValueResponse() {
     }
 

@@ -12,7 +12,16 @@ public class DepartmentAssetValueResponse {
 
     private BigDecimal totalAssetValue;
 
-    public DepartmentAssetValueResponse() {
+    public DepartmentAssetValueResponse(
+            Long departmentId,
+            String departmentName,
+            Long deviceCount,
+            BigDecimal totalAssetValue) {
+
+        this.departmentId = departmentId;
+        this.departmentName = departmentName;
+        this.deviceCount = deviceCount;
+        this.totalAssetValue = totalAssetValue;
     }
 
     public Long getDepartmentId() {

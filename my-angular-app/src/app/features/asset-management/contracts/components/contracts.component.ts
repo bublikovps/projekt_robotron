@@ -1,6 +1,13 @@
-import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import {
+  Component,
+  OnInit
+} from '@angular/core';
+
+import { CommonModule }
+from '@angular/common';
+
+import { FormsModule }
+from '@angular/forms';
 
 import { EmployeeService }
 from '../../employees/services/employee.service';
@@ -27,11 +34,14 @@ from '../models/employment-contract-create-request.model';
   templateUrl: './contracts.component.html',
   styleUrls: ['./contracts.component.css']
 })
-export class ContractsComponent implements OnInit {
+export class ContractsComponent
+implements OnInit {
 
-  contracts: EmploymentContractResponse[] = [];
+  contracts:
+    EmploymentContractResponse[] = [];
 
-  employees: EmployeeResponse[] = [];
+  employees:
+    EmployeeResponse[] = [];
 
   successMessage = '';
 
@@ -39,7 +49,10 @@ export class ContractsComponent implements OnInit {
 
   isEditMode = false;
 
-  editingContractId: number | null = null;
+  showDialog = false;
+
+  editingContractId:
+    number | null = null;
 
   contractTypes = [
     'UNBEFRISTET',
@@ -49,7 +62,8 @@ export class ContractsComponent implements OnInit {
     'MINIJOB'
   ];
 
-  contractForm: EmploymentContractCreateRequest = {
+  contractForm:
+    EmploymentContractCreateRequest = {
 
     employeeId: 0,
 
@@ -68,8 +82,11 @@ export class ContractsComponent implements OnInit {
   };
 
   constructor(
-    private contractService: EmploymentContractService,
-    private employeeService: EmployeeService
+    private contractService:
+      EmploymentContractService,
+
+    private employeeService:
+      EmployeeService
   ) {}
 
   ngOnInit(): void {
@@ -88,6 +105,12 @@ export class ContractsComponent implements OnInit {
         next: (data) => {
 
           this.contracts = data;
+        },
+
+        error: () => {
+
+          this.errorMessage =
+            'Fehler beim Laden der Verträge.';
         }
 
       });
@@ -107,7 +130,29 @@ export class ContractsComponent implements OnInit {
       });
   }
 
+  openCreateDialog(): void {
+
+    this.isEditMode = false;
+
+    this.editingContractId = null;
+
+    this.resetForm();
+
+    this.showDialog = true;
+  }
+
+  closeDialog(): void {
+
+    this.showDialog = false;
+
+    this.cancelEdit();
+  }
+
   saveContract(): void {
+
+    this.successMessage = '';
+
+    this.errorMessage = '';
 
     if (
       this.isEditMode &&
@@ -126,9 +171,17 @@ export class ContractsComponent implements OnInit {
             this.successMessage =
               'Vertrag aktualisiert.';
 
+            this.showDialog = false;
+
             this.cancelEdit();
 
             this.loadContracts();
+          },
+
+          error: () => {
+
+            this.errorMessage =
+              'Fehler beim Bearbeiten.';
           }
 
         });
@@ -147,16 +200,25 @@ export class ContractsComponent implements OnInit {
           this.successMessage =
             'Vertrag erstellt.';
 
+          this.showDialog = false;
+
           this.resetForm();
 
           this.loadContracts();
+        },
+
+        error: () => {
+
+          this.errorMessage =
+            'Fehler beim Erstellen.';
         }
 
       });
   }
 
   editContract(
-    contract: EmploymentContractResponse
+    contract:
+      EmploymentContractResponse
   ): void {
 
     this.isEditMode = true;
@@ -188,10 +250,13 @@ export class ContractsComponent implements OnInit {
         contract.salary
 
     };
+
+    this.showDialog = true;
   }
 
   archiveContract(
-    contract: EmploymentContractResponse
+    contract:
+      EmploymentContractResponse
   ): void {
 
     if (
@@ -199,6 +264,7 @@ export class ContractsComponent implements OnInit {
         `Vertrag "${contract.contractNumber}" archivieren?`
       )
     ) {
+
       return;
     }
 

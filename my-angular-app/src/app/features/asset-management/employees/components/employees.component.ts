@@ -32,7 +32,8 @@ from '../../departments/models/department-response.model';
   templateUrl: './employees.component.html',
   styleUrls: ['./employees.component.css']
 })
-export class EmployeesComponent implements OnInit {
+export class EmployeesComponent
+implements OnInit {
 
   employees: EmployeeResponse[] = [];
 
@@ -44,9 +45,13 @@ export class EmployeesComponent implements OnInit {
 
   isEditMode = false;
 
-  editingEmployeeId: number | null = null;
+  showDialog = false;
 
-  employeeForm: EmployeeCreateRequest = {
+  editingEmployeeId:
+    number | null = null;
+
+  employeeForm:
+    EmployeeCreateRequest = {
 
     departmentId: 0,
 
@@ -67,8 +72,11 @@ export class EmployeesComponent implements OnInit {
   };
 
   constructor(
-    private employeeService: EmployeeService,
-    private departmentService: DepartmentService
+    private employeeService:
+      EmployeeService,
+
+    private departmentService:
+      DepartmentService
   ) {}
 
   ngOnInit(): void {
@@ -112,6 +120,24 @@ export class EmployeesComponent implements OnInit {
       });
   }
 
+  openCreateDialog(): void {
+
+    this.isEditMode = false;
+
+    this.editingEmployeeId = null;
+
+    this.resetForm();
+
+    this.showDialog = true;
+  }
+
+  closeDialog(): void {
+
+    this.showDialog = false;
+
+    this.cancelEdit();
+  }
+
   saveEmployee(): void {
 
     this.successMessage = '';
@@ -134,6 +160,8 @@ export class EmployeesComponent implements OnInit {
 
             this.successMessage =
               'Mitarbeiter aktualisiert.';
+
+            this.showDialog = false;
 
             this.cancelEdit();
 
@@ -162,6 +190,8 @@ export class EmployeesComponent implements OnInit {
 
           this.successMessage =
             'Mitarbeiter erstellt.';
+
+          this.showDialog = false;
 
           this.resetForm();
 
@@ -213,6 +243,8 @@ export class EmployeesComponent implements OnInit {
       hireDate: ''
 
     };
+
+    this.showDialog = true;
   }
 
   archiveEmployee(
@@ -224,6 +256,7 @@ export class EmployeesComponent implements OnInit {
         `Mitarbeiter "${employee.firstName} ${employee.lastName}" archivieren?`
       )
     ) {
+
       return;
     }
 

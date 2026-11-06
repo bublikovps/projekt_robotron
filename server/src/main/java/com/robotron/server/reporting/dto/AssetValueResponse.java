@@ -18,7 +18,22 @@ public class AssetValueResponse {
 
     private BigDecimal depreciationValue;
 
-    public AssetValueResponse() {
+    public AssetValueResponse(
+            Long deviceId,
+            String inventoryNumber,
+            String serialNumber,
+            String status,
+            BigDecimal purchasePrice,
+            BigDecimal currentValue,
+            BigDecimal depreciationValue) {
+
+        this.deviceId = deviceId;
+        this.inventoryNumber = inventoryNumber;
+        this.serialNumber = serialNumber;
+        this.status = status;
+        this.purchasePrice = purchasePrice;
+        this.currentValue = currentValue;
+        this.depreciationValue = depreciationValue;
     }
 
     public Long getDeviceId() {

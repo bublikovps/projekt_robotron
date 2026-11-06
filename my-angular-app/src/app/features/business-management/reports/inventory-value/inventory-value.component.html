@@ -1,0 +1,219 @@
+<div class="report-page">
+
+  <div class="report-header">
+
+    <div>
+
+      <h1>Inventory Value Report</h1>
+
+      <p class="report-date">
+
+        Letzte Aktualisierung:
+
+        {{
+            generatedAt
+            | date:'dd.MM.yyyy HH:mm'
+        }}
+
+        </p>
+
+      <p>
+        Übersicht des Lagerwerts aller Produkte.
+      </p>
+
+    </div>
+
+  </div>
+
+  <div class="kpi-container">
+
+    <div class="kpi-card">
+
+      <span class="kpi-label">
+        📦 Produkte
+      </span>
+
+      <span class="kpi-value">
+        {{ totalProducts }}
+      </span>
+
+    </div>
+
+    <div class="kpi-card">
+
+      <span class="kpi-label">
+        📊 Gesamtbestand
+      </span>
+
+      <span class="kpi-value">
+        {{ totalStock }}
+      </span>
+
+    </div>
+
+    <div class="kpi-card">
+
+      <span class="kpi-label">
+        💶 Lagerwert
+      </span>
+
+      <span class="kpi-value">
+        {{ totalInventoryValue | number:'1.2-2' }}
+        €
+      </span>
+
+    </div>
+
+  </div>
+
+  <div class="toolbar">
+
+    <input
+      class="search-input"
+      type="text"
+      placeholder="Produkt suchen..."
+      [(ngModel)]="searchTerm">
+
+    <div class="toolbar-buttons">
+
+      <button
+        class="btn-csv"
+        (click)="exportCsv()">
+
+        📄 CSV
+
+      </button>
+
+      <button
+        class="btn-excel"
+        (click)="exportExcel()">
+
+        📊 Excel
+
+      </button>
+
+      <button
+        class="btn-pdf"
+        (click)="exportPdf()">
+
+        🧾 PDF
+
+      </button>
+
+    </div>
+
+  </div>
+
+  @if (loading) {
+
+    <p>Daten werden geladen...</p>
+
+  } @else {
+
+    <div class="table-wrapper">
+
+    <table class="report-table">
+
+      <thead>
+
+        <tr>
+
+          <th
+            (click)="sortBy('sku')"
+            [class.active-sort]="sortColumn === 'sku'">
+            SKU
+            @if (sortColumn === 'sku') {
+              {{ sortDirection === 'asc' ? '▲' : '▼' }}
+            } @else {
+              ⇅
+            }
+          </th>
+
+          <th (click)="sortBy('name')"
+            [class.active-sort]="sortColumn === 'name'">
+            Name
+            @if (sortColumn === 'name') {
+              {{ sortDirection === 'asc' ? '▲' : '▼' }}
+            } @else {
+              ⇅
+            }
+          </th>
+
+          <th (click)="sortBy('manufacturer')"
+            [class.active-sort]="sortColumn === 'manufacturer'">
+            Hersteller
+            @if (sortColumn === 'manufacturer') {
+              {{ sortDirection === 'asc' ? '▲' : '▼' }}
+            } @else {
+              ⇅
+            }
+          </th>
+
+          <th (click)="sortBy('lagerbestand')"
+            [class.active-sort]="sortColumn === 'lagerbestand'">
+            Bestand
+            @if (sortColumn === 'lagerbestand') {
+              {{ sortDirection === 'asc' ? '▲' : '▼' }}
+            } @else {
+              ⇅
+            }
+          </th>
+
+          <th (click)="sortBy('purchasePrice')"
+            [class.active-sort]="sortColumn === 'purchasePrice'">
+            Einkaufspreis
+            @if (sortColumn === 'purchasePrice') {
+              {{ sortDirection === 'asc' ? '▲' : '▼' }}
+            } @else {
+              ⇅
+            }
+          </th>
+
+          <th (click)="sortBy('inventoryValue')"
+            [class.active-sort]="sortColumn === 'inventoryValue'">
+            Lagerwert
+            @if (sortColumn === 'inventoryValue') {
+              {{ sortDirection === 'asc' ? '▲' : '▼' }}
+            } @else {
+              ⇅
+            }
+          </th>
+
+        </tr>
+
+      </thead>
+
+      <tbody>
+
+        @for (
+          item of sortedInventoryData;
+          track item.productId
+        ) {
+
+          <tr>
+
+            <td>{{ item.sku }}</td>
+
+            <td>{{ item.name }}</td>
+
+            <td>{{ item.manufacturer }}</td>
+
+            <td>{{ item.lagerbestand }}</td>
+
+            <td>{{ item.purchasePrice }}</td>
+
+            <td>{{ item.inventoryValue }}</td>
+
+          </tr>
+
+        }
+
+      </tbody>
+
+    </table>
+
+    </div>
+
+  }
+
+</div>

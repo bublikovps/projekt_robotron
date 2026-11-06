@@ -60,6 +60,12 @@ public class SoftwareLicenseService {
         license.setNotes(
                 request.getNotes());
 
+        license.setLicenseNumber(
+                request.getLicenseNumber());
+
+        license.setStatus(
+                request.getStatus());
+
         SoftwareLicense saved =
                 repository.save(license);
 
@@ -122,6 +128,13 @@ public class SoftwareLicenseService {
 
         license.setActive(
                 request.isActive());
+
+        license.setLicenseKey(
+                request.getLicenseKey());
+
+        license.setStatus(
+                request.getStatus());
+
 
         SoftwareLicense saved =
                 repository.save(license);

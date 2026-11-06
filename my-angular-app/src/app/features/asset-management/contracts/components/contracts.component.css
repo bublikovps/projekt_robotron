@@ -1,118 +1,254 @@
-.employees-container {
+.contracts-container {
+
   padding: 30px 0;
 }
 
-.employees-container h1 {
-  margin-bottom: 30px;
+.page-header {
+
+  display: flex;
+
+  justify-content: space-between;
+
+  align-items: center;
+
+  gap: 20px;
+
+  margin-bottom: 24px;
+}
+
+.page-header h1 {
+
   color: var(--primary-color);
 }
 
 .card {
+
   background: var(--bg-card);
+
   border: 1px solid var(--border-color);
+
   border-radius: 16px;
+
   padding: 24px;
+
   margin-bottom: 24px;
+
   box-shadow:
     0 4px 8px rgba(15, 23, 42, 0.04);
 }
 
 .card h2 {
+
   margin-top: 0;
+
   margin-bottom: 20px;
+
   color: var(--primary-color);
 }
 
-form {
-  display: grid;
-  grid-template-columns:
-    repeat(auto-fit, minmax(240px, 1fr));
-  gap: 16px;
-}
-
-select,
-input,
-textarea {
-  width: 100%;
-  padding: 12px;
-  border: 1px solid var(--border-color);
-  border-radius: 8px;
-  background: white;
-  font-size: 14px;
-  box-sizing: border-box;
-}
-
-
-
-button {
-  border: none;
-  border-radius: 8px;
-  padding: 12px 18px;
-  cursor: pointer;
-  font-weight: 600;
-}
-
-form button {
-  width: fit-content;
-}
-
 .success-message {
+
   background: #dcfce7;
+
   color: #166534;
+
   border: 1px solid #86efac;
+
   padding: 12px;
+
   border-radius: 8px;
+
   margin-bottom: 20px;
 }
 
 .error-message {
+
   background: #fee2e2;
+
   color: #991b1b;
+
   border: 1px solid #fca5a5;
+
   padding: 12px;
+
   border-radius: 8px;
+
   margin-bottom: 20px;
 }
 
 table {
+
   width: 100%;
+
   border-collapse: collapse;
 }
 
 th {
+
   text-align: left;
+
   background: #f8fafc;
+
   color: #0f172a;
 }
 
 th,
 td {
+
   padding: 14px;
-  border-bottom: 1px solid var(--border-color);
+
+  border-bottom:
+    1px solid var(--border-color);
 }
 
 tr:hover {
+
   background: #fafafa;
 }
 
-td button {
-  margin-right: 8px;
-  background: var(--primary-color);
+.btn-primary {
+
+  background: #2563eb;
+
   color: white;
+
+  border: none;
+
+  border-radius: 8px;
+
+  padding: 12px 18px;
+
+  cursor: pointer;
+
+  font-weight: 600;
 }
 
-td button:last-child {
+.btn-edit {
+
+  background: #f59e0b;
+
+  color: white;
+
+  border: none;
+
+  border-radius: 8px;
+
+  padding: 10px 14px;
+
+  cursor: pointer;
+
+  margin-right: 8px;
+}
+
+.btn-danger {
+
   background: #dc2626;
+
+  color: white;
+
+  border: none;
+
+  border-radius: 8px;
+
+  padding: 10px 14px;
+
+  cursor: pointer;
+}
+
+.btn-secondary {
+
+  background: #64748b;
+
+  color: white;
+
+  border: none;
+
+  border-radius: 8px;
+
+  padding: 10px 14px;
+
+  cursor: pointer;
+}
+
+.dialog-backdrop {
+
+  position: fixed;
+
+  inset: 0;
+
+  background:
+    rgba(15, 23, 42, 0.45);
+
+  display: flex;
+
+  justify-content: center;
+
+  align-items: center;
+
+  z-index: 2000;
+}
+
+.dialog-window {
+
+  width: 700px;
+
+  max-width: 90vw;
+
+  background: white;
+
+  border-radius: 16px;
+
+  padding: 24px;
+
+  box-shadow:
+    0 24px 64px rgba(0,0,0,.25);
+}
+
+.dialog-window form {
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 12px;
+}
+
+.dialog-window select,
+.dialog-window input {
+
+  width: 100%;
+
+  padding: 12px;
+
+  border: 1px solid var(--border-color);
+
+  border-radius: 8px;
+
+  box-sizing: border-box;
+}
+
+.button-group {
+
+  display: flex;
+
+  gap: 10px;
+
+  margin-top: 16px;
 }
 
 @media (max-width: 768px) {
 
-  form {
-    grid-template-columns: 1fr;
+  .page-header {
+
+    flex-direction: column;
+
+    align-items: stretch;
   }
 
   table {
+
     display: block;
+
     overflow-x: auto;
   }
 

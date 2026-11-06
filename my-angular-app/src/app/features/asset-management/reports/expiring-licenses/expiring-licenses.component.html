@@ -1,0 +1,159 @@
+<div class="report-page">
+
+  <h1>Expiring Licenses Report</h1>
+
+  <p class="report-date">
+    Letzte Aktualisierung:
+    {{ generatedAt | date:'dd.MM.yyyy HH:mm' }}
+  </p>
+
+  <p>
+    Übersicht über auslaufende Softwarelizenzen.
+  </p>
+
+  <div class="kpi-container">
+
+    <div class="kpi-card">
+
+      <span class="kpi-label">
+        📜 Lizenzen
+      </span>
+
+      <span class="kpi-value">
+        {{ totalLicenses }}
+      </span>
+
+    </div>
+
+    <div class="kpi-card">
+
+      <span class="kpi-label">
+        ⚠ Läuft bald ab
+      </span>
+
+      <span class="kpi-value">
+        {{ expiringSoon }}
+      </span>
+
+    </div>
+
+    <div class="kpi-card">
+
+      <span class="kpi-label">
+        🚨 Abgelaufen
+      </span>
+
+      <span class="kpi-value negative-value">
+        {{ expiredLicenses }}
+      </span>
+
+    </div>
+
+    <div class="kpi-card">
+
+      <span class="kpi-label">
+        🏢 Hersteller
+      </span>
+
+      <span class="kpi-value">
+        {{ vendorCount }}
+      </span>
+
+    </div>
+
+  </div>
+
+  <div class="toolbar">
+
+    <input
+      class="search-input"
+      type="text"
+      placeholder="Software oder Hersteller suchen..."
+      [(ngModel)]="searchTerm">
+
+  </div>
+
+  @if (loading) {
+
+    <p>Daten werden geladen...</p>
+
+  } @else {
+
+    <div class="table-wrapper">
+
+      <table class="report-table">
+
+        <thead>
+
+          <tr>
+
+            <th
+              (click)="sortBy('softwareName')">
+
+              Software
+
+            </th>
+
+            <th
+              (click)="sortBy('vendor')">
+
+              Hersteller
+
+            </th>
+
+            <th
+              (click)="sortBy('expirationDate')">
+
+              Ablaufdatum
+
+            </th>
+
+            <th
+              (click)="sortBy('status')">
+
+              Status
+
+            </th>
+
+          </tr>
+
+        </thead>
+
+        <tbody>
+
+          @for (
+            item of sortedData;
+            track item.licenseId
+          ) {
+
+            <tr>
+
+              <td>
+                {{ item.softwareName }}
+              </td>
+
+              <td>
+                {{ item.vendor }}
+              </td>
+
+              <td>
+                {{ item.expirationDate }}
+              </td>
+
+              <td>
+                {{ item.status }}
+              </td>
+
+            </tr>
+
+          }
+
+        </tbody>
+
+      </table>
+
+    </div>
+
+  }
+
+</div>

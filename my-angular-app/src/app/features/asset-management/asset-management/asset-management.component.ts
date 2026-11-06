@@ -1,77 +1,100 @@
 import { Component } from '@angular/core';
+
 import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router';
+
+import { DepartmentsComponent }
+from '../departments/components/departments.component';
+
+import { EmployeesComponent }
+from '../employees/components/employees.component';
+
+import { ContractsComponent }
+from '../contracts/components/contracts.component';
+
+import { DevicesComponent }
+from '../devices/components/devices.component';
+
+import { ReportsComponent }
+from '../reports/reports.component';
+
+import { SoftwareLicensesComponent }
+from '../software-licenses/components/software-licenses.component';
 
 @Component({
   selector: 'app-asset-management',
   standalone: true,
   imports: [
     CommonModule,
-    RouterLink
+
+    DepartmentsComponent,
+    EmployeesComponent,
+    ContractsComponent,
+    DevicesComponent,
+    ReportsComponent,
+    SoftwareLicensesComponent 
   ],
   templateUrl: './asset-management.component.html',
   styleUrls: ['./asset-management.component.css']
 })
 export class AssetManagementComponent {
 
-  modules = [
+  selectedArea:
+    'master-data'
+    | 'operations'
+    | 'analytics'
+    =
+    'master-data';
 
-    {
-      icon: '🏛️',
-      title: 'Departments',
-      route: '/asset-management/departments',
-      description:
-        'Verwaltung von Abteilungen und Organisationsstrukturen.'
-    },
+  selectedModule:
+    'departments'
+    | 'employees'
+    | 'contracts'
+    | 'devices'
+    | 'reports'
+    | 'software-licenses'
+    =
+    'departments';
 
-    {
-      icon: '👥',
-      title: 'Employees',
-      route: '/asset-management/employees',
-      description:
-        'Mitarbeiterstammdaten und Zuordnungen verwalten.'
-    },
+  selectArea(
+    area:
+      'master-data'
+      | 'operations'
+      | 'analytics'
+  ): void {
 
-    {
-      icon: '📄',
-      title: 'Employment Contracts',
-      route: '/asset-management/contracts',
-      description:
-        'Arbeitsverträge und Vertragsinformationen verwalten.'
-    },
+    this.selectedArea = area;
 
-    {
-      icon: '💻',
-      title: 'Devices',
-      route: '/asset-management/devices',
-      description:
-        'IT-Geräte, Inventarnummern und Status verwalten.'
-    },
+    switch (area) {
 
-    {
-      icon: '🔑',
-      title: 'Software Licenses',
-      route: '',
-      description:
-        'Softwarelizenzen und Nutzungsrechte verwalten.'
-    },
+      case 'master-data':
+        this.selectedModule =
+          'departments';
+        break;
 
-    {
-      icon: '📦',
-      title: 'Device Assignments',
-      route: '',
-      description:
-        'Geräte Mitarbeitern zuweisen und Rückgaben verfolgen.'
-    },
+      case 'operations':
+        this.selectedModule =
+          'devices';
+        break;
 
-    {
-      icon: '🔗',
-      title: 'License Assignments',
-      route: '',
-      description:
-        'Softwarelizenzen Mitarbeitern zuweisen und verwalten.'
+      case 'analytics':
+        this.selectedModule =
+          'reports';
+        break;
     }
+  }
 
-  ];
+  selectModule(
+    module:
+      'departments'
+      | 'employees'
+      | 'contracts'
+      | 'devices'
+      | 'reports'
+      | 'software-licenses'
+  ): void {
+
+    this.selectedModule =
+      module;
+  }
 
 }

@@ -14,7 +14,18 @@ public class ExpiringLicenseResponse {
 
     private String status;
 
-    public ExpiringLicenseResponse() {
+    public ExpiringLicenseResponse(
+            Long licenseId,
+            String softwareName,
+            String vendor,
+            LocalDate expirationDate,
+            String status) {
+
+        this.licenseId = licenseId;
+        this.softwareName = softwareName;
+        this.vendor = vendor;
+        this.expirationDate = expirationDate;
+        this.status = status;
     }
 
     public Long getLicenseId() {
