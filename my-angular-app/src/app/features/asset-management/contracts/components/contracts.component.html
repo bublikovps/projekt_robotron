@@ -1,143 +1,114 @@
 <div class="contracts-container">
 
-  <h1>Employment Contracts</h1>
+  <div class="page-header">
 
-  <div class="card">
+    <div>
 
-    <h2>
-      {{ isEditMode
-        ? 'Vertrag bearbeiten'
-        : 'Vertrag erstellen'
-      }}
-    </h2>
+      <h1>Employment Contracts</h1>
 
-    <form (ngSubmit)="saveContract()">
+      <p>
 
-      <select
-        [(ngModel)]="contractForm.employeeId"
-        name="employeeId">
+        Verwaltung von Arbeitsverträgen
 
-        <option [value]="0">
-          Mitarbeiter auswählen
-        </option>
+      </p>
 
-        <option
-          *ngFor="let employee of employees"
-          [value]="employee.id">
+    </div>
 
-          {{ employee.employeeNumber }}
-          -
-          {{ employee.firstName }}
-          {{ employee.lastName }}
+    <button
+      class="btn-primary"
+      (click)="openCreateDialog()">
 
-        </option>
+      + New Contract
 
-      </select>
+    </button>
 
-      <input
-        type="text"
-        placeholder="Vertragsnummer"
-        [(ngModel)]="contractForm.contractNumber"
-        name="contractNumber">
+  </div>
 
-      <select
-        [(ngModel)]="contractForm.contractType"
-        name="contractType">
+  <div
+    *ngIf="successMessage"
+    class="success-message">
 
-        <option
-          *ngFor="let type of contractTypes"
-          [value]="type">
+    {{ successMessage }}
 
-          {{ type }}
+  </div>
 
-        </option>
+  <div
+    *ngIf="errorMessage"
+    class="error-message">
 
-      </select>
-
-      <input
-        type="date"
-        [(ngModel)]="contractForm.startDate"
-        name="startDate">
-
-      <input
-        type="date"
-        [(ngModel)]="contractForm.endDate"
-        name="endDate">
-
-      <input
-        type="number"
-        placeholder="Weekly Hours"
-        [(ngModel)]="contractForm.weeklyHours"
-        name="weeklyHours">
-
-      <input
-        type="number"
-        placeholder="Salary"
-        [(ngModel)]="contractForm.salary"
-        name="salary">
-
-      <div class="button-group">
-
-        <button type="submit">
-
-          {{ isEditMode
-            ? 'Speichern'
-            : 'Erstellen'
-          }}
-
-        </button>
-
-        <button
-          *ngIf="isEditMode"
-          type="button"
-          (click)="cancelEdit()">
-
-          Abbrechen
-
-        </button>
-
-      </div>
-
-    </form>
+    {{ errorMessage }}
 
   </div>
 
   <div class="card">
 
-    <h2>Verträge</h2>
+    <h2>
+
+      Verträge
+
+    </h2>
 
     <table>
 
       <thead>
 
       <tr>
+
         <th>Nr.</th>
+
         <th>Mitarbeiter</th>
+
         <th>Typ</th>
+
         <th>Wochenstunden</th>
+
         <th>Gehalt</th>
+
         <th>Aktionen</th>
+
       </tr>
 
       </thead>
 
       <tbody>
 
-      <tr *ngFor="let contract of contracts">
+      <tr
+        *ngFor="let contract of contracts">
 
-        <td>{{ contract.contractNumber }}</td>
+        <td>
 
-        <td>{{ contract.employeeName }}</td>
+          {{ contract.contractNumber }}
 
-        <td>{{ contract.contractType }}</td>
+        </td>
 
-        <td>{{ contract.weeklyHours }}</td>
+        <td>
 
-        <td>{{ contract.salary }}</td>
+          {{ contract.employeeName }}
+
+        </td>
+
+        <td>
+
+          {{ contract.contractType }}
+
+        </td>
+
+        <td>
+
+          {{ contract.weeklyHours }}
+
+        </td>
+
+        <td>
+
+          {{ contract.salary }}
+
+        </td>
 
         <td>
 
           <button
+            class="btn-edit"
             (click)="editContract(contract)">
 
             Bearbeiten
@@ -145,6 +116,7 @@
           </button>
 
           <button
+            class="btn-danger"
             (click)="archiveContract(contract)">
 
             Archivieren
@@ -158,6 +130,117 @@
       </tbody>
 
     </table>
+
+  </div>
+
+  <div
+    *ngIf="showDialog"
+    class="dialog-backdrop">
+
+    <div class="dialog-window">
+
+      <h2>
+
+        {{ isEditMode
+          ? 'Vertrag bearbeiten'
+          : 'Neuer Vertrag' }}
+
+      </h2>
+
+      <form
+        (ngSubmit)="saveContract()">
+
+        <select
+          [(ngModel)]="contractForm.employeeId"
+          name="employeeId">
+
+          <option [value]="0">
+
+            Mitarbeiter auswählen
+
+          </option>
+
+          <option
+            *ngFor="let employee of employees"
+            [value]="employee.id">
+
+            {{ employee.employeeNumber }}
+            -
+            {{ employee.firstName }}
+            {{ employee.lastName }}
+
+          </option>
+
+        </select>
+
+        <input
+          type="text"
+          placeholder="Vertragsnummer"
+          [(ngModel)]="contractForm.contractNumber"
+          name="contractNumber">
+
+        <select
+          [(ngModel)]="contractForm.contractType"
+          name="contractType">
+
+          <option
+            *ngFor="let type of contractTypes"
+            [value]="type">
+
+            {{ type }}
+
+          </option>
+
+        </select>
+
+        <input
+          type="date"
+          [(ngModel)]="contractForm.startDate"
+          name="startDate">
+
+        <input
+          type="date"
+          [(ngModel)]="contractForm.endDate"
+          name="endDate">
+
+        <input
+          type="number"
+          placeholder="Weekly Hours"
+          [(ngModel)]="contractForm.weeklyHours"
+          name="weeklyHours">
+
+        <input
+          type="number"
+          placeholder="Salary"
+          [(ngModel)]="contractForm.salary"
+          name="salary">
+
+        <div class="button-group">
+
+          <button
+            type="submit"
+            class="btn-primary">
+
+            {{ isEditMode
+              ? 'Speichern'
+              : 'Erstellen' }}
+
+          </button>
+
+          <button
+            type="button"
+            class="btn-secondary"
+            (click)="closeDialog()">
+
+            Abbrechen
+
+          </button>
+
+        </div>
+
+      </form>
+
+    </div>
 
   </div>
 

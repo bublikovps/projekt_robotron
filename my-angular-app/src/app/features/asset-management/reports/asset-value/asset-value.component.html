@@ -1,0 +1,244 @@
+<div class="report-page">
+
+  <h1>Asset Value Report</h1>
+
+  <p class="report-date">
+    Letzte Aktualisierung:
+    {{ generatedAt | date:'dd.MM.yyyy HH:mm' }}
+  </p>
+
+  <p>
+    Analyse von Anschaffungswert,
+    aktuellem Wert und Abschreibung.
+  </p>
+
+  <div class="kpi-container">
+
+    <div class="kpi-card">
+
+      <span class="kpi-label">
+        💻 Geräte
+      </span>
+
+      <span class="kpi-value">
+        {{ totalDevices }}
+      </span>
+
+    </div>
+
+    <div class="kpi-card">
+
+      <span class="kpi-label">
+        💰 Anschaffungswert
+      </span>
+
+      <span class="kpi-value">
+        {{
+          totalPurchaseValue
+          | currency:'EUR':'symbol':'1.2-2':'de-DE'
+        }}
+      </span>
+
+    </div>
+
+    <div class="kpi-card">
+
+      <span class="kpi-label">
+        🏦 Aktueller Wert
+      </span>
+
+      <span class="kpi-value">
+        {{
+          totalCurrentValue
+          | currency:'EUR':'symbol':'1.2-2':'de-DE'
+        }}
+      </span>
+
+    </div>
+
+    <div class="kpi-card">
+
+      <span class="kpi-label">
+        📉 Abschreibung
+      </span>
+
+      <span class="kpi-value negative-value">
+        {{
+          totalDepreciation
+          | currency:'EUR':'symbol':'1.2-2':'de-DE'
+        }}
+      </span>
+
+    </div>
+
+  </div>
+
+  <div class="toolbar">
+
+    <input
+      class="search-input"
+      type="text"
+      placeholder="Inventarnummer oder Seriennummer suchen..."
+      [(ngModel)]="searchTerm">
+
+    <div class="toolbar-buttons">
+
+      <button
+        class="btn-csv"
+        (click)="exportCsv()">
+
+        📄 CSV
+
+      </button>
+
+      <button
+        class="btn-excel"
+        (click)="exportExcel()">
+
+        📊 Excel
+
+      </button>
+
+      <button
+        class="btn-pdf"
+        (click)="exportPdf()">
+
+        🧾 PDF
+
+      </button>
+
+    </div>
+
+  </div>
+
+  @if (loading) {
+
+    <p>Daten werden geladen...</p>
+
+  } @else {
+
+    <div class="table-wrapper">
+
+      <table class="report-table">
+
+        <thead>
+
+          <tr>
+
+            <th
+              (click)="sortBy('inventoryNumber')"
+              [class.active-sort]="sortColumn === 'inventoryNumber'">
+
+              Inventarnummer
+
+            </th>
+
+            <th
+              (click)="sortBy('serialNumber')"
+              [class.active-sort]="sortColumn === 'serialNumber'">
+
+              Seriennummer
+
+            </th>
+
+            <th
+              (click)="sortBy('status')"
+              [class.active-sort]="sortColumn === 'status'">
+
+              Status
+
+            </th>
+
+            <th
+              (click)="sortBy('purchasePrice')"
+              [class.active-sort]="sortColumn === 'purchasePrice'">
+
+              Anschaffungswert
+
+            </th>
+
+            <th
+              (click)="sortBy('currentValue')"
+              [class.active-sort]="sortColumn === 'currentValue'">
+
+              Aktueller Wert
+
+            </th>
+
+            <th
+              (click)="sortBy('depreciationValue')"
+              [class.active-sort]="sortColumn === 'depreciationValue'">
+
+              Abschreibung
+
+            </th>
+
+          </tr>
+
+        </thead>
+
+        <tbody>
+
+          @for (
+            item of sortedData;
+            track item.deviceId
+          ) {
+
+            <tr>
+
+              <td>
+                {{ item.inventoryNumber }}
+              </td>
+
+              <td>
+                {{ item.serialNumber }}
+              </td>
+
+              <td>
+                {{ item.status }}
+              </td>
+
+              <td>
+
+                {{
+                  item.purchasePrice
+                  | currency:'EUR':'symbol':'1.2-2':'de-DE'
+                }}
+
+              </td>
+
+              <td>
+
+                {{
+                  item.currentValue
+                  | currency:'EUR':'symbol':'1.2-2':'de-DE'
+                }}
+
+              </td>
+
+              <td>
+
+                <span class="negative-value">
+
+                  {{
+                    item.depreciationValue
+                    | currency:'EUR':'symbol':'1.2-2':'de-DE'
+                  }}
+
+                </span>
+
+              </td>
+
+            </tr>
+
+          }
+
+        </tbody>
+
+      </table>
+
+    </div>
+
+  }
+
+</div>

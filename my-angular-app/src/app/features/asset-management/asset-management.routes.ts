@@ -21,12 +21,33 @@ from '../../core/guards/role.guard';
 import { passwordChangeGuard }
 from '../../core/guards/password-change.guard';
 
+import { ReportsComponent }
+from './reports/reports.component';
+
 export const ASSET_MANAGEMENT_ROUTES: Routes = [
 
   {
     path: 'asset-management',
 
     component: AssetManagementComponent,
+
+    canActivate: [
+      passwordChangeGuard,
+      roleGuard
+    ],
+
+    data: {
+      expectedRoles: [
+        'ROLE_ADMIN',
+        'ROLE_DIRECTOR'
+      ]
+    }
+  },
+
+  {
+    path: 'asset-management/reports',
+
+    component: ReportsComponent,
 
     canActivate: [
       passwordChangeGuard,

@@ -16,7 +16,20 @@ public class ProductMarginResponse {
 
     private BigDecimal margin;
 
-    public ProductMarginResponse() {
+    public ProductMarginResponse(
+            Long productId,
+            String sku,
+            String name,
+            BigDecimal purchasePrice,
+            BigDecimal salePrice,
+            BigDecimal margin) {
+
+        this.productId = productId;
+        this.sku = sku;
+        this.name = name;
+        this.purchasePrice = purchasePrice;
+        this.salePrice = salePrice;
+        this.margin = margin;
     }
 
     public Long getProductId() {

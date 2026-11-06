@@ -12,7 +12,18 @@ public class LowStockResponse {
 
     private Integer minimumStock;
 
-    public LowStockResponse() {
+    public LowStockResponse(
+            Long productId,
+            String sku,
+            String name,
+            Integer lagerbestand,
+            Integer minimumStock) {
+
+        this.productId = productId;
+        this.sku = sku;
+        this.name = name;
+        this.lagerbestand = lagerbestand;
+        this.minimumStock = minimumStock;
     }
 
     public Long getProductId() {

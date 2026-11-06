@@ -1,0 +1,158 @@
+<div class="report-page">
+
+  <h1>Department Asset Value Report</h1>
+
+  <p class="report-date">
+    Letzte Aktualisierung:
+    {{ generatedAt | date:'dd.MM.yyyy HH:mm' }}
+  </p>
+
+  <p>
+    Analyse der Vermögenswerte nach Abteilungen.
+  </p>
+
+  <div class="kpi-container">
+
+    <div class="kpi-card">
+
+      <span class="kpi-label">
+        🏢 Abteilungen
+      </span>
+
+      <span class="kpi-value">
+        {{ totalDepartments }}
+      </span>
+
+    </div>
+
+    <div class="kpi-card">
+
+      <span class="kpi-label">
+        💻 Geräte
+      </span>
+
+      <span class="kpi-value">
+        {{ totalDevices }}
+      </span>
+
+    </div>
+
+    <div class="kpi-card">
+
+      <span class="kpi-label">
+        💰 Gesamtwert
+      </span>
+
+      <span class="kpi-value">
+        {{
+          totalAssetValue
+          | currency:'EUR':'symbol':'1.2-2':'de-DE'
+        }}
+      </span>
+
+    </div>
+
+    <div class="kpi-card">
+
+      <span class="kpi-label">
+        🏆 Wertvollste Abteilung
+      </span>
+
+      <span class="kpi-value">
+
+        {{ topDepartment?.departmentName }}
+
+      </span>
+
+    </div>
+
+  </div>
+
+  <div class="toolbar">
+
+    <input
+      class="search-input"
+      type="text"
+      placeholder="Abteilung suchen..."
+      [(ngModel)]="searchTerm">
+
+  </div>
+
+  @if (loading) {
+
+    <p>Daten werden geladen...</p>
+
+  } @else {
+
+    <div class="table-wrapper">
+
+      <table class="report-table">
+
+        <thead>
+
+          <tr>
+
+            <th
+              (click)="sortBy('departmentName')">
+
+              Abteilung
+
+            </th>
+
+            <th
+              (click)="sortBy('deviceCount')">
+
+              Geräte
+
+            </th>
+
+            <th
+              (click)="sortBy('totalAssetValue')">
+
+              Vermögenswert
+
+            </th>
+
+          </tr>
+
+        </thead>
+
+        <tbody>
+
+          @for (
+            item of sortedData;
+            track item.departmentId
+          ) {
+
+            <tr>
+
+              <td>
+                {{ item.departmentName }}
+              </td>
+
+              <td>
+                {{ item.deviceCount }}
+              </td>
+
+              <td>
+
+                {{
+                  item.totalAssetValue
+                  | currency:'EUR':'symbol':'1.2-2':'de-DE'
+                }}
+
+              </td>
+
+            </tr>
+
+          }
+
+        </tbody>
+
+      </table>
+
+    </div>
+
+  }
+
+</div>

@@ -1,0 +1,92 @@
+<div class="reports-container">
+
+  <div class="reports-header">
+
+    <h1>Asset Reports</h1>
+
+    <p>
+
+      Analysen für Geräte,
+      Vermögenswerte und Lizenzen.
+
+    </p>
+
+  </div>
+
+  <div class="report-tabs">
+
+    <button
+      class="report-tab"
+      [class.active]="selectedReport === 'asset-value'"
+      (click)="selectReport('asset-value')">
+
+      💻 Asset Value
+
+    </button>
+
+    <button
+      class="report-tab"
+      [class.active]="selectedReport === 'department-assets'"
+      (click)="selectReport('department-assets')">
+
+      🏢 Department Assets
+
+    </button>
+
+    <button
+      class="report-tab"
+      [class.active]="selectedReport === 'active-devices'"
+      (click)="selectReport('active-devices')">
+
+      ✅ Active Devices
+
+    </button>
+
+    <button
+      class="report-tab"
+      [class.active]="selectedReport === 'expiring-licenses'"
+      (click)="selectReport('expiring-licenses')">
+
+      📜 Licenses
+
+    </button>
+
+  </div>
+
+  <div class="report-content">
+
+    @if (
+    selectedReport === 'asset-value'
+    ) {
+
+    <app-asset-value />
+
+    }
+
+    @if (
+      selectedReport === 'department-assets'
+    ) {
+
+      <app-department-assets />
+
+    }
+
+    @if (
+      selectedReport === 'active-devices'
+    ) {
+
+      <app-active-devices />
+
+    }
+
+    @if (
+      selectedReport === 'expiring-licenses'
+    ) {
+
+      <app-expiring-licenses />
+
+    }
+
+  </div>
+
+</div>

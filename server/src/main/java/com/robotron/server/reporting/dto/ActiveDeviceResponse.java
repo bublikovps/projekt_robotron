@@ -12,7 +12,18 @@ public class ActiveDeviceResponse {
 
     private String location;
 
-    public ActiveDeviceResponse() {
+    public ActiveDeviceResponse(
+            Long deviceId,
+            String inventoryNumber,
+            String serialNumber,
+            String status,
+            String location) {
+
+        this.deviceId = deviceId;
+        this.inventoryNumber = inventoryNumber;
+        this.serialNumber = serialNumber;
+        this.status = status;
+        this.location = location;
     }
 
     public Long getDeviceId() {

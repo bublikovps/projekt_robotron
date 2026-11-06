@@ -1,0 +1,228 @@
+<div class="report-page">
+
+  <h1>Supplier Inventory Report</h1>
+
+  <p class="report-date">
+    Letzte Aktualisierung:
+    {{ generatedAt | date:'dd.MM.yyyy HH:mm' }}
+  </p>
+
+  <p>
+    Analyse der Lagerbestände nach Lieferanten.
+  </p>
+
+  <div class="kpi-container">
+
+    <div class="kpi-card">
+
+      <span class="kpi-label">
+        🚚 Lieferanten
+      </span>
+
+      <span class="kpi-value">
+        {{ totalSuppliers }}
+      </span>
+
+    </div>
+
+    <div class="kpi-card">
+
+      <span class="kpi-label">
+        📦 Produkte
+      </span>
+
+      <span class="kpi-value">
+        {{ totalProducts }}
+      </span>
+
+    </div>
+
+    <div class="kpi-card">
+
+      <span class="kpi-label">
+        🏬 Bestand
+      </span>
+
+      <span class="kpi-value">
+        {{ totalUnits }}
+      </span>
+
+    </div>
+
+    <div class="kpi-card">
+
+      <span class="kpi-label">
+        💰 Lagerwert
+      </span>
+
+      <span class="kpi-value">
+        {{ totalInventoryValue | number:'1.2-2' }}
+        €
+      </span>
+
+    </div>
+
+  </div>
+
+  <div class="toolbar">
+
+    <input
+      class="search-input"
+      type="text"
+      placeholder="Lieferant suchen..."
+      [(ngModel)]="searchTerm">
+
+    <div class="toolbar-buttons">
+
+      <button
+        class="btn-csv"
+        (click)="exportCsv()">
+
+        📄 CSV
+
+      </button>
+
+      <button
+        class="btn-excel"
+        (click)="exportExcel()">
+
+        📊 Excel
+
+      </button>
+
+      <button
+        class="btn-pdf"
+        (click)="exportPdf()">
+
+        🧾 PDF
+
+      </button>
+
+    </div>
+
+  </div>
+
+  @if (loading) {
+
+    <p>Daten werden geladen...</p>
+
+  } @else {
+
+    <div class="table-wrapper">
+
+      <table class="report-table">
+
+        <thead>
+
+          <tr>
+
+            <th
+              (click)="sortBy('supplier')"
+              [class.active-sort]="sortColumn === 'supplier'">
+
+              Lieferant
+
+            </th>
+
+            <th
+              (click)="sortBy('productCount')"
+              [class.active-sort]="sortColumn === 'productCount'">
+
+              Produkte
+
+            </th>
+
+            <th
+              (click)="sortBy('totalUnits')"
+              [class.active-sort]="sortColumn === 'totalUnits'">
+
+              Bestand
+
+            </th>
+
+            <th
+              (click)="sortBy('inventoryValue')"
+              [class.active-sort]="sortColumn === 'inventoryValue'">
+
+              Lagerwert
+
+            </th>
+
+            <th>
+
+              Anteil am Lagerwert
+
+            </th>
+
+          </tr>
+
+        </thead>
+
+        <tbody>
+
+          @for (
+            item of sortedData;
+            track item.supplier
+          ) {
+
+            <tr>
+
+              <td>
+
+                {{ item.supplier }}
+
+              </td>
+
+              <td>
+
+                {{ item.productCount }}
+
+              </td>
+
+              <td>
+
+                {{ item.totalUnits }}
+
+              </td>
+
+              <td>
+
+                {{ item.inventoryValue | number:'1.2-2' }}
+                €
+
+              </td>
+
+              <td>
+
+                <div class="share-wrapper">
+
+                  <div
+                    class="share-bar"
+                    [style.width.%]="getSupplierShare(item)">
+
+                  </div>
+
+                  <span>
+
+                    {{ getSupplierShare(item) }}
+                    %
+
+                  </span>
+
+                </div>
+
+              </td>
+
+            </tr>
+
+          }
+
+        </tbody>
+
+      </table>
+
+    </div>
+
+  }
+
+</div>

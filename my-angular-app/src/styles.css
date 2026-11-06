@@ -28,3 +28,8 @@ body {
   padding: 0 30px; 
   box-sizing: border-box;
 }
+
+.page-content {
+
+  min-height: 1000px;
+}

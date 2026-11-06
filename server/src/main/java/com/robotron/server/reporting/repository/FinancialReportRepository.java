@@ -1,138 +1,116 @@
 package com.robotron.server.reporting.repository;
 
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
-import org.springframework.stereotype.Repository;
+import com.robotron.server.model.Product;
+import com.robotron.server.reporting.projection.ActiveDeviceProjection;
+import com.robotron.server.reporting.projection.AssetValueProjection;
+import com.robotron.server.reporting.projection.DepartmentAssetValueProjection;
+import com.robotron.server.reporting.projection.ExpiringLicenseProjection;
+import com.robotron.server.reporting.projection.InventoryValueProjection;
+import com.robotron.server.reporting.projection.LowStockProjection;
+import com.robotron.server.reporting.projection.ProductMarginProjection;
+import com.robotron.server.reporting.projection.SupplierInventoryProjection;
+
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.Repository;
 
 import java.util.List;
 
-@Repository
-public class FinancialReportRepository {
+public interface FinancialReportRepository
+        extends Repository<Product, Long> {
 
-    @PersistenceContext
-    private EntityManager entityManager;
+    @Query(value = """
+            SELECT
+                id AS productId,
+                sku AS sku,
+                name AS name,
+                manufacturer AS manufacturer,
+                lagerbestand AS lagerbestand,
+                purchase_price AS purchasePrice,
+                inventory_value AS inventoryValue
+            FROM inventory_value_report
+            """, nativeQuery = true)
+    List<InventoryValueProjection> findInventoryValueReport();
 
-    public List<Object[]> findInventoryValueReport() {
+    @Query(value = """
+            SELECT
+                id AS deviceId,
+                inventory_number AS inventoryNumber,
+                serial_number AS serialNumber,
+                status AS status,
+                purchase_price AS purchasePrice,
+                current_value AS currentValue,
+                depreciation_value AS depreciationValue
+            FROM asset_value_report
+            """, nativeQuery = true)
+    List<AssetValueProjection> findAssetValueReport();
 
-        return entityManager
-                .createNativeQuery("""
-                        SELECT *
-                        FROM inventory_value_report
-                        """)
-                .getResultList();
-    }
+    @Query(value = """
+            SELECT
+                id AS departmentId,
+                name AS departmentName,
+                device_count AS deviceCount,
+                total_asset_value AS totalAssetValue
+            FROM department_asset_value_report
+            """, nativeQuery = true)
+    List<DepartmentAssetValueProjection> findDepartmentAssetValueReport();
 
-    public List<Object[]> findAssetValueReport() {
-
-        return entityManager
-                .createNativeQuery("""
-                        SELECT *
-                        FROM asset_value_report
-                        """)
-                .getResultList();
-    }
-
-    public List<Object[]> findDepartmentAssetValueReport() {
-
-        return entityManager
-                .createNativeQuery("""
-                        SELECT *
-                        FROM department_asset_value_report
-                        """)
-                .getResultList();
-    }
-
-    public List<Object[]> findLowStockReport() {
-
-        return entityManager
-                .createNativeQuery("""
-                        SELECT
-                                id,
-                                sku,
-                                name,
-                                lagerbestand,
-                                minimum_stock
-                        FROM products
-                        WHERE lagerbestand <= minimum_stock
-                        ORDER BY lagerbestand ASC
-                        """)
-                .getResultList();
-        }
-
-      public List<Object[]> findProductMarginReport() {
-
-        return entityManager
-                .createNativeQuery("""
-                        SELECT
-                                id,
-                                sku,
-                                name,
-                                purchase_price,
-                                sale_price,
-                                (
-                                COALESCE(sale_price,0)
-                                -
-                                COALESCE(purchase_price,0)
-                                ) AS margin
-                        FROM products
-                        ORDER BY margin DESC
-                        """)
-                .getResultList();
-        }  
-
-        public List<Object[]> findSupplierInventoryReport() {
-
-        return entityManager
-                .createNativeQuery("""
-                        SELECT
-                                supplier,
-                                COUNT(*),
-                                SUM(lagerbestand),
-                                SUM(
-                                COALESCE(lagerbestand,0)
-                                *
-                                COALESCE(purchase_price,0)
-                                )
-                        FROM products
-                        GROUP BY supplier
-                        ORDER BY supplier
-                        """)
-                .getResultList();
-        }
+    @Query(value = """
+            SELECT
+                p.id AS productId,
+                p.sku AS sku,
+                p.name AS name,
+                p.lagerbestand AS lagerbestand,
+                p.minimum_stock AS minimumStock
+            FROM products p
+            WHERE p.lagerbestand <= :threshold
+            ORDER BY p.lagerbestand ASC
+            """, nativeQuery = true)
+    List<LowStockProjection> findLowStockReport(
+            Integer threshold
+    );
 
 
-        public List<Object[]> findActiveDevicesReport() {
+    @Query(value = """
+            SELECT
+                id AS productId,
+                sku AS sku,
+                name AS name,
+                purchase_price AS purchasePrice,
+                sale_price AS salePrice,
+                margin AS margin
+            FROM product_margin_report
+            """, nativeQuery = true)
+    List<ProductMarginProjection> findProductMarginReport();
 
-        return entityManager
-                .createNativeQuery("""
-                        SELECT
-                                id,
-                                inventory_number,
-                                serial_number,
-                                status,
-                                location
-                        FROM device
-                        WHERE active = true
-                        ORDER BY inventory_number
-                        """)
-                .getResultList();
-        }
+    @Query(value = """
+            SELECT
+                supplier AS supplier,
+                product_count AS productCount,
+                total_units AS totalUnits,
+                inventory_value AS inventoryValue
+            FROM supplier_inventory_report
+            """, nativeQuery = true)
+    List<SupplierInventoryProjection> findSupplierInventoryReport();
 
-        public List<Object[]> findExpiringLicensesReport() {
+    @Query(value = """
+            SELECT
+                id AS deviceId,
+                inventory_number AS inventoryNumber,
+                serial_number AS serialNumber,
+                status AS status,
+                location AS location
+            FROM active_device_report
+            """, nativeQuery = true)
+    List<ActiveDeviceProjection> findActiveDevicesReport();
 
-        return entityManager
-                .createNativeQuery("""
-                        SELECT
-                                id,
-                                software_name,
-                                vendor,
-                                expiration_date,
-                                status
-                        FROM software_license
-                        WHERE expiration_date
-                                <= CURRENT_DATE + 90
-                        ORDER BY expiration_date
-                        """)
-                .getResultList();
-        }
+    @Query(value = """
+            SELECT
+                id AS licenseId,
+                software_name AS softwareName,
+                vendor AS vendor,
+                expiration_date AS expirationDate,
+                status AS status
+            FROM expiring_license_report
+            """, nativeQuery = true)
+    List<ExpiringLicenseProjection> findExpiringLicensesReport();
 }

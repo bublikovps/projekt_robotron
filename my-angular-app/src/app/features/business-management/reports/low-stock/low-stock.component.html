@@ -1,0 +1,272 @@
+<div class="report-page">
+
+  <h1>Low Stock Report</h1>
+
+  <p class="report-date">
+    Letzte Aktualisierung:
+    {{ generatedAt | date:'dd.MM.yyyy HH:mm' }}
+  </p>
+
+  <p>
+    Produkte mit kritischem Lagerbestand.
+  </p>
+
+  <div class="kpi-container">
+
+    <div class="kpi-card">
+
+      <span class="kpi-label">
+        🎯 Aktive Grenze
+      </span>
+
+      <span class="kpi-value">
+        {{ activeThreshold }}
+      </span>
+
+    </div>
+
+    <div class="kpi-card">
+
+      <span class="kpi-label">
+        📦 Produkte unter Grenze
+      </span>
+
+      <span class="kpi-value">
+        {{ totalProducts }}
+      </span>
+
+    </div>
+
+    <div class="kpi-card">
+
+      <span class="kpi-label">
+        🔴 Unter Minimum
+      </span>
+
+      <span class="kpi-value">
+        {{ productsUnderMinimum }}
+      </span>
+
+    </div>
+
+    <div class="kpi-card">
+
+      <span class="kpi-label">
+        🛒 Fehlende Einheiten
+      </span>
+
+      <span class="kpi-value">
+        {{ totalDeficit }}
+      </span>
+
+    </div>
+
+  </div>
+
+  <div class="threshold-panel">
+
+    <label>
+
+      Kritische Grenze
+
+    </label>
+
+    <input
+      type="number"
+      min="1"
+      [(ngModel)]="threshold">
+
+    <button
+      class="btn-apply"
+      (click)="applyThreshold()">
+
+      Anwenden
+
+    </button>
+
+  </div>
+
+  <div class="toolbar">
+
+    <input
+      class="search-input"
+      type="text"
+      placeholder="Produkt suchen..."
+      [(ngModel)]="searchTerm">
+
+    <div class="threshold-buttons">
+
+      <button
+        class="btn-threshold"
+        (click)="setThreshold(2)">
+        2
+      </button>
+
+      <button
+        class="btn-threshold"
+        (click)="setThreshold(5)">
+        5
+      </button>
+
+      <button
+        class="btn-threshold"
+        (click)="setThreshold(10)">
+        10
+      </button>
+
+      <button
+        class="btn-threshold"
+        (click)="setThreshold(20)">
+        20
+      </button>
+
+    </div>
+
+    <div class="toolbar-buttons">
+
+      <button
+        class="btn-csv"
+        (click)="exportCsv()">
+
+        📄 CSV
+
+      </button>
+
+      <button
+        class="btn-excel"
+        (click)="exportExcel()">
+
+        📊 Excel
+
+      </button>
+
+      <button
+        class="btn-pdf"
+        (click)="exportPdf()">
+
+        🧾 PDF
+
+      </button>
+
+    </div>
+
+  </div>
+
+  @if (loading) {
+
+    <p>Daten werden geladen...</p>
+
+  } @else {
+
+    <div class="table-wrapper">
+
+      <table class="report-table">
+
+        <thead>
+
+          <tr>
+
+            <th
+              (click)="sortBy('sku')"
+              [class.active-sort]="sortColumn === 'sku'">
+
+              SKU
+
+            </th>
+
+            <th
+              (click)="sortBy('name')"
+              [class.active-sort]="sortColumn === 'name'">
+
+              Name
+
+            </th>
+
+            <th
+              (click)="sortBy('lagerbestand')"
+              [class.active-sort]="sortColumn === 'lagerbestand'">
+
+              Bestand
+
+            </th>
+
+            <th
+              (click)="sortBy('minimumStock')"
+              [class.active-sort]="sortColumn === 'minimumStock'">
+
+              Minimum
+
+            </th>
+
+            <th>
+
+              Defizit
+
+            </th>
+
+          </tr>
+
+        </thead>
+
+        <tbody>
+
+          @for (
+            item of sortedData;
+            track item.productId
+          ) {
+
+            <tr>
+
+              <td>
+                {{ item.sku }}
+              </td>
+
+              <td>
+                {{ item.name }}
+              </td>
+
+              <td>
+                {{ item.lagerbestand }}
+              </td>
+
+              <td>
+                {{ item.minimumStock }}
+              </td>
+
+              <td>
+
+                @if (
+                  getDeficit(item) > 0
+                ) {
+
+                  <span class="danger-value">
+
+                    {{ getDeficit(item) }}
+
+                  </span>
+
+                } @else {
+
+                  <span class="ok-value">
+
+                    0
+
+                  </span>
+
+                }
+
+              </td>
+
+            </tr>
+
+          }
+
+        </tbody>
+
+      </table>
+
+    </div>
+
+  }
+
+</div>

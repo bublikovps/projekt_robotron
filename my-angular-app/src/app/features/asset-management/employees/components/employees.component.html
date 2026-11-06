@@ -1,6 +1,26 @@
 <div class="employees-container">
 
-  <h1>Employee Management</h1>
+  <div class="page-header">
+
+    <div>
+
+      <h1>Employee Management</h1>
+
+      <p>
+        Verwaltung von Mitarbeitern
+      </p>
+
+    </div>
+
+    <button
+      class="btn-primary"
+      (click)="openCreateDialog()">
+
+      + New Employee
+
+    </button>
+
+  </div>
 
   <div
     *ngIf="successMessage"
@@ -21,111 +41,29 @@
   <div class="card">
 
     <h2>
-      {{ isEditMode
-        ? 'Mitarbeiter bearbeiten'
-        : 'Mitarbeiter erstellen'
-      }}
+
+      Mitarbeiter
+
     </h2>
-
-    <form (ngSubmit)="saveEmployee()">
-
-      <select
-        [(ngModel)]="employeeForm.departmentId"
-        name="departmentId">
-
-        <option [value]="0">
-          Abteilung auswählen
-        </option>
-
-        <option
-          *ngFor="let department of departments"
-          [value]="department.id">
-
-          {{ department.name }}
-
-        </option>
-
-      </select>
-
-      <input
-        type="text"
-        placeholder="Mitarbeiternummer"
-        [(ngModel)]="employeeForm.employeeNumber"
-        name="employeeNumber">
-
-      <input
-        type="text"
-        placeholder="Vorname"
-        [(ngModel)]="employeeForm.firstName"
-        name="firstName">
-
-      <input
-        type="text"
-        placeholder="Nachname"
-        [(ngModel)]="employeeForm.lastName"
-        name="lastName">
-
-      <input
-        type="email"
-        placeholder="E-Mail"
-        [(ngModel)]="employeeForm.email"
-        name="email">
-
-      <input
-        type="text"
-        placeholder="Telefon"
-        [(ngModel)]="employeeForm.phone"
-        name="phone">
-
-      <input
-        type="text"
-        placeholder="Position"
-        [(ngModel)]="employeeForm.position"
-        name="position">
-
-      <input
-        type="date"
-        [(ngModel)]="employeeForm.hireDate"
-        name="hireDate">
-      
-        <button type="submit">
-
-            {{ isEditMode
-            ? 'Speichern'
-            : 'Erstellen'
-            }}
-
-        </button>
-
-        <button
-            *ngIf="isEditMode"
-            type="button"
-            (click)="cancelEdit()">
-
-            Abbrechen
-
-        </button>
-      
-
-    </form>
-
-  </div>
-
-  <div class="card">
-
-    <h2>Mitarbeiter</h2>
 
     <table>
 
       <thead>
 
       <tr>
+
         <th>Nr.</th>
+
         <th>Name</th>
+
         <th>Abteilung</th>
+
         <th>E-Mail</th>
+
         <th>Position</th>
+
         <th>Aktionen</th>
+
       </tr>
 
       </thead>
@@ -159,6 +97,7 @@
         <td>
 
           <button
+            class="btn-edit"
             (click)="editEmployee(employee)">
 
             Bearbeiten
@@ -166,6 +105,7 @@
           </button>
 
           <button
+            class="btn-danger"
             (click)="archiveEmployee(employee)">
 
             Archivieren
@@ -179,6 +119,116 @@
       </tbody>
 
     </table>
+
+  </div>
+
+  <div
+    *ngIf="showDialog"
+    class="dialog-backdrop">
+
+    <div class="dialog-window">
+
+      <h2>
+
+        {{ isEditMode
+          ? 'Mitarbeiter bearbeiten'
+          : 'Neuer Mitarbeiter' }}
+
+      </h2>
+
+      <form
+        (ngSubmit)="saveEmployee()">
+
+        <select
+          [(ngModel)]="employeeForm.departmentId"
+          name="departmentId">
+
+          <option [value]="0">
+
+            Abteilung auswählen
+
+          </option>
+
+          <option
+            *ngFor="
+              let department
+              of departments
+            "
+            [value]="department.id">
+
+            {{ department.name }}
+
+          </option>
+
+        </select>
+
+        <input
+          type="text"
+          placeholder="Mitarbeiternummer"
+          [(ngModel)]="employeeForm.employeeNumber"
+          name="employeeNumber">
+
+        <input
+          type="text"
+          placeholder="Vorname"
+          [(ngModel)]="employeeForm.firstName"
+          name="firstName">
+
+        <input
+          type="text"
+          placeholder="Nachname"
+          [(ngModel)]="employeeForm.lastName"
+          name="lastName">
+
+        <input
+          type="email"
+          placeholder="E-Mail"
+          [(ngModel)]="employeeForm.email"
+          name="email">
+
+        <input
+          type="text"
+          placeholder="Telefon"
+          [(ngModel)]="employeeForm.phone"
+          name="phone">
+
+        <input
+          type="text"
+          placeholder="Position"
+          [(ngModel)]="employeeForm.position"
+          name="position">
+
+        <input
+          type="date"
+          [(ngModel)]="employeeForm.hireDate"
+          name="hireDate">
+
+        <div class="button-group">
+
+          <button
+            type="submit"
+            class="btn-primary">
+
+            {{ isEditMode
+            ? 'Speichern'
+            : 'Erstellen' }}
+
+          </button>
+
+          <button
+            type="button"
+            class="btn-secondary"
+            (click)="closeDialog()">
+
+            Abbrechen
+
+          </button>
+
+        </div>
+
+      </form>
+
+    </div>
 
   </div>
 

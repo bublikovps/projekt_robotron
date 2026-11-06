@@ -2,22 +2,90 @@
 
   <div class="reports-header">
 
-    <h1>Reports</h1>
+    <h1>Business Reports</h1>
 
     <p>
-      Geschäftsberichte und Kennzahlen.
+
+      Analysen für Lager,
+      Produkte und Lieferanten.
+
     </p>
 
   </div>
 
-  <div class="reports-card">
+  <div class="report-tabs">
 
-    <h2>Modul wird vorbereitet</h2>
+    <button
+      class="report-tab"
+      [class.active]="selectedReport === 'inventory'"
+      (click)="selectReport('inventory')">
 
-    <p>
-      Die Anbindung an FinancialReportController
-      erfolgt im nächsten Entwicklungsschritt.
-    </p>
+      📦 Inventory Value
+
+    </button>
+
+    <button
+      class="report-tab"
+      [class.active]="selectedReport === 'low-stock'"
+      (click)="selectReport('low-stock')">
+
+      📉 Low Stock
+
+    </button>
+
+    <button
+      class="report-tab"
+      [class.active]="selectedReport === 'margin'"
+      (click)="selectReport('margin')">
+
+      💰 Product Margin
+
+    </button>
+
+    <button
+      class="report-tab"
+      [class.active]="selectedReport === 'supplier'"
+      (click)="selectReport('supplier')">
+
+      🚚 Supplier Inventory
+
+    </button>
+
+  </div>
+
+  <div class="report-content">
+
+    @if (
+      selectedReport === 'inventory'
+    ) {
+
+      <app-inventory-value />
+
+    }
+
+    @if (
+      selectedReport === 'low-stock'
+    ) {
+
+      <app-low-stock />
+
+    }
+
+    @if (
+        selectedReport === 'margin'
+      ) {
+
+        <app-product-margin />
+
+      }
+
+      @if (
+        selectedReport === 'supplier'
+      ) {
+
+        <app-supplier-inventory />
+
+      }
 
   </div>
 
