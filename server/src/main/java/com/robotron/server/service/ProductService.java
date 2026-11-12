@@ -29,43 +29,53 @@ public class ProductService {
     }
 
     public List<ProductResponse> getAllProducts(
-            String search,
-            Long categoryId) {
+        String search,
+        Long categoryId) {
 
-        String query =
-                (search != null)
-                        ? search.trim()
-                        : "";
+    String query =
+            (search != null)
+                    ? search.trim()
+                    : "";
 
-        List<Product> products;
+    List<Product> products;
 
-        if (categoryId != null) {
+    if (categoryId != null) {
 
-            products = productRepository
-                    .findByCategoryIdAndIsActiveTrueAndNameContainingIgnoreCase(
-                            categoryId,
-                            query
-                    );
+        products = productRepository
+                .findByCategoryIdAndIsActiveTrueAndNameContainingIgnoreCase(
+                        categoryId,
+                        query
+                );
 
-        } else if (!query.isEmpty()) {
+    } else if (!query.isEmpty()) {
 
-            products = productRepository
-                    .findByIsActiveTrueAndNameContainingIgnoreCaseOrIsActiveTrueAndManufacturerContainingIgnoreCase(
-                            query,
-                            query
-                    );
-
+        products =
+                productRepository
+                        .searchProducts(
+                                query
+                        );
         } else {
 
-            products = productRepository.findByIsActiveTrue();
-        }
-
-        return products.stream()
-                .map(ProductMapper::toResponse)
-                .toList();
+        products = productRepository
+                .findByIsActiveTrue();
     }
 
-    public ProductResponse createProduct(
+    return products.stream()
+            .map(ProductMapper::toResponse)
+            .toList();
+}
+    
+        public List<ProductResponse>
+        getAllProductsForManagement() {
+
+        return productRepository
+                .findAll()
+                .stream()
+                .map(ProductMapper::toResponse)
+                .toList();
+        }
+
+        public ProductResponse createProduct(
             ProductCreateRequest request) {
 
         if (productRepository.existsBySku(request.getSku())) {
@@ -110,6 +120,11 @@ public class ProductService {
         product.setSupplier(
                 request.getSupplier()
         );
+
+        product.setImageUrl(
+                request.getImageUrl()
+        );
+
 
         product.setLagerbestand(
                 request.getLagerbestand()
@@ -175,6 +190,10 @@ public class ProductService {
 
         product.setSupplier(
                 request.getSupplier()
+        );
+
+        product.setImageUrl(
+                request.getImageUrl()
         );
 
         product.setLagerbestand(

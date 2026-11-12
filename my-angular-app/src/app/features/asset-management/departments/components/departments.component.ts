@@ -11,6 +11,9 @@ import { FormsModule } from '@angular/forms';
 import { DepartmentService }
 from '../services/department.service';
 
+import { ExportService }
+from '../../../../shared/services/export.service';
+
 import { DepartmentResponse }
 from '../models/department-response.model';
 
@@ -30,7 +33,27 @@ from '../models/department-create-request.model';
 export class DepartmentsComponent
 implements OnInit {
 
-  departments: DepartmentResponse[] = [];
+  allDepartments:
+    DepartmentResponse[] = [];
+
+  filteredDepartments:
+    DepartmentResponse[] = [];
+
+  searchTerm = '';
+
+  selectedExportFormat = '';
+
+  exportMenuOpen = false;
+
+  sortColumn = 'departmentCode';
+
+  sortDirection:
+    'asc'
+    | 'desc'
+    = 'asc';
+
+  openMenuId:
+    number | null = null;
 
   successMessage = '';
 
@@ -57,11 +80,16 @@ implements OnInit {
   };
 
   constructor(
+
     private departmentService:
       DepartmentService,
 
+    private exportService:
+      ExportService,
+
     private cdr:
       ChangeDetectorRef
+
   ) {}
 
   ngOnInit(): void {
@@ -79,7 +107,9 @@ implements OnInit {
 
         next: (data) => {
 
-          this.departments = data;
+          this.allDepartments = data;
+
+          this.filteredDepartments = data;
 
           this.isLoading = false;
 
@@ -98,6 +128,234 @@ implements OnInit {
         }
 
       });
+  }
+
+  applyFilters(): void {
+
+    const search =
+      this.searchTerm
+        .trim()
+        .toLowerCase();
+
+    if (!search) {
+
+      this.filteredDepartments =
+        [...this.allDepartments];
+
+      return;
+    }
+
+    this.filteredDepartments =
+      this.allDepartments.filter(
+        department =>
+
+          department.departmentCode
+            .toLowerCase()
+            .includes(search)
+
+          ||
+
+          department.name
+            .toLowerCase()
+            .includes(search)
+
+          ||
+
+          department.description
+            .toLowerCase()
+            .includes(search)
+      );
+  }
+
+  sortBy(
+    column: string
+  ): void {
+
+    if (
+      this.sortColumn === column
+    ) {
+
+      this.sortDirection =
+        this.sortDirection === 'asc'
+          ? 'desc'
+          : 'asc';
+
+      return;
+    }
+
+    this.sortColumn = column;
+
+    this.sortDirection = 'asc';
+  }
+
+  getSortIcon(
+    column: string
+  ): string {
+
+    if (
+      this.sortColumn !== column
+    ) {
+
+      return '↕';
+    }
+
+    return this.sortDirection === 'asc'
+      ? '↑'
+      : '↓';
+  }
+
+  get sortedDepartments():
+    DepartmentResponse[] {
+
+    const data =
+      [...this.filteredDepartments];
+
+    data.sort((a, b) => {
+
+      let valueA = '';
+
+      let valueB = '';
+
+      switch (
+        this.sortColumn
+      ) {
+
+        case 'departmentCode':
+
+          valueA =
+            a.departmentCode;
+
+          valueB =
+            b.departmentCode;
+
+          break;
+
+        case 'name':
+
+          valueA =
+            a.name;
+
+          valueB =
+            b.name;
+
+          break;
+
+        case 'description':
+
+          valueA =
+            a.description;
+
+          valueB =
+            b.description;
+
+          break;
+      }
+
+      const result =
+        valueA.localeCompare(
+          valueB
+        );
+
+      return this.sortDirection === 'asc'
+        ? result
+        : -result;
+    });
+
+    return data;
+  }
+
+  exportData(): void {
+
+    const exportData =
+      this.sortedDepartments.map(
+        department => ({
+
+          DepartmentCode:
+            department.departmentCode,
+
+          DepartmentName:
+            department.name,
+
+          Description:
+            department.description,
+
+          Active:
+            department.active
+              ? 'Yes'
+              : 'No'
+
+        })
+      );
+
+    switch (
+      this.selectedExportFormat
+    ) {
+
+      case 'csv':
+
+        this.exportService
+          .exportToCsv(
+            exportData,
+            'departments'
+          );
+
+        break;
+
+      case 'excel':
+
+        this.exportService
+          .exportToExcel(
+            exportData,
+            'departments'
+          );
+
+        break;
+
+      case 'pdf':
+
+        this.exportService
+          .exportToPdf(
+            exportData,
+            'departments'
+          );
+
+        break;
+    }
+
+    this.selectedExportFormat = '';
+  }
+
+  toggleExportMenu(): void {
+
+  this.exportMenuOpen =
+    !this.exportMenuOpen;
+}
+
+exportAs(
+  format: string
+): void {
+
+  this.selectedExportFormat =
+    format;
+
+  this.exportData();
+
+  this.exportMenuOpen = false;
+}
+
+  toggleMenu(
+    departmentId: number
+  ): void {
+
+    this.openMenuId =
+      this.openMenuId === departmentId
+        ? null
+        : departmentId;
+  }
+
+  closeMenu(): void {
+
+    this.openMenuId = null;
   }
 
   openCreateDialog(): void {
@@ -225,12 +483,16 @@ implements OnInit {
     };
 
     this.showDialog = true;
+
+    this.closeMenu();
   }
 
   archiveDepartment(
     department:
       DepartmentResponse
   ): void {
+
+    this.closeMenu();
 
     const confirmed =
       confirm(

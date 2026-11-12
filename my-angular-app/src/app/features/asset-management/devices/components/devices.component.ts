@@ -1,6 +1,7 @@
 import {
   Component,
-  OnInit
+  OnInit,
+  ChangeDetectorRef
 } from '@angular/core';
 
 import { CommonModule }
@@ -14,6 +15,9 @@ from '../services/device.service';
 
 import { ProductService }
 from '../../../business-management/products/services/product.service';
+
+import { ExportService }
+from '../../../../shared/services/export.service';
 
 import { DeviceResponse }
 from '../models/device-response.model';
@@ -37,9 +41,30 @@ from '../../../business-management/products/models/product-response.model';
 export class DevicesComponent
 implements OnInit {
 
-  devices: DeviceResponse[] = [];
+  allDevices:
+    DeviceResponse[] = [];
 
-  products: ProductResponse[] = [];
+  filteredDevices:
+    DeviceResponse[] = [];
+
+  products:
+    ProductResponse[] = [];
+
+  searchTerm = '';
+
+  selectedExportFormat = '';
+
+  exportMenuOpen = false;
+
+  sortColumn = 'inventoryNumber';
+
+  sortDirection:
+    'asc'
+    | 'desc'
+    = 'asc';
+
+  openMenuId:
+    number | null = null;
 
   successMessage = '';
 
@@ -53,10 +78,15 @@ implements OnInit {
     number | null = null;
 
   statuses = [
+
     'AVAILABLE',
+
     'ASSIGNED',
+
     'REPAIR',
+
     'RETIRED'
+
   ];
 
   deviceForm:
@@ -85,11 +115,19 @@ implements OnInit {
   };
 
   constructor(
+
     private deviceService:
       DeviceService,
 
     private productService:
-      ProductService
+      ProductService,
+
+    private exportService:
+      ExportService,
+
+    private cdr:
+      ChangeDetectorRef
+
   ) {}
 
   ngOnInit(): void {
@@ -107,7 +145,11 @@ implements OnInit {
 
         next: (data) => {
 
-          this.devices = data;
+          this.allDevices = data;
+
+          this.filteredDevices = data;
+
+          this.cdr.detectChanges();
         },
 
         error: () => {
@@ -128,9 +170,302 @@ implements OnInit {
         next: (data) => {
 
           this.products = data;
+
+          this.cdr.detectChanges();
         }
 
       });
+  }
+
+  applyFilters(): void {
+
+    const search =
+      this.searchTerm
+        .trim()
+        .toLowerCase();
+
+    if (!search) {
+
+      this.filteredDevices =
+        [...this.allDevices];
+
+      return;
+    }
+
+    this.filteredDevices =
+      this.allDevices.filter(
+        device =>
+
+          device.inventoryNumber
+            .toLowerCase()
+            .includes(search)
+
+          ||
+
+          device.productName
+            .toLowerCase()
+            .includes(search)
+
+          ||
+
+          device.serialNumber
+            .toLowerCase()
+            .includes(search)
+
+          ||
+
+          device.manufacturerAssetTag
+            .toLowerCase()
+            .includes(search)
+
+          ||
+
+          device.status
+            .toLowerCase()
+            .includes(search)
+
+          ||
+
+          device.location
+            .toLowerCase()
+            .includes(search)
+      );
+  }
+
+  sortBy(
+    column: string
+  ): void {
+
+    if (
+      this.sortColumn === column
+    ) {
+
+      this.sortDirection =
+        this.sortDirection === 'asc'
+          ? 'desc'
+          : 'asc';
+
+      return;
+    }
+
+    this.sortColumn = column;
+
+    this.sortDirection = 'asc';
+  }
+
+  getSortIcon(
+    column: string
+  ): string {
+
+    if (
+      this.sortColumn !== column
+    ) {
+
+      return '↕';
+    }
+
+    return this.sortDirection === 'asc'
+      ? '↑'
+      : '↓';
+  }
+
+  get sortedDevices():
+    DeviceResponse[] {
+
+    const data =
+      [...this.filteredDevices];
+
+    data.sort((a, b) => {
+
+      let valueA = '';
+
+      let valueB = '';
+
+      switch (
+        this.sortColumn
+      ) {
+
+        case 'inventoryNumber':
+
+          valueA =
+            a.inventoryNumber;
+
+          valueB =
+            b.inventoryNumber;
+
+          break;
+
+        case 'productName':
+
+          valueA =
+            a.productName;
+
+          valueB =
+            b.productName;
+
+          break;
+
+        case 'serialNumber':
+
+          valueA =
+            a.serialNumber;
+
+          valueB =
+            b.serialNumber;
+
+          break;
+
+        case 'status':
+
+          valueA =
+            a.status;
+
+          valueB =
+            b.status;
+
+          break;
+
+        case 'location':
+
+          valueA =
+            a.location;
+
+          valueB =
+            b.location;
+
+          break;
+      }
+
+      const result =
+        valueA.localeCompare(
+          valueB
+        );
+
+      return this.sortDirection === 'asc'
+        ? result
+        : -result;
+    });
+
+    return data;
+  }
+
+  exportData(): void {
+
+    const exportData =
+      this.sortedDevices.map(
+        device => ({
+
+          InventoryNumber:
+            device.inventoryNumber,
+
+          Product:
+            device.productName,
+
+          SerialNumber:
+            device.serialNumber,
+
+          AssetTag:
+            device.manufacturerAssetTag,
+
+          Status:
+            device.status,
+
+          Location:
+            device.location,
+
+          PurchaseDate:
+            device.purchaseDate ?? '',
+
+          PurchasePrice:
+            device.purchasePrice ?? '',
+
+          WarrantyUntil:
+            device.warrantyUntil ?? '',
+
+          Active:
+            device.active
+              ? 'Yes'
+              : 'No'
+
+        })
+      );
+
+    switch (
+      this.selectedExportFormat
+    ) {
+
+      case 'csv':
+
+        this.exportService
+          .exportToCsv(
+            exportData,
+            'devices'
+          );
+
+        break;
+
+      case 'excel':
+
+        this.exportService
+          .exportToExcel(
+            exportData,
+            'devices'
+          );
+
+        break;
+
+      case 'pdf':
+
+        this.exportService
+          .exportToPdf(
+            exportData,
+            'devices'
+          );
+
+        break;
+    }
+
+    this.selectedExportFormat = '';
+  }
+
+ toggleExportMenu(): void {
+
+    this.exportMenuOpen =
+      !this.exportMenuOpen;
+  }
+
+  exportAs(
+    format: string
+  ): void {
+
+    this.selectedExportFormat =
+      format;
+
+    this.exportData();
+
+    this.exportMenuOpen = false;
+  }
+
+  toggleMenu(
+    deviceId: number
+  ): void {
+
+    this.openMenuId =
+      this.openMenuId === deviceId
+        ? null
+        : deviceId;
+  }
+
+  closeMenu(): void {
+
+    this.openMenuId = null;
+  }
+
+  getStatusClass(
+    status: string
+  ): string {
+
+    return status.toLowerCase();
   }
 
   openCreateDialog(): void {
@@ -152,6 +487,10 @@ implements OnInit {
   }
 
   saveDevice(): void {
+
+    this.successMessage = '';
+
+    this.errorMessage = '';
 
     if (
       this.isEditMode &&
@@ -247,11 +586,15 @@ implements OnInit {
     };
 
     this.showDialog = true;
+
+    this.closeMenu();
   }
 
   archiveDevice(
     device: DeviceResponse
   ): void {
+
+    this.closeMenu();
 
     if (
       !confirm(

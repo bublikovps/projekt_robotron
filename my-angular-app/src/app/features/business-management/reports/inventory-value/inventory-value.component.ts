@@ -6,9 +6,13 @@ import {
   afterNextRender
 } from '@angular/core';
 
-import { CommonModule } from '@angular/common';
+import {
+  CommonModule
+} from '@angular/common';
 
-import { FormsModule } from '@angular/forms';
+import {
+  FormsModule
+} from '@angular/forms';
 
 import { BusinessReportService }
 from '../services/business-report.service';
@@ -18,11 +22,13 @@ from '../models/inventory-value-response.model';
 
 import * as XLSX from 'xlsx';
 
-import { saveAs } from 'file-saver';
+import { saveAs }
+from 'file-saver';
 
 import jsPDF from 'jspdf';
 
-import autoTable from 'jspdf-autotable';
+import autoTable
+from 'jspdf-autotable';
 
 @Component({
   selector: 'app-inventory-value',
@@ -42,37 +48,44 @@ implements OnInit {
 
   private readonly reportService =
     inject(BusinessReportService);
-  
-  readonly generatedAt =
-  new Date();
 
-  inventoryData: InventoryValueResponse[] = [];
+  readonly generatedAt =
+    new Date();
+
+  inventoryData:
+    InventoryValueResponse[] = [];
 
   loading = true;
 
   searchTerm = '';
 
-  sortColumn: keyof InventoryValueResponse =
+  exportMenuOpen = false;
+
+  sortColumn:
+    keyof InventoryValueResponse =
     'sku';
 
-  sortDirection: 'asc' | 'desc' =
+  sortDirection:
+    'asc' | 'desc' =
     'asc';
 
   constructor() {
 
     afterNextRender(() => {
 
-        this.cdr.detectChanges();
+      this.cdr.detectChanges();
 
     });
-    }
+  }
 
-  get totalProducts(): number {
+  get totalProducts():
+    number {
 
     return this.inventoryData.length;
   }
 
-  get totalStock(): number {
+  get totalStock():
+    number {
 
     return this.inventoryData.reduce(
       (sum, item) =>
@@ -81,7 +94,8 @@ implements OnInit {
     );
   }
 
-  get totalInventoryValue(): number {
+  get totalInventoryValue():
+    number {
 
     return this.inventoryData.reduce(
       (sum, item) =>
@@ -93,7 +107,10 @@ implements OnInit {
   get filteredInventoryData():
     InventoryValueResponse[] {
 
-    if (!this.searchTerm.trim()) {
+    if (
+      !this.searchTerm.trim()
+    ) {
+
       return this.inventoryData;
     }
 
@@ -102,19 +119,31 @@ implements OnInit {
 
     return this.inventoryData.filter(
       item =>
-        item.sku.toLowerCase().includes(term)
+
+        item.sku
+          .toLowerCase()
+          .includes(term)
+
         ||
-        item.name.toLowerCase().includes(term)
+
+        item.name
+          .toLowerCase()
+          .includes(term)
+
         ||
-        item.manufacturer.toLowerCase().includes(term)
+
+        item.manufacturer
+          .toLowerCase()
+          .includes(term)
     );
   }
 
   get sortedInventoryData():
     InventoryValueResponse[] {
 
-    const data =
-      [...this.filteredInventoryData];
+    const data = [
+      ...this.filteredInventoryData
+    ];
 
     data.sort((a, b) => {
 
@@ -125,12 +154,14 @@ implements OnInit {
         b[this.sortColumn];
 
       if (valueA < valueB) {
+
         return this.sortDirection === 'asc'
           ? -1
           : 1;
       }
 
       if (valueA > valueB) {
+
         return this.sortDirection === 'asc'
           ? 1
           : -1;
@@ -143,10 +174,13 @@ implements OnInit {
   }
 
   sortBy(
-    column: keyof InventoryValueResponse
+    column:
+      keyof InventoryValueResponse
   ): void {
 
-    if (this.sortColumn === column) {
+    if (
+      this.sortColumn === column
+    ) {
 
       this.sortDirection =
         this.sortDirection === 'asc'
@@ -156,9 +190,11 @@ implements OnInit {
       return;
     }
 
-    this.sortColumn = column;
+    this.sortColumn =
+      column;
 
-    this.sortDirection = 'asc';
+    this.sortDirection =
+      'asc';
   }
 
   exportCsv(): void {
@@ -167,23 +203,28 @@ implements OnInit {
       'SKU,Name,Manufacturer,Stock,PurchasePrice,InventoryValue';
 
     const rows =
-      this.sortedInventoryData.map(item =>
-        `${item.sku},${item.name},${item.manufacturer},${item.lagerbestand},${item.purchasePrice},${item.inventoryValue}`
+      this.sortedInventoryData.map(
+        item =>
+          `${item.sku},${item.name},${item.manufacturer},${item.lagerbestand},${item.purchasePrice},${item.inventoryValue}`
       );
 
     const csv =
-      [header, ...rows].join('\n');
+      [header, ...rows]
+        .join('\n');
 
     const blob =
       new Blob(
         [csv],
         {
-          type: 'text/csv;charset=utf-8;'
+          type:
+            'text/csv;charset=utf-8;'
         }
       );
 
     const url =
-      window.URL.createObjectURL(blob);
+      window.URL.createObjectURL(
+        blob
+      );
 
     const link =
       document.createElement('a');
@@ -195,7 +236,12 @@ implements OnInit {
 
     link.click();
 
-    window.URL.revokeObjectURL(url);
+    window.URL.revokeObjectURL(
+      url
+    );
+
+    this.exportMenuOpen =
+      false;
   }
 
   exportExcel(): void {
@@ -236,6 +282,9 @@ implements OnInit {
       blob,
       'inventory-value-report.xlsx'
     );
+
+    this.exportMenuOpen =
+      false;
   }
 
   exportPdf(): void {
@@ -255,6 +304,7 @@ implements OnInit {
       doc,
       {
         startY: 30,
+
         head: [[
           'SKU',
           'Name',
@@ -281,7 +331,22 @@ implements OnInit {
     doc.save(
       'inventory-value-report.pdf'
     );
+
+    this.exportMenuOpen =
+      false;
   }
+
+  getSortIcon(column: string): string {
+
+  if (this.sortColumn !== column) {
+    return '↕';
+  }
+
+  return this.sortDirection === 'asc'
+    ? '↑'
+    : '↓';
+
+}
 
   ngOnInit(): void {
 
@@ -291,30 +356,33 @@ implements OnInit {
 
         next: (data) => {
 
-          this.inventoryData = data;
+          this.inventoryData =
+            data;
 
-          this.loading = false;
-
-          this.cdr.detectChanges();
-
-            setTimeout(() => {
-
-                this.cdr.detectChanges();
-
-            });
-        },
-
-        error: () => {
-
-          this.loading = false;
+          this.loading =
+            false;
 
           this.cdr.detectChanges();
 
           setTimeout(() => {
 
-                this.cdr.detectChanges();
+            this.cdr.detectChanges();
 
-            });
+          });
+        },
+
+        error: () => {
+
+          this.loading =
+            false;
+
+          this.cdr.detectChanges();
+
+          setTimeout(() => {
+
+            this.cdr.detectChanges();
+
+          });
         }
       });
   }

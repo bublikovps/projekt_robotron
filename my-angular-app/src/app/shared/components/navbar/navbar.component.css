@@ -1,9 +1,29 @@
 .main-nav {
-  background-color: var(--primary-color);
-  padding: 15px 0;
-  position: relative;
-  z-index: 1000;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+
+  position: sticky;
+
+  top: 0;
+
+  z-index: 9999;
+
+  padding: 14px 0;
+
+  background:
+    rgba(8, 20, 54, 0.92);
+
+  backdrop-filter:
+    blur(12px);
+
+  -webkit-backdrop-filter:
+    blur(12px);
+
+  border-bottom:
+    1px solid
+    rgba(255,255,255,0.06);
+
+  box-shadow:
+    0 8px 24px
+    rgba(15,23,42,.12);
 }
 
 .nav-container {
@@ -57,20 +77,29 @@
 }
 
 .nav-item {
-  color: #cbd5e1;
+
+  color: #dbe5f4;
+
   text-decoration: none;
+
   font-size: 15px;
-  font-weight: 500;
-  padding: 8px 16px;
-  border-radius: 6px;
-  transition: all 0.2s ease-in-out;
+
+  font-weight: 600;
+
+  padding: 10px 16px;
+
+  border-radius: 10px;
+
+  transition: all .2s ease;
+
   cursor: pointer;
+
   white-space: nowrap;
 }
 
 .nav-item:hover {
   color: white;
-  background-color: var(--primary-light);
+  background-color: rgba(255,255,255,0.08);
 }
 
 /* ==========================================================
@@ -119,7 +148,7 @@
   top: calc(100% - 2px);
   left: 0;
 
-  background-color: var(--primary-light);
+  background-color: #122246;
 
   min-width: 220px;
 
@@ -185,17 +214,19 @@
 
   padding: 8px 14px;
 
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.06);
 
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, .10);
 
-  border-radius: 12px;
+  border-radius: 16px;
 
   cursor: pointer;
 
   color: white;
 
   transition: all 0.2s ease;
+
+  box-shadow:  0 4px 16px rgba(0,0,0,.12);
 }
 
 .user-menu-button:hover {
@@ -258,7 +289,7 @@
   width: 280px;
 
   background: white;
-
+  backdrop-filter: blur(10px);
   border: 1px solid var(--border-color);
 
   border-radius: 16px;
@@ -403,7 +434,11 @@
   }
 
   .logo {
-    font-size: 20px;
+    font-size: 28px;
+
+    font-weight: 900;
+
+    letter-spacing: 0.3px;
   }
 
   .user-menu-button {

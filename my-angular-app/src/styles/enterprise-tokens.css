@@ -1,0 +1,42 @@
+:root {
+
+  --enterprise-primary:
+    #2563eb;
+
+  --enterprise-primary-hover:
+    #1d4ed8;
+
+  --enterprise-success:
+    #16a34a;
+
+  --enterprise-danger:
+    #dc2626;
+
+  --enterprise-warning:
+    #f59e0b;
+
+  --enterprise-background:
+    #f8fafc;
+
+  --enterprise-surface:
+    #ffffff;
+
+  --enterprise-border:
+    #e2e8f0;
+
+  --enterprise-text:
+    #0f172a;
+
+  --enterprise-text-muted:
+    #64748b;
+
+  --enterprise-shadow:
+    0 2px 8px
+    rgba(15,23,42,.08);
+
+  --enterprise-radius:
+    16px;
+
+  --enterprise-transition:
+    .2s ease;
+}

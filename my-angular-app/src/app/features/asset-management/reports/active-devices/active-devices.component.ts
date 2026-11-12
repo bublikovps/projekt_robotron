@@ -2,16 +2,20 @@ import {
   Component,
   OnInit,
   inject,
-  ChangeDetectorRef,
-  afterNextRender
+  ChangeDetectorRef
 } from '@angular/core';
 
-import { CommonModule } from '@angular/common';
+import { CommonModule }
+from '@angular/common';
 
-import { FormsModule } from '@angular/forms';
+import { FormsModule }
+from '@angular/forms';
 
 import { AssetReportService }
 from '../services/asset-report.service';
+
+import { ExportService }
+from '../../../../shared/services/export.service';
 
 import { ActiveDeviceResponse }
 from '../models/active-device-response.model';
@@ -23,8 +27,11 @@ from '../models/active-device-response.model';
     CommonModule,
     FormsModule
   ],
-  templateUrl: './active-devices.component.html',
-  styleUrls: ['./active-devices.component.css']
+  templateUrl:
+    './active-devices.component.html',
+  styleUrls: [
+    './active-devices.component.css'
+  ]
 })
 export class ActiveDevicesComponent
 implements OnInit {
@@ -35,14 +42,8 @@ implements OnInit {
   private readonly reportService =
     inject(AssetReportService);
 
-  constructor() {
-
-    afterNextRender(() => {
-
-      this.cdr.detectChanges();
-
-    });
-  }
+  private readonly exportService =
+    inject(ExportService);
 
   reportData:
     ActiveDeviceResponse[] = [];
@@ -51,8 +52,9 @@ implements OnInit {
 
   searchTerm = '';
 
-  readonly generatedAt =
-    new Date();
+  exportMenuOpen = false;
+
+  selectedExportFormat = '';
 
   sortColumn:
     keyof ActiveDeviceResponse =
@@ -60,8 +62,40 @@ implements OnInit {
 
   sortDirection:
     'asc'
-    | 'desc' =
-      'asc';
+    | 'desc'
+    = 'asc';
+
+  ngOnInit(): void {
+
+    this.loadReport();
+  }
+
+  private loadReport(): void {
+
+    this.loading = true;
+
+    this.reportService
+      .getActiveDevicesReport()
+      .subscribe({
+
+        next: data => {
+
+          this.reportData = data;
+
+          this.loading = false;
+
+          this.cdr.detectChanges();
+        },
+
+        error: () => {
+
+          this.loading = false;
+
+          this.cdr.detectChanges();
+        }
+
+      });
+  }
 
   get totalDevices(): number {
 
@@ -81,38 +115,51 @@ implements OnInit {
 
     return this.reportData.filter(
       item =>
+
         item.status === 'ACTIVE'
+
         ||
+
         item.status === 'IN_USE'
+
         ||
+
         item.status === 'ASSIGNED'
+
     ).length;
   }
 
   get filteredData():
     ActiveDeviceResponse[] {
 
-    if (!this.searchTerm.trim()) {
+    const search =
+      this.searchTerm
+        .trim()
+        .toLowerCase();
+
+    if (!search) {
 
       return this.reportData;
     }
 
-    const term =
-      this.searchTerm.toLowerCase();
-
     return this.reportData.filter(
       item =>
+
         item.inventoryNumber
           .toLowerCase()
-          .includes(term)
+          .includes(search)
+
         ||
+
         item.serialNumber
           .toLowerCase()
-          .includes(term)
+          .includes(search)
+
         ||
+
         item.location
           .toLowerCase()
-          .includes(term)
+          .includes(search)
     );
   }
 
@@ -131,12 +178,14 @@ implements OnInit {
         b[this.sortColumn];
 
       if (valueA < valueB) {
+
         return this.sortDirection === 'asc'
           ? -1
           : 1;
       }
 
       if (valueA > valueB) {
+
         return this.sortDirection === 'asc'
           ? 1
           : -1;
@@ -170,31 +219,98 @@ implements OnInit {
     this.sortDirection = 'asc';
   }
 
-  ngOnInit(): void {
+  getSortIcon(
+    column:
+      keyof ActiveDeviceResponse
+  ): string {
 
-    this.reportService
-      .getActiveDevicesReport()
-      .subscribe({
+    if (
+      this.sortColumn !== column
+    ) {
 
-        next: (data) => {
+      return '↕';
+    }
 
-          this.reportData = data;
+    return this.sortDirection === 'asc'
+      ? '↑'
+      : '↓';
+  }
 
-          this.loading = false;
+  toggleExportMenu(): void {
 
-          this.cdr.detectChanges();
+    this.exportMenuOpen =
+      !this.exportMenuOpen;
+  }
 
-        },
+  exportAs(
+    format: string
+  ): void {
 
-        error: () => {
+    this.selectedExportFormat =
+      format;
 
-          this.loading = false;
+    this.exportData();
 
-          this.cdr.detectChanges();
+    this.exportMenuOpen = false;
+  }
 
-        }
+  exportData(): void {
 
-      });
+    const exportData =
+      this.sortedData.map(
+        item => ({
+
+          InventoryNumber:
+            item.inventoryNumber,
+
+          SerialNumber:
+            item.serialNumber,
+
+          Status:
+            item.status,
+
+          Location:
+            item.location
+
+        })
+      );
+
+    switch (
+      this.selectedExportFormat
+    ) {
+
+      case 'csv':
+
+        this.exportService
+          .exportToCsv(
+            exportData,
+            'active-devices-report'
+          );
+
+        break;
+
+      case 'excel':
+
+        this.exportService
+          .exportToExcel(
+            exportData,
+            'active-devices-report'
+          );
+
+        break;
+
+      case 'pdf':
+
+        this.exportService
+          .exportToPdf(
+            exportData,
+            'active-devices-report'
+          );
+
+        break;
+    }
+
+    this.selectedExportFormat = '';
   }
 
 }

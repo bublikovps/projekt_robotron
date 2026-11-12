@@ -29,6 +29,8 @@ import { AboutComponent } from './features/about/about.component';
 import { NewsComponent } from './features/news/news.component';
 import { SupportComponent } from './features/support/support.component';
 
+import { LEGAL_ROUTES } from './features/legal/legal.routes';
+
 export const routes: Routes = [
 
   {
@@ -84,6 +86,7 @@ export const routes: Routes = [
   ...BUSINESS_MANAGEMENT_ROUTES,
   ...ASSET_MANAGEMENT_ROUTES,
   ...CATALOG_ROUTES,
+  ...LEGAL_ROUTES,
 
   {
     path: '**',

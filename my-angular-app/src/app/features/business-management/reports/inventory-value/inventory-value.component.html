@@ -1,216 +1,231 @@
 <div class="report-page">
 
-  <div class="report-header">
+  <div class="enterprise-kpi-grid">
 
-    <div>
-
-      <h1>Inventory Value Report</h1>
-
-      <p class="report-date">
-
-        Letzte Aktualisierung:
-
-        {{
-            generatedAt
-            | date:'dd.MM.yyyy HH:mm'
-        }}
-
-        </p>
-
-      <p>
-        Übersicht des Lagerwerts aller Produkte.
-      </p>
-
-    </div>
-
-  </div>
-
-  <div class="kpi-container">
-
-    <div class="kpi-card">
-
-      <span class="kpi-label">
-        📦 Produkte
+    <div class="enterprise-kpi-card">
+      <span class="enterprise-kpi-label">
+        Produkte
       </span>
-
-      <span class="kpi-value">
+      <span class="enterprise-kpi-value">
         {{ totalProducts }}
       </span>
-
     </div>
 
-    <div class="kpi-card">
-
-      <span class="kpi-label">
-        📊 Gesamtbestand
+    <div class="enterprise-kpi-card">
+      <span class="enterprise-kpi-label">
+        Gesamtbestand
       </span>
-
-      <span class="kpi-value">
+      <span class="enterprise-kpi-value">
         {{ totalStock }}
       </span>
-
     </div>
 
-    <div class="kpi-card">
-
-      <span class="kpi-label">
-        💶 Lagerwert
+    <div class="enterprise-kpi-card">
+      <span class="enterprise-kpi-label">
+        Lagerwert
       </span>
-
-      <span class="kpi-value">
+      <span class="enterprise-kpi-value">
         {{ totalInventoryValue | number:'1.2-2' }}
         €
       </span>
+    </div>
+
+  </div>
+
+  <div class="report-toolbar">
+
+    <input
+      type="text"
+      class="enterprise-search report-search"
+      placeholder="Produkt suchen..."
+      [(ngModel)]="searchTerm">
+
+    <div class="enterprise-toolbar-right">
+
+      <div class="enterprise-dropdown">
+
+        <button
+          type="button"
+          class="enterprise-dropdown-trigger"
+          (click)="exportMenuOpen = !exportMenuOpen">
+
+          <span class="enterprise-dropdown-label">
+            Export
+          </span>
+
+          <span class="enterprise-dropdown-arrow">
+            ▼
+          </span>
+
+        </button>
+
+        <div
+          *ngIf="exportMenuOpen"
+          class="enterprise-dropdown-menu">
+
+          <button
+            type="button"
+            (click)="exportCsv()">
+
+            CSV
+
+          </button>
+
+          <button
+            type="button"
+            (click)="exportExcel()">
+
+            Excel
+
+          </button>
+
+          <button
+            type="button"
+            (click)="exportPdf()">
+
+            PDF
+
+          </button>
+
+        </div>
+
+      </div>
 
     </div>
 
   </div>
 
-  <div class="toolbar">
-
-    <input
-      class="search-input"
-      type="text"
-      placeholder="Produkt suchen..."
-      [(ngModel)]="searchTerm">
-
-    <div class="toolbar-buttons">
-
-      <button
-        class="btn-csv"
-        (click)="exportCsv()">
-
-        📄 CSV
-
-      </button>
-
-      <button
-        class="btn-excel"
-        (click)="exportExcel()">
-
-        📊 Excel
-
-      </button>
-
-      <button
-        class="btn-pdf"
-        (click)="exportPdf()">
-
-        🧾 PDF
-
-      </button>
-
-    </div>
-
+  <div class="table-info">
+    {{ sortedInventoryData.length }}
+    Produkte gefunden
   </div>
 
   @if (loading) {
 
-    <p>Daten werden geladen...</p>
+    <div class="empty-state">
+
+      <div>
+
+        <h3>
+          Daten werden geladen...
+        </h3>
+
+      </div>
+
+    </div>
 
   } @else {
 
-    <div class="table-wrapper">
+    <div class="enterprise-table-card">
 
-    <table class="report-table">
+      <div class="table-wrapper">
 
-      <thead>
+        <table class="enterprise-table">
 
-        <tr>
+          <thead>
 
-          <th
-            (click)="sortBy('sku')"
-            [class.active-sort]="sortColumn === 'sku'">
-            SKU
-            @if (sortColumn === 'sku') {
-              {{ sortDirection === 'asc' ? '▲' : '▼' }}
-            } @else {
-              ⇅
+            <tr>
+
+              <th
+                class="sortable-column"
+                (click)="sortBy('sku')">
+
+                SKU
+                {{ getSortIcon('sku') }}
+
+              </th>
+
+              <th
+                class="sortable-column"
+                (click)="sortBy('name')">
+
+                Name
+                {{ getSortIcon('name') }}
+
+              </th>
+
+              <th
+                class="sortable-column"
+                (click)="sortBy('manufacturer')">
+
+                Hersteller
+                {{ getSortIcon('manufacturer') }}
+
+              </th>
+
+              <th
+                class="sortable-column"
+                (click)="sortBy('lagerbestand')">
+
+                Bestand
+                {{ getSortIcon('lagerbestand') }}
+
+              </th>
+
+              <th
+                class="sortable-column"
+                (click)="sortBy('purchasePrice')">
+
+                Einkaufspreis
+                {{ getSortIcon('purchasePrice') }}
+
+              </th>
+
+              <th
+                class="sortable-column"
+                (click)="sortBy('inventoryValue')">
+
+                Lagerwert
+                {{ getSortIcon('inventoryValue') }}
+
+              </th>
+
+            </tr>
+
+          </thead>
+
+          <tbody>
+
+            @for (
+              item of sortedInventoryData;
+              track item.productId
+            ) {
+
+              <tr>
+
+                <td>
+                  {{ item.sku }}
+                </td>
+
+                <td>
+                  {{ item.name }}
+                </td>
+
+                <td>
+                  {{ item.manufacturer }}
+                </td>
+
+                <td>
+                  {{ item.lagerbestand }}
+                </td>
+
+                <td>
+                  {{ item.purchasePrice }}
+                </td>
+
+                <td>
+                  {{ item.inventoryValue }}
+                </td>
+
+              </tr>
+
             }
-          </th>
 
-          <th (click)="sortBy('name')"
-            [class.active-sort]="sortColumn === 'name'">
-            Name
-            @if (sortColumn === 'name') {
-              {{ sortDirection === 'asc' ? '▲' : '▼' }}
-            } @else {
-              ⇅
-            }
-          </th>
+          </tbody>
 
-          <th (click)="sortBy('manufacturer')"
-            [class.active-sort]="sortColumn === 'manufacturer'">
-            Hersteller
-            @if (sortColumn === 'manufacturer') {
-              {{ sortDirection === 'asc' ? '▲' : '▼' }}
-            } @else {
-              ⇅
-            }
-          </th>
+        </table>
 
-          <th (click)="sortBy('lagerbestand')"
-            [class.active-sort]="sortColumn === 'lagerbestand'">
-            Bestand
-            @if (sortColumn === 'lagerbestand') {
-              {{ sortDirection === 'asc' ? '▲' : '▼' }}
-            } @else {
-              ⇅
-            }
-          </th>
-
-          <th (click)="sortBy('purchasePrice')"
-            [class.active-sort]="sortColumn === 'purchasePrice'">
-            Einkaufspreis
-            @if (sortColumn === 'purchasePrice') {
-              {{ sortDirection === 'asc' ? '▲' : '▼' }}
-            } @else {
-              ⇅
-            }
-          </th>
-
-          <th (click)="sortBy('inventoryValue')"
-            [class.active-sort]="sortColumn === 'inventoryValue'">
-            Lagerwert
-            @if (sortColumn === 'inventoryValue') {
-              {{ sortDirection === 'asc' ? '▲' : '▼' }}
-            } @else {
-              ⇅
-            }
-          </th>
-
-        </tr>
-
-      </thead>
-
-      <tbody>
-
-        @for (
-          item of sortedInventoryData;
-          track item.productId
-        ) {
-
-          <tr>
-
-            <td>{{ item.sku }}</td>
-
-            <td>{{ item.name }}</td>
-
-            <td>{{ item.manufacturer }}</td>
-
-            <td>{{ item.lagerbestand }}</td>
-
-            <td>{{ item.purchasePrice }}</td>
-
-            <td>{{ item.inventoryValue }}</td>
-
-          </tr>
-
-        }
-
-      </tbody>
-
-    </table>
+      </div>
 
     </div>
 

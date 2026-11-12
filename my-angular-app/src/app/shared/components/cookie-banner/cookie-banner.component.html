@@ -1,0 +1,43 @@
+<div
+  *ngIf="isVisible"
+  class="cookie-banner">
+
+  <div
+    class="cookie-content">
+
+    <div
+      class="cookie-text">
+
+      <h4>
+
+        Cookie-Hinweis
+
+      </h4>
+
+      <p>
+
+        Diese Plattform verwendet
+        technisch notwendige Cookies
+        für Anmeldung,
+        Authentifizierung und
+        Sitzungsverwaltung.
+
+        Es werden keine
+        Marketing- oder Tracking-Cookies
+        eingesetzt.
+
+      </p>
+
+    </div>
+
+    <button
+      class="cookie-button"
+      (click)="acceptCookies()">
+
+      Verstanden
+
+    </button>
+
+  </div>
+
+</div>

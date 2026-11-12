@@ -1,175 +1,236 @@
 <div class="report-page">
 
-  <h1>Asset Value Report</h1>
+  <div class="enterprise-kpi-grid">
 
-  <p class="report-date">
-    Letzte Aktualisierung:
-    {{ generatedAt | date:'dd.MM.yyyy HH:mm' }}
-  </p>
+    <div class="enterprise-kpi-card">
 
-  <p>
-    Analyse von Anschaffungswert,
-    aktuellem Wert und Abschreibung.
-  </p>
+      <span class="enterprise-kpi-label">
 
-  <div class="kpi-container">
+        Devices
 
-    <div class="kpi-card">
-
-      <span class="kpi-label">
-        💻 Geräte
       </span>
 
-      <span class="kpi-value">
+      <span class="enterprise-kpi-value">
+
         {{ totalDevices }}
+
       </span>
 
     </div>
 
-    <div class="kpi-card">
+    <div class="enterprise-kpi-card">
 
-      <span class="kpi-label">
-        💰 Anschaffungswert
+      <span class="enterprise-kpi-label">
+
+        Purchase Value
+
       </span>
 
-      <span class="kpi-value">
+      <span class="enterprise-kpi-value">
+
         {{
           totalPurchaseValue
           | currency:'EUR':'symbol':'1.2-2':'de-DE'
         }}
+
       </span>
 
     </div>
 
-    <div class="kpi-card">
+    <div class="enterprise-kpi-card">
 
-      <span class="kpi-label">
-        🏦 Aktueller Wert
+      <span class="enterprise-kpi-label">
+
+        Current Value
+
       </span>
 
-      <span class="kpi-value">
+      <span
+        class="
+          enterprise-kpi-value
+          enterprise-kpi-primary
+        ">
+
         {{
           totalCurrentValue
           | currency:'EUR':'symbol':'1.2-2':'de-DE'
         }}
+
       </span>
 
     </div>
 
-    <div class="kpi-card">
+    <div class="enterprise-kpi-card">
 
-      <span class="kpi-label">
-        📉 Abschreibung
+      <span class="enterprise-kpi-label">
+
+        Depreciation
+
       </span>
 
-      <span class="kpi-value negative-value">
+      <span
+        class="
+          enterprise-kpi-value
+          enterprise-kpi-danger
+        ">
+
         {{
           totalDepreciation
           | currency:'EUR':'symbol':'1.2-2':'de-DE'
         }}
+
       </span>
 
     </div>
 
   </div>
 
-  <div class="toolbar">
+  <div class="report-toolbar">
 
     <input
-      class="search-input"
       type="text"
-      placeholder="Inventarnummer oder Seriennummer suchen..."
+      class="
+        enterprise-search
+        report-search
+      "
+      placeholder="Search inventory number or serial number..."
       [(ngModel)]="searchTerm">
 
-    <div class="toolbar-buttons">
+    <div
+      class="enterprise-dropdown">
 
       <button
-        class="btn-csv"
-        (click)="exportCsv()">
+        type="button"
+        class="enterprise-dropdown-trigger"
+        (click)="toggleExportMenu()">
 
-        📄 CSV
+        <span
+          class="enterprise-dropdown-label">
+
+          Export
+
+        </span>
+
+        <span
+          class="enterprise-dropdown-arrow">
+
+          ▼
+
+        </span>
 
       </button>
 
-      <button
-        class="btn-excel"
-        (click)="exportExcel()">
+      <div
+        *ngIf="exportMenuOpen"
+        class="enterprise-dropdown-menu">
 
-        📊 Excel
+        <button
+          type="button"
+          (click)="exportAs('csv')">
 
-      </button>
+          CSV
 
-      <button
-        class="btn-pdf"
-        (click)="exportPdf()">
+        </button>
 
-        🧾 PDF
+        <button
+          type="button"
+          (click)="exportAs('excel')">
 
-      </button>
+          Excel
+
+        </button>
+
+        <button
+          type="button"
+          (click)="exportAs('pdf')">
+
+          PDF
+
+        </button>
+
+      </div>
 
     </div>
+
+  </div>
+
+  <div class="report-counter">
+
+    {{ filteredData.length }}
+    records found
 
   </div>
 
   @if (loading) {
 
-    <p>Daten werden geladen...</p>
+    <div class="report-loading">
+
+      Loading report...
+
+    </div>
 
   } @else {
 
-    <div class="table-wrapper">
+    <div class="enterprise-table-card">
 
-      <table class="report-table">
+      <table
+        class="enterprise-table">
 
         <thead>
 
           <tr>
 
             <th
-              (click)="sortBy('inventoryNumber')"
-              [class.active-sort]="sortColumn === 'inventoryNumber'">
+              class="sortable-column"
+              (click)="sortBy('inventoryNumber')">
 
-              Inventarnummer
-
-            </th>
-
-            <th
-              (click)="sortBy('serialNumber')"
-              [class.active-sort]="sortColumn === 'serialNumber'">
-
-              Seriennummer
+              Inventory No.
+              {{ getSortIcon('inventoryNumber') }}
 
             </th>
 
             <th
-              (click)="sortBy('status')"
-              [class.active-sort]="sortColumn === 'status'">
+              class="sortable-column"
+              (click)="sortBy('serialNumber')">
+
+              Serial Number
+              {{ getSortIcon('serialNumber') }}
+
+            </th>
+
+            <th
+              class="sortable-column"
+              (click)="sortBy('status')">
 
               Status
+              {{ getSortIcon('status') }}
 
             </th>
 
             <th
-              (click)="sortBy('purchasePrice')"
-              [class.active-sort]="sortColumn === 'purchasePrice'">
+              class="sortable-column"
+              (click)="sortBy('purchasePrice')">
 
-              Anschaffungswert
-
-            </th>
-
-            <th
-              (click)="sortBy('currentValue')"
-              [class.active-sort]="sortColumn === 'currentValue'">
-
-              Aktueller Wert
+              Purchase Value
+              {{ getSortIcon('purchasePrice') }}
 
             </th>
 
             <th
-              (click)="sortBy('depreciationValue')"
-              [class.active-sort]="sortColumn === 'depreciationValue'">
+              class="sortable-column"
+              (click)="sortBy('currentValue')">
 
-              Abschreibung
+              Current Value
+              {{ getSortIcon('currentValue') }}
+
+            </th>
+
+            <th
+              class="sortable-column"
+              (click)="sortBy('depreciationValue')">
+
+              Depreciation
+              {{ getSortIcon('depreciationValue') }}
 
             </th>
 
@@ -187,15 +248,21 @@
             <tr>
 
               <td>
+
                 {{ item.inventoryNumber }}
+
               </td>
 
               <td>
+
                 {{ item.serialNumber }}
+
               </td>
 
               <td>
+
                 {{ item.status }}
+
               </td>
 
               <td>
@@ -207,7 +274,8 @@
 
               </td>
 
-              <td>
+              <td
+                class="asset-value-current">
 
                 {{
                   item.currentValue
@@ -216,16 +284,13 @@
 
               </td>
 
-              <td>
+              <td
+                class="asset-value-depreciation">
 
-                <span class="negative-value">
-
-                  {{
-                    item.depreciationValue
-                    | currency:'EUR':'symbol':'1.2-2':'de-DE'
-                  }}
-
-                </span>
+                {{
+                  item.depreciationValue
+                  | currency:'EUR':'symbol':'1.2-2':'de-DE'
+                }}
 
               </td>
 
@@ -236,6 +301,16 @@
         </tbody>
 
       </table>
+
+      <div
+        *ngIf="
+          filteredData.length === 0
+        "
+        class="report-empty">
+
+        No records found
+
+      </div>
 
     </div>
 

@@ -1,16 +1,30 @@
-<h1 style="color:red">
-  TEST PRODUCT DETAIL PAGE
-</h1>
-
 <div class="product-details-container">
 
-  <a
-    routerLink="/catalog"
-    class="back-link">
+  <nav class="enterprise-breadcrumb">
 
-    ← Zurück zum Katalog
+    <a routerLink="/catalog">
 
-  </a>
+      Katalog
+
+    </a>
+
+    <span>/</span>
+
+    <span>
+
+      {{ product?.categoryName }}
+
+    </span>
+
+    <span>/</span>
+
+    <span>
+
+      {{ product?.name }}
+
+    </span>
+
+  </nav>
 
   <div
     *ngIf="isLoading"
@@ -32,9 +46,37 @@
     *ngIf="product && !isLoading"
     class="product-card">
 
-    <div class="product-header">
+    <div class="hero-section">
 
-      <div>
+      <div class="image-section">
+
+        <img
+          *ngIf="product.imageUrl"
+          [src]="product.imageUrl"
+          [alt]="product.name"
+          class="product-image">
+
+        <div
+          *ngIf="!product.imageUrl"
+          class="image-placeholder">
+
+          <div class="placeholder-icon">
+
+            📦
+
+          </div>
+
+          <span>
+
+            Kein Produktbild verfügbar
+
+          </span>
+
+        </div>
+
+      </div>
+
+      <div class="hero-content">
 
         <div class="category-badge">
 
@@ -48,53 +90,116 @@
 
         </h1>
 
+        <p class="manufacturer">
+
+          {{ product.manufacturer }}
+
+        </p>
+
+        <div class="price-section">
+
+          <span class="price">
+
+            {{ product.price }} €
+
+          </span>
+
+        </div>
+
       </div>
 
     </div>
 
-    <div class="info-row">
+    <div class="product-info-grid">
 
-      <strong>Hersteller:</strong>
+      <div class="info-box">
 
-      {{ product.manufacturer }}
+        <span class="label">
+
+          SKU
+
+        </span>
+
+        <span class="value">
+
+          {{ product.sku }}
+
+        </span>
+
+      </div>
+
+      <div class="info-box">
+
+        <span class="label">
+
+          Kategorie
+
+        </span>
+
+        <span class="value">
+
+          {{ product.categoryName }}
+
+        </span>
+
+      </div>
+
+      <div class="info-box">
+
+        <span class="label">
+
+          Lagerbestand
+
+        </span>
+
+        <span class="value">
+
+          {{ product.lagerbestand }}
+
+        </span>
+
+      </div>
 
     </div>
 
-    <div class="info-row">
+    <div class="description">
 
-      <strong>SKU:</strong>
+      <h3>
 
-      {{ product.sku }}
+        Produktbeschreibung
 
-    </div>
+      </h3>
 
-    <div class="info-row">
-
-      <strong>Preis:</strong>
-
-      {{ product.price }} €
-
-    </div>
-
-    <div class="info-row">
-
-      <strong>Kategorie:</strong>
-
-      {{ product.categoryName }}
-
-    </div>
-
-    <div
-      class="description"
-      *ngIf="product.description">
-
-      <h3>Beschreibung</h3>
-
-      <p>
+      <p *ngIf="product.description">
 
         {{ product.description }}
 
       </p>
+
+      <p *ngIf="!product.description">
+
+        Keine Beschreibung vorhanden.
+
+      </p>
+
+    </div>
+
+    <div class="product-actions">
+
+      <button
+        class="primary-button"
+        (click)="addToCart()">
+
+        🛒 In den Warenkorb
+
+      </button>
+
+      <button
+        class="secondary-button">
+
+        Angebot anfragen
+
+      </button>
 
     </div>
 

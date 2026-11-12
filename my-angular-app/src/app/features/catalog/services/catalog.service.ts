@@ -11,20 +11,17 @@ export class CatalogService {
   private readonly productsApiUrl = 'http://localhost:8080/api/catalog/products';
   private readonly categoriesApiUrl = 'http://localhost:8080/api/catalog/categories';
 
-  // 1. Создаем приватный Сигнал для хранения массива категорий
+  
   private readonly categoriesSignal = signal<CatalogCategoryResponse[]>([]);
 
-  // 2. Экспонируем readonly версию сигнала наружу для компонентов (Паттерн: State Management)
+ 
   public readonly categories = this.categoriesSignal.asReadonly();
 
   constructor(private http: HttpClient) {}
-
-  /**
-   * Проверяет кэш сигналов. Если он пуст — выполняет один контролируемый запрос к бэкенду.
-   */
+ 
   loadCategoriesIfNeeded(): void {
     if (this.categoriesSignal().length > 0) {
-      return; // Данные уже на месте — блокируем лишний сетевой трафик
+      return;  
     }
 
     this.http.get<CatalogCategoryResponse[]>(this.categoriesApiUrl).subscribe({
@@ -57,8 +54,7 @@ export class CatalogService {
       `${this.productsApiUrl}/${id}`
     );
   }
-
-  // Оставлен для обратной совместимости, если используется в других гвардах или резолверах
+ 
   getCategories(): Observable<CatalogCategoryResponse[]> {
     return this.http.get<CatalogCategoryResponse[]>(this.categoriesApiUrl);
   }

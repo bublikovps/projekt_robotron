@@ -6,15 +6,19 @@ public class CatalogCategoryResponse {
 
     private String name;
 
+    private long productCount;
+
     public CatalogCategoryResponse() {
     }
 
     public CatalogCategoryResponse(
             Long id,
-            String name) {
+            String name,
+            long productCount) {
 
         this.id = id;
         this.name = name;
+        this.productCount = productCount;
     }
 
     public Long getId() {
@@ -33,5 +37,14 @@ public class CatalogCategoryResponse {
     public void setName(
             String name) {
         this.name = name;
+    }
+
+    public long getProductCount() {
+        return productCount;
+    }
+
+    public void setProductCount(
+            long productCount) {
+        this.productCount = productCount;
     }
 }

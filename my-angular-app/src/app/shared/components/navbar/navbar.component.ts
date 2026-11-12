@@ -182,4 +182,19 @@ implements OnInit {
         }
       });
   }
+
+  getUserInitials(): string {
+
+    const login =
+      this.getUsername();
+
+    if (!login) {
+
+      return 'U';
+    }
+
+    return login
+      .charAt(0)
+      .toUpperCase();
+  }
 }

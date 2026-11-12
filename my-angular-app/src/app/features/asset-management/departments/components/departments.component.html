@@ -1,30 +1,102 @@
-<div class="departments-container">
+<div class="enterprise-page">
 
-  <div class="page-header">
+  <div class="report-toolbar">
 
-    <div>
+  <input
+    type="text"
+    class="
+      enterprise-search
+      report-search
+    "
+    placeholder="Search departments..."
+    [(ngModel)]="searchTerm"
+    (input)="applyFilters()">
 
-      <h1>Department Management</h1>
+  <div
+    class="enterprise-toolbar-right">
 
-      <p>
-        Verwaltung von Abteilungen
-      </p>
+    <div
+      class="enterprise-dropdown">
+
+      <button
+        type="button"
+        class="enterprise-dropdown-trigger"
+        (click)="toggleExportMenu()">
+
+        <span
+          class="enterprise-dropdown-label">
+
+          Export
+
+        </span>
+
+        <span
+          class="enterprise-dropdown-arrow">
+
+          ▼
+
+        </span>
+
+      </button>
+
+      <div
+        *ngIf="exportMenuOpen"
+        class="enterprise-dropdown-menu">
+
+        <button
+          type="button"
+          (click)="exportAs('csv')">
+
+          CSV
+
+        </button>
+
+        <button
+          type="button"
+          (click)="exportAs('excel')">
+
+          Excel
+
+        </button>
+
+        <button
+          type="button"
+          (click)="exportAs('pdf')">
+
+          PDF
+
+        </button>
+
+      </div>
 
     </div>
 
     <button
-      class="btn-primary"
+      class="
+        enterprise-btn
+        enterprise-btn-primary
+      "
       (click)="openCreateDialog()">
 
-      + New Department
+      + Department
 
     </button>
 
   </div>
 
+</div>
+
+  <div
+    class="table-info">
+
+    {{ filteredDepartments.length }}
+    departments found
+
+  </div>
+
   <div
     *ngIf="successMessage"
-    class="alert success">
+    class="success-message">
 
     {{ successMessage }}
 
@@ -32,36 +104,54 @@
 
   <div
     *ngIf="errorMessage"
-    class="alert error">
+    class="error-message">
 
     {{ errorMessage }}
 
   </div>
 
-  <div class="card">
-
-    <h2>
-
-      Abteilungen
-
-    </h2>
+  <div
+    class="enterprise-table-card">
 
     <table
-      *ngIf="departments.length > 0">
+      class="enterprise-table">
 
       <thead>
 
       <tr>
 
-        <th>ID</th>
+        <th
+          class="sortable-column"
+          (click)="sortBy('departmentCode')">
 
-        <th>Code</th>
+          Code
+          {{ getSortIcon('departmentCode') }}
 
-        <th>Name</th>
+        </th>
 
-        <th>Beschreibung</th>
+        <th
+          class="sortable-column"
+          (click)="sortBy('name')">
 
-        <th>Aktionen</th>
+          Name
+          {{ getSortIcon('name') }}
+
+        </th>
+
+        <th
+          class="sortable-column"
+          (click)="sortBy('description')">
+
+          Description
+          {{ getSortIcon('description') }}
+
+        </th>
+
+        <th>
+
+          Actions
+
+        </th>
 
       </tr>
 
@@ -72,42 +162,70 @@
       <tr
         *ngFor="
           let department
-          of departments
+          of sortedDepartments
         ">
 
         <td>
-          {{ department.id }}
-        </td>
 
-        <td>
           {{ department.departmentCode }}
+
         </td>
 
         <td>
+
           {{ department.name }}
+
         </td>
 
         <td>
+
           {{ department.description }}
+
         </td>
 
-        <td>
+        <td
+          class="actions-cell">
 
-          <button
-            class="btn-edit"
-            (click)="editDepartment(department)">
+          <div
+            class="enterprise-actions">
 
-            Bearbeiten
+            <button
+              class="
+                enterprise-btn
+                enterprise-btn-secondary
+                enterprise-actions-button
+              "
+              (click)="toggleMenu(department.id)">
 
-          </button>
+              ⋮
 
-          <button
-            class="btn-danger"
-            (click)="archiveDepartment(department)">
+            </button>
 
-            Archivieren
+            <div
+              *ngIf="
+                openMenuId === department.id
+              "
+              class="
+                enterprise-actions-menu
+              ">
 
-          </button>
+              <button
+                (click)="editDepartment(department)">
+
+                Edit
+
+              </button>
+
+              <button
+                (click)="archiveDepartment(department)">
+
+                Archive
+
+              </button>
+
+            </div>
+
+          </div>
 
         </td>
 
@@ -117,101 +235,110 @@
 
     </table>
 
+    <div
+      *ngIf="
+        filteredDepartments.length === 0
+      "
+      class="empty-state">
+
+      <div>
+
+        <h3>
+
+          No departments found
+
+        </h3>
+
+        <p>
+
+          Try changing the search
+          criteria.
+
+        </p>
+
+      </div>
+
+    </div>
+
   </div>
 
   <div
     *ngIf="showDialog"
-    class="dialog-backdrop">
+    class="enterprise-dialog-overlay">
 
-    <div class="dialog-window">
+    <div
+      class="enterprise-dialog">
 
       <h2>
 
         {{ isEditMode
-          ? 'Department bearbeiten'
-          : 'Neue Abteilung' }}
+          ? 'Edit Department'
+          : 'New Department' }}
 
       </h2>
 
       <form
+        class="enterprise-form-grid"
         (ngSubmit)="saveDepartment()">
 
-        <div class="form-group">
+        <input
+          type="text"
+          placeholder="Department Code"
+          [(ngModel)]="
+            departmentForm.departmentCode
+          "
+          name="departmentCode">
 
-          <label>
+        <input
+          type="text"
+          placeholder="Department Name"
+          [(ngModel)]="
+            departmentForm.name
+          "
+          name="name">
 
-            Abteilungscode
+        <textarea
+          rows="4"
+          placeholder="Description"
+          [(ngModel)]="
+            departmentForm.description
+          "
+          name="description">
 
-          </label>
-
-          <input
-            type="text"
-            name="departmentCode"
-            [(ngModel)]="
-              departmentForm.departmentCode
-            ">
-
-        </div>
-
-        <div class="form-group">
-
-          <label>
-
-            Name
-
-          </label>
-
-          <input
-            type="text"
-            name="name"
-            [(ngModel)]="
-              departmentForm.name
-            ">
-
-        </div>
-
-        <div class="form-group">
-
-          <label>
-
-            Beschreibung
-
-          </label>
-
-          <textarea
-            rows="4"
-            name="description"
-            [(ngModel)]="
-              departmentForm.description
-            ">
-          </textarea>
-
-        </div>
-
-        <div class="button-group">
-
-          <button
-            type="submit"
-            class="btn-primary">
-
-            {{ isEditMode
-              ? 'Speichern'
-              : 'Erstellen' }}
-
-          </button>
-
-          <button
-            type="button"
-            class="btn-secondary"
-            (click)="closeDialog()">
-
-            Abbrechen
-
-          </button>
-
-        </div>
+        </textarea>
 
       </form>
+
+      <div
+        class="enterprise-dialog-footer">
+
+        <button
+          type="button"
+          class="
+            enterprise-btn
+            enterprise-btn-secondary
+          "
+          (click)="closeDialog()">
+
+          Cancel
+
+        </button>
+
+        <button
+          type="submit"
+          class="
+            enterprise-btn
+            enterprise-btn-primary
+          "
+          (click)="saveDepartment()">
+
+          {{ isEditMode
+            ? 'Save'
+            : 'Create' }}
+
+        </button>
+
+      </div>
 
     </div>
 

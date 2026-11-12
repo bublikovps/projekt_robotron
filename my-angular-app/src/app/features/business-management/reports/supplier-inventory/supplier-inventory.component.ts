@@ -7,7 +7,6 @@ import {
 } from '@angular/core';
 
 import { CommonModule } from '@angular/common';
-
 import { FormsModule } from '@angular/forms';
 
 import { BusinessReportService }
@@ -50,6 +49,7 @@ implements OnInit {
       this.cdr.detectChanges();
 
     });
+
   }
 
   reportData:
@@ -59,8 +59,7 @@ implements OnInit {
 
   searchTerm = '';
 
-  readonly generatedAt =
-    new Date();
+  exportMenuOpen = false;
 
   sortColumn:
     keyof SupplierInventoryResponse =
@@ -75,25 +74,28 @@ implements OnInit {
     item: SupplierInventoryResponse
   ): number {
 
-    if (this.totalInventoryValue === 0) {
+    if (
+      this.totalInventoryValue === 0
+    ) {
 
       return 0;
+
     }
 
     return Number(
       (
-        item.inventoryValue
-        /
-        this.totalInventoryValue
-        *
+        item.inventoryValue /
+        this.totalInventoryValue *
         100
       ).toFixed(1)
     );
+
   }
 
   get totalSuppliers(): number {
 
     return this.reportData.length;
+
   }
 
   get totalProducts(): number {
@@ -103,6 +105,7 @@ implements OnInit {
         sum + item.productCount,
       0
     );
+
   }
 
   get totalUnits(): number {
@@ -112,6 +115,7 @@ implements OnInit {
         sum + item.totalUnits,
       0
     );
+
   }
 
   get totalInventoryValue(): number {
@@ -121,14 +125,18 @@ implements OnInit {
         sum + item.inventoryValue,
       0
     );
+
   }
 
   get filteredData():
     SupplierInventoryResponse[] {
 
-    if (!this.searchTerm.trim()) {
+    if (
+      !this.searchTerm.trim()
+    ) {
 
       return this.reportData;
+
     }
 
     const term =
@@ -140,6 +148,7 @@ implements OnInit {
           .toLowerCase()
           .includes(term)
     );
+
   }
 
   get sortedData():
@@ -161,6 +170,7 @@ implements OnInit {
         return this.sortDirection === 'asc'
           ? -1
           : 1;
+
       }
 
       if (valueA > valueB) {
@@ -168,12 +178,33 @@ implements OnInit {
         return this.sortDirection === 'asc'
           ? 1
           : -1;
+
       }
 
       return 0;
+
     });
 
     return data;
+
+  }
+
+  getSortIcon(
+    column: string
+  ): string {
+
+    if (
+      this.sortColumn !== column
+    ) {
+
+      return '↕';
+
+    }
+
+    return this.sortDirection === 'asc'
+      ? '↑'
+      : '↓';
+
   }
 
   sortBy(
@@ -191,6 +222,7 @@ implements OnInit {
           : 'asc';
 
       return;
+
     }
 
     this.sortColumn =
@@ -198,6 +230,7 @@ implements OnInit {
 
     this.sortDirection =
       'asc';
+
   }
 
   exportCsv(): void {
@@ -225,6 +258,9 @@ implements OnInit {
       ),
       'supplier-inventory-report.csv'
     );
+
+    this.exportMenuOpen = false;
+
   }
 
   exportExcel(): void {
@@ -256,6 +292,9 @@ implements OnInit {
       new Blob([excelBuffer]),
       'supplier-inventory-report.xlsx'
     );
+
+    this.exportMenuOpen = false;
+
   }
 
   exportPdf(): void {
@@ -284,15 +323,10 @@ implements OnInit {
         body:
           this.sortedData.map(
             item => [
-
               item.supplier,
-
               item.productCount,
-
               item.totalUnits,
-
               item.inventoryValue
-
             ]
           )
       }
@@ -301,6 +335,9 @@ implements OnInit {
     doc.save(
       'supplier-inventory-report.pdf'
     );
+
+    this.exportMenuOpen = false;
+
   }
 
   ngOnInit(): void {
@@ -311,11 +348,9 @@ implements OnInit {
 
         next: (data) => {
 
-          this.reportData =
-            data;
+          this.reportData = data;
 
-          this.loading =
-            false;
+          this.loading = false;
 
           this.cdr.detectChanges();
 
@@ -329,14 +364,14 @@ implements OnInit {
 
         error: () => {
 
-          this.loading =
-            false;
+          this.loading = false;
 
           this.cdr.detectChanges();
 
         }
 
       });
+
   }
 
 }

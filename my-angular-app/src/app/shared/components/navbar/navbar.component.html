@@ -22,13 +22,17 @@
 
           <div class="dropdown-menu" [class.dropdown-menu-open]="isCatalogMenuOpen">
             <a routerLink="/catalog" class="dropdown-item">Alle Produkte</a>
-
-            <!-- 🔥 ИСПРАВЛЕНО: Теперь вызывается как Сигнал со скобками categories() -->
+ 
             <a
               *ngFor="let cat of categories()"
-              [routerLink]="['/catalog/category', cat.id]"
+              routerLink="/catalog"
+              [queryParams]="{
+                category: cat.id
+              }"
               class="dropdown-item">
+
               {{ cat.name }}
+
             </a>
           </div>
         </div>
@@ -47,7 +51,7 @@
         <ng-container *ngIf="isLoggedIn()">
           <div class="user-menu">
             <button class="user-menu-button" (click)="toggleUserMenu()">
-              <div class="user-avatar">👤</div>
+              <div class="user-avatar">{{ getUserInitials() }}</div>
               <div class="user-info">
                 <span class="user-login">{{ getUsername() }}</span>
                 <span class="user-role">{{ getRoleDisplayName() }}</span>
@@ -57,16 +61,16 @@
 
             <div class="user-dropdown" *ngIf="isUserMenuOpen">
               <div class="user-dropdown-header">
-                <div class="user-dropdown-avatar">👤</div>
+                <div class="user-dropdown-avatar">{{ getUserInitials() }}</div>
                 <div>
                   <strong>{{ getUsername() }}</strong>
                   <span>{{ getRoleDisplayName() }}</span>
                 </div>
               </div>
-              <a routerLink="/dashboard" class="user-dropdown-item">🚀 Arbeitsbereich</a>
-              <a routerLink="/profile" class="user-dropdown-item">👤 Mein Profil</a>
+              <a routerLink="/dashboard" class="user-dropdown-item">Arbeitsbereich</a>
+              <a routerLink="/profile" class="user-dropdown-item">Mein Profil</a>
               <div class="dropdown-divider"></div>
-              <a class="user-dropdown-item logout-item" (click)="onLogout()">🚪 Abmelden</a>
+              <a class="user-dropdown-item logout-item" (click)="onLogout()">Abmelden</a>
             </div>
           </div>
         </ng-container>

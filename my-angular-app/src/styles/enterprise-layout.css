@@ -1,0 +1,53 @@
+.enterprise-page {
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 24px;
+}
+
+.enterprise-page-header {
+
+  display: flex;
+
+  justify-content: space-between;
+
+  align-items: center;
+
+  gap: 20px;
+}
+
+.enterprise-page-header h1 {
+
+  margin: 0;
+
+  color:
+    var(--enterprise-text);
+}
+
+.enterprise-page-header p {
+
+  margin-top: 8px;
+
+  color:
+    var(--enterprise-text-muted);
+}
+
+.enterprise-card {
+
+  background:
+    var(--enterprise-surface);
+
+  border:
+    1px solid
+    var(--enterprise-border);
+
+  border-radius:
+    var(--enterprise-radius);
+
+  box-shadow:
+    var(--enterprise-shadow);
+
+  padding: 24px;
+}

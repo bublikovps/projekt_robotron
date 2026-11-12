@@ -1,105 +1,189 @@
 <div class="report-page">
 
-  <h1>Active Devices Report</h1>
+  <div class="enterprise-kpi-grid">
 
-  <p class="report-date">
-    Letzte Aktualisierung:
-    {{ generatedAt | date:'dd.MM.yyyy HH:mm' }}
-  </p>
+    <div class="enterprise-kpi-card">
 
-  <p>
-    Übersicht aller aktiven Geräte.
-  </p>
+      <span class="enterprise-kpi-label">
 
-  <div class="kpi-container">
+        Devices
 
-    <div class="kpi-card">
-
-      <span class="kpi-label">
-        💻 Geräte
       </span>
 
-      <span class="kpi-value">
+      <span class="enterprise-kpi-value">
+
         {{ totalDevices }}
+
       </span>
 
     </div>
 
-    <div class="kpi-card">
+    <div class="enterprise-kpi-card">
 
-      <span class="kpi-label">
-        📍 Standorte
+      <span class="enterprise-kpi-label">
+
+        Locations
+
       </span>
 
-      <span class="kpi-value">
+      <span class="enterprise-kpi-value">
+
         {{ totalLocations }}
+
       </span>
 
     </div>
 
-    <div class="kpi-card">
+    <div class="enterprise-kpi-card">
 
-      <span class="kpi-label">
-        ✅ Aktiv
+      <span class="enterprise-kpi-label">
+
+        Active Devices
+
       </span>
 
-      <span class="kpi-value">
+      <span
+        class="
+          enterprise-kpi-value
+          enterprise-kpi-success
+        ">
+
         {{ activeDevices }}
+
       </span>
 
     </div>
 
   </div>
 
-  <div class="toolbar">
+  <div class="report-toolbar">
 
     <input
-      class="search-input"
       type="text"
-      placeholder="Gerät suchen..."
+      class="
+        enterprise-search
+        report-search
+      "
+      placeholder="Search device..."
       [(ngModel)]="searchTerm">
+
+    <div
+      class="enterprise-dropdown">
+
+      <button
+        type="button"
+        class="enterprise-dropdown-trigger"
+        (click)="toggleExportMenu()">
+
+        <span
+          class="enterprise-dropdown-label">
+
+          Export
+
+        </span>
+
+        <span
+          class="enterprise-dropdown-arrow">
+
+          ▼
+
+        </span>
+
+      </button>
+
+      <div
+        *ngIf="exportMenuOpen"
+        class="enterprise-dropdown-menu">
+
+        <button
+          type="button"
+          (click)="exportAs('csv')">
+
+          CSV
+
+        </button>
+
+        <button
+          type="button"
+          (click)="exportAs('excel')">
+
+          Excel
+
+        </button>
+
+        <button
+          type="button"
+          (click)="exportAs('pdf')">
+
+          PDF
+
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <div class="report-counter">
+
+    {{ filteredData.length }}
+    records found
 
   </div>
 
   @if (loading) {
 
-    <p>Daten werden geladen...</p>
+    <div class="report-loading">
+
+      Loading report...
+
+    </div>
 
   } @else {
 
-    <div class="table-wrapper">
+    <div class="enterprise-table-card">
 
-      <table class="report-table">
+      <table
+        class="enterprise-table">
 
         <thead>
 
           <tr>
 
             <th
+              class="sortable-column"
               (click)="sortBy('inventoryNumber')">
 
-              Inventarnummer
+              Inventory No.
+              {{ getSortIcon('inventoryNumber') }}
 
             </th>
 
             <th
+              class="sortable-column"
               (click)="sortBy('serialNumber')">
 
-              Seriennummer
+              Serial Number
+              {{ getSortIcon('serialNumber') }}
 
             </th>
 
             <th
+              class="sortable-column"
               (click)="sortBy('status')">
 
               Status
+              {{ getSortIcon('status') }}
 
             </th>
 
             <th
+              class="sortable-column"
               (click)="sortBy('location')">
 
-              Standort
+              Location
+              {{ getSortIcon('location') }}
 
             </th>
 
@@ -117,19 +201,27 @@
             <tr>
 
               <td>
+
                 {{ item.inventoryNumber }}
+
               </td>
 
               <td>
+
                 {{ item.serialNumber }}
+
               </td>
 
               <td>
+
                 {{ item.status }}
+
               </td>
 
               <td>
+
                 {{ item.location }}
+
               </td>
 
             </tr>
@@ -139,6 +231,16 @@
         </tbody>
 
       </table>
+
+      <div
+        *ngIf="
+          filteredData.length === 0
+        "
+        class="report-empty">
+
+        No records found
+
+      </div>
 
     </div>
 

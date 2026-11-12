@@ -2,16 +2,20 @@ import {
   Component,
   OnInit,
   inject,
-  ChangeDetectorRef,
-  afterNextRender
+  ChangeDetectorRef
 } from '@angular/core';
 
-import { CommonModule } from '@angular/common';
+import { CommonModule }
+from '@angular/common';
 
-import { FormsModule } from '@angular/forms';
+import { FormsModule }
+from '@angular/forms';
 
 import { AssetReportService }
 from '../services/asset-report.service';
+
+import { ExportService }
+from '../../../../shared/services/export.service';
 
 import { ExpiringLicenseResponse }
 from '../models/expiring-license-response.model';
@@ -23,8 +27,11 @@ from '../models/expiring-license-response.model';
     CommonModule,
     FormsModule
   ],
-  templateUrl: './expiring-licenses.component.html',
-  styleUrls: ['./expiring-licenses.component.css']
+  templateUrl:
+    './expiring-licenses.component.html',
+  styleUrls: [
+    './expiring-licenses.component.css'
+  ]
 })
 export class ExpiringLicensesComponent
 implements OnInit {
@@ -35,14 +42,8 @@ implements OnInit {
   private readonly reportService =
     inject(AssetReportService);
 
-  constructor() {
-
-    afterNextRender(() => {
-
-      this.cdr.detectChanges();
-
-    });
-  }
+  private readonly exportService =
+    inject(ExportService);
 
   reportData:
     ExpiringLicenseResponse[] = [];
@@ -51,8 +52,9 @@ implements OnInit {
 
   searchTerm = '';
 
-  readonly generatedAt =
-    new Date();
+  exportMenuOpen = false;
+
+  selectedExportFormat = '';
 
   sortColumn:
     keyof ExpiringLicenseResponse =
@@ -60,8 +62,40 @@ implements OnInit {
 
   sortDirection:
     'asc'
-    | 'desc' =
-      'asc';
+    | 'desc'
+    = 'asc';
+
+  ngOnInit(): void {
+
+    this.loadReport();
+  }
+
+  private loadReport(): void {
+
+    this.loading = true;
+
+    this.reportService
+      .getExpiringLicensesReport()
+      .subscribe({
+
+        next: data => {
+
+          this.reportData = data;
+
+          this.loading = false;
+
+          this.cdr.detectChanges();
+        },
+
+        error: () => {
+
+          this.loading = false;
+
+          this.cdr.detectChanges();
+        }
+
+      });
+  }
 
   get totalLicenses(): number {
 
@@ -81,9 +115,11 @@ implements OnInit {
 
     return this.reportData.filter(
       item =>
+
         item.status
           .toUpperCase()
           .includes('EXPIRED')
+
     ).length;
   }
 
@@ -91,32 +127,39 @@ implements OnInit {
 
     return this.reportData.filter(
       item =>
+
         item.status
           .toUpperCase()
           .includes('EXPIR')
+
     ).length;
   }
 
   get filteredData():
     ExpiringLicenseResponse[] {
 
-    if (!this.searchTerm.trim()) {
+    const search =
+      this.searchTerm
+        .trim()
+        .toLowerCase();
+
+    if (!search) {
 
       return this.reportData;
     }
 
-    const term =
-      this.searchTerm.toLowerCase();
-
     return this.reportData.filter(
       item =>
+
         item.softwareName
           .toLowerCase()
-          .includes(term)
+          .includes(search)
+
         ||
+
         item.vendor
           .toLowerCase()
-          .includes(term)
+          .includes(search)
     );
   }
 
@@ -176,31 +219,98 @@ implements OnInit {
     this.sortDirection = 'asc';
   }
 
-  ngOnInit(): void {
+  getSortIcon(
+    column:
+      keyof ExpiringLicenseResponse
+  ): string {
 
-    this.reportService
-      .getExpiringLicensesReport()
-      .subscribe({
+    if (
+      this.sortColumn !== column
+    ) {
 
-        next: (data) => {
+      return '↕';
+    }
 
-          this.reportData = data;
+    return this.sortDirection === 'asc'
+      ? '↑'
+      : '↓';
+  }
 
-          this.loading = false;
+  toggleExportMenu(): void {
 
-          this.cdr.detectChanges();
+    this.exportMenuOpen =
+      !this.exportMenuOpen;
+  }
 
-        },
+  exportAs(
+    format: string
+  ): void {
 
-        error: () => {
+    this.selectedExportFormat =
+      format;
 
-          this.loading = false;
+    this.exportData();
 
-          this.cdr.detectChanges();
+    this.exportMenuOpen = false;
+  }
 
-        }
+  exportData(): void {
 
-      });
+    const exportData =
+      this.sortedData.map(
+        item => ({
+
+          Software:
+            item.softwareName,
+
+          Vendor:
+            item.vendor,
+
+          ExpirationDate:
+            item.expirationDate,
+
+          Status:
+            item.status
+
+        })
+      );
+
+    switch (
+      this.selectedExportFormat
+    ) {
+
+      case 'csv':
+
+        this.exportService
+          .exportToCsv(
+            exportData,
+            'expiring-licenses-report'
+          );
+
+        break;
+
+      case 'excel':
+
+        this.exportService
+          .exportToExcel(
+            exportData,
+            'expiring-licenses-report'
+          );
+
+        break;
+
+      case 'pdf':
+
+        this.exportService
+          .exportToPdf(
+            exportData,
+            'expiring-licenses-report'
+          );
+
+        break;
+    }
+
+    this.selectedExportFormat = '';
   }
 
 }

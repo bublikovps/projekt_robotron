@@ -1,7 +1,8 @@
 import {
   Component,
   OnInit,
-  inject
+  inject,
+  ChangeDetectorRef
 } from '@angular/core';
 
 import {
@@ -14,12 +15,15 @@ import {
 
 import {
   RouterLink,
-  ActivatedRoute
+  ActivatedRoute,
+  Router
 } from '@angular/router';
 
 import {
-  ChangeDetectorRef
-} from '@angular/core';
+  Subject,
+  debounceTime,
+  distinctUntilChanged
+} from 'rxjs';
 
 import { CatalogService }
 from '../services/catalog.service';
@@ -47,8 +51,14 @@ implements OnInit {
   private readonly route =
     inject(ActivatedRoute);
 
+  private readonly router =
+    inject(Router);
+
   private readonly cdr =
-  inject(ChangeDetectorRef);
+    inject(ChangeDetectorRef);
+
+  private readonly searchSubject =
+    new Subject<string>();
 
   categories =
     this.catalogService.categories;
@@ -61,16 +71,28 @@ implements OnInit {
 
   searchTerm = '';
 
+  isLoading = true;
+
   ngOnInit(): void {
 
     this.catalogService
       .loadCategoriesIfNeeded();
 
-    this.route.paramMap
+    this.searchSubject
+      .pipe(
+        debounceTime(300),
+        distinctUntilChanged()
+      )
+      .subscribe(() => {
+
+        this.loadProducts();
+      });
+
+    this.route.queryParamMap
       .subscribe(params => {
 
         const categoryId =
-          params.get('id');
+          params.get('category');
 
         this.selectedCategoryId =
           categoryId
@@ -78,12 +100,12 @@ implements OnInit {
             : null;
 
         this.loadProducts();
-
-        this.cdr.detectChanges();
       });
   }
 
   loadProducts(): void {
+
+    this.isLoading = true;
 
     this.catalogService
       .getProducts(
@@ -96,16 +118,28 @@ implements OnInit {
 
           this.products = data;
 
+          this.isLoading = false;
+
           this.cdr.detectChanges();
         },
 
-        
+        error: () => {
+
+          this.products = [];
+
+          this.isLoading = false;
+
+          this.cdr.detectChanges();
+        }
+
       });
   }
 
   onSearch(): void {
 
-    this.loadProducts();
+    this.searchSubject.next(
+      this.searchTerm
+    );
   }
 
   clearSearch(): void {
@@ -113,5 +147,30 @@ implements OnInit {
     this.searchTerm = '';
 
     this.loadProducts();
+  }
+
+  selectCategory(
+    categoryId: number | null
+  ): void {
+
+    this.router.navigate(
+      ['/catalog'],
+      {
+        queryParams:
+          categoryId
+            ? {
+                category: categoryId
+              }
+            : {}
+      }
+    );
+  }
+
+  trackByProductId(
+    index: number,
+    product: CatalogProductResponse
+  ): number {
+
+    return product.id;
   }
 }

@@ -1,0 +1,40 @@
+.enterprise-breadcrumb {
+
+  display: flex;
+
+  flex-wrap: wrap;
+
+  align-items: center;
+
+  gap: 10px;
+
+  font-size: 14px;
+
+  margin-bottom: 24px;
+}
+
+.breadcrumb-link {
+
+  text-decoration: none;
+
+  color: var(--enterprise-text-muted);
+
+  transition: color .2s ease;
+}
+
+.breadcrumb-link:hover {
+
+  color: var(--primary-color);
+}
+
+.breadcrumb-current {
+
+  color: var(--enterprise-text);
+
+  font-weight: 600;
+}
+
+.breadcrumb-separator {
+
+  color: var(--enterprise-text-muted);
+}

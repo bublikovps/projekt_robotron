@@ -31,6 +31,7 @@ public class ProductMapper {
                 product.getPurchasePrice(),
                 product.getSalePrice(),
                 product.getSupplier(),
+                product.getImageUrl(),
                 product.getLagerbestand(),
                 product.getMinimumStock(),
                 product.isActive(),

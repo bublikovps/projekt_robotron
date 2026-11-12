@@ -1,142 +1,149 @@
 .asset-container {
 
-  padding: 24px 0;
+  padding: 16px 0;
 }
 
-.asset-header {
+.workspace-header {
 
-  text-align: center;
-
-  margin-bottom: 28px;
+  margin-bottom: 20px;
 }
 
-.asset-header h1 {
+.workspace-header h1 {
+
+  margin: 0;
 
   color: var(--primary-color);
-
-  margin-bottom: 10px;
-}
-
-.asset-header p {
-
-  color: var(--text-muted);
 }
 
 .workspace-tabs {
 
   display: flex;
 
-  gap: 12px;
+  gap: 28px;
 
-  flex-wrap: wrap;
+  margin-bottom: 12px;
 
-  margin-bottom: 20px;
+  padding: 0;
 
-  padding: 12px;
-
-  background: var(--bg-card);
-
-  border: 1px solid var(--border-color);
-
-  border-radius: 14px;
+  border-bottom:
+    1px solid var(--border-color);
 }
 
 .workspace-tab {
 
+  position: relative;
+
   border: none;
 
-  padding: 12px 20px;
+  padding: 12px 0;
 
-  border-radius: 10px;
+  background: transparent;
 
   cursor: pointer;
 
   font-weight: 600;
 
-  background: transparent;
+  color: var(--text-muted);
 
-  color: var(--text-main);
-
-  transition: all 0.2s ease;
+  transition: color 0.2s ease;
 }
 
 .workspace-tab:hover {
 
-  background:
-    rgba(15, 23, 42, 0.05);
+  color: var(--primary-color);
 }
 
 .workspace-tab.active {
 
-  background:
-    var(--primary-light);
+  color: var(--primary-color);
+}
 
-  color: white;
+.workspace-tab.active::after {
+
+  content: '';
+
+  position: absolute;
+
+  left: 0;
+
+  right: 0;
+
+  bottom: -1px;
+
+  height: 3px;
+
+  border-radius: 2px;
+
+  background:
+    var(--primary-color);
 }
 
 .module-tabs {
 
   display: flex;
 
-  gap: 10px;
+  gap: 24px;
 
-  flex-wrap: wrap;
+  margin-bottom: 18px;
 
-  margin-bottom: 24px;
+  padding: 0;
 
-  padding: 10px;
-
-  background: white;
-
-  border: 1px solid
-    var(--border-color);
-
-  border-radius: 12px;
+  border-bottom:
+    1px solid var(--border-color);
 }
 
 .module-tab {
 
+  position: relative;
+
   border: none;
 
-  padding: 10px 18px;
+  background: transparent;
 
-  border-radius: 8px;
+  padding: 10px 0;
 
   cursor: pointer;
 
   font-weight: 600;
 
-  background:
-    rgba(15, 23, 42, 0.04);
+  color: var(--text-muted);
 
-  transition: all 0.2s ease;
+  transition: color 0.2s ease;
 }
 
 .module-tab:hover {
 
-  background:
-    rgba(15, 23, 42, 0.08);
+  color: var(--primary-color);
 }
 
 .module-tab.active {
 
-  background:
-    var(--primary-color);
-
-  color: white;
+  color: var(--primary-color);
 }
 
-.module-tab.disabled {
+.module-tab.active::after {
 
-  opacity: 0.5;
+  content: '';
 
-  cursor: not-allowed;
+  position: absolute;
+
+  left: 0;
+
+  right: 0;
+
+  bottom: -1px;
+
+  height: 3px;
+
+  border-radius: 2px;
+
+  background:
+    var(--primary-color);
 }
 
 .workspace-content {
 
-  min-height:
-    calc(100vh - 260px);
+  margin-top: 12px;
 }
 
 @media (max-width: 900px) {
@@ -144,13 +151,11 @@
   .workspace-tabs,
   .module-tabs {
 
-    flex-direction: column;
-  }
+    overflow-x: auto;
 
-  .workspace-tab,
-  .module-tab {
+    white-space: nowrap;
 
-    width: 100%;
+    gap: 18px;
   }
 
 }

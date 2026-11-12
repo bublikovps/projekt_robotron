@@ -1,27 +1,205 @@
-<div class="page-content">
+<div class="enterprise-page">
 
-  <div class="page-header">
+  <div class="report-toolbar">
 
-    <div>
+    <input
+      type="text"
+      class="
+        enterprise-search
+        report-search
+      "
+      placeholder="Search licenses..."
+      [(ngModel)]="searchTerm"
+      (input)="applyFilters()">
 
-      <h1>
-        Software Licenses
-      </h1>
+    <div
+      class="enterprise-toolbar-right">
 
-      <p>
-        Manage software licenses,
-        subscriptions and vendors.
-      </p>
+      <div
+        class="enterprise-dropdown">
+
+        <button
+          type="button"
+          class="enterprise-dropdown-trigger"
+          (click)="toggleVendorMenu()">
+
+          <span
+            class="enterprise-dropdown-label">
+
+            {{
+              selectedVendor ||
+              'All Vendors'
+            }}
+
+          </span>
+
+          <span
+            class="enterprise-dropdown-arrow">
+
+            ▼
+
+          </span>
+
+        </button>
+
+        <div
+          *ngIf="vendorMenuOpen"
+          class="enterprise-dropdown-menu">
+
+          <button
+            type="button"
+            (click)="clearVendorFilter()">
+
+            All Vendors
+
+          </button>
+
+          <button
+            *ngFor="
+              let vendor
+              of vendors
+            "
+            type="button"
+            (click)="selectVendor(vendor)">
+
+            {{ vendor }}
+
+          </button>
+
+        </div>
+
+      </div>
+
+      <div
+        class="enterprise-dropdown">
+
+        <button
+          type="button"
+          class="enterprise-dropdown-trigger"
+          (click)="toggleTypeMenu()">
+
+          <span
+            class="enterprise-dropdown-label">
+
+            {{
+              selectedLicenseType ||
+              'All Types'
+            }}
+
+          </span>
+
+          <span
+            class="enterprise-dropdown-arrow">
+
+            ▼
+
+          </span>
+
+        </button>
+
+        <div
+          *ngIf="typeMenuOpen"
+          class="enterprise-dropdown-menu">
+
+          <button
+            type="button"
+            (click)="clearTypeFilter()">
+
+            All Types
+
+          </button>
+
+          <button
+            *ngFor="
+              let type
+              of licenseTypes
+            "
+            type="button"
+            (click)="selectLicenseType(type)">
+
+            {{ type }}
+
+          </button>
+
+        </div>
+
+      </div>
+
+      <div
+        class="enterprise-dropdown">
+
+        <button
+          type="button"
+          class="enterprise-dropdown-trigger"
+          (click)="toggleExportMenu()">
+
+          <span
+            class="enterprise-dropdown-label">
+
+            Export
+
+          </span>
+
+          <span
+            class="enterprise-dropdown-arrow">
+
+            ▼
+
+          </span>
+
+        </button>
+
+        <div
+          *ngIf="exportMenuOpen"
+          class="enterprise-dropdown-menu">
+
+          <button
+            type="button"
+            (click)="exportAs('csv')">
+
+            CSV
+
+          </button>
+
+          <button
+            type="button"
+            (click)="exportAs('excel')">
+
+            Excel
+
+          </button>
+
+          <button
+            type="button"
+            (click)="exportAs('pdf')">
+
+            PDF
+
+          </button>
+
+        </div>
+
+      </div>
+
+      <button
+        class="
+          enterprise-btn
+          enterprise-btn-primary
+        "
+        (click)="openCreateDialog()">
+
+        + License
+
+      </button>
 
     </div>
 
-    <button
-      class="primary-button"
-      (click)="openCreateDialog()">
+  </div>
 
-      + New License
+  <div class="table-info">
 
-    </button>
+    {{ filteredLicenses.length }}
+    licenses found
 
   </div>
 
@@ -41,68 +219,104 @@
 
   </div>
 
-  <div class="toolbar">
-
-    <input
-      class="search-input"
-      type="text"
-      placeholder="Search software, vendor or license..."
-      [(ngModel)]="searchTerm">
-
-  </div>
-
   @if (loading) {
 
-    <div class="loading-panel">
+    <div class="empty-state">
 
-      Loading licenses...
+      <div>
+
+        <h3>
+
+          Loading licenses...
+
+        </h3>
+
+      </div>
 
     </div>
 
   } @else {
 
-    <div class="table-wrapper">
+    <div
+      class="enterprise-table-card">
 
-      <table class="data-table">
+      <table
+        class="enterprise-table">
 
         <thead>
 
         <tr>
 
-          <th (click)="sortBy('licenseNumber')">
+          <th
+            class="sortable-column"
+            (click)="sortBy('licenseNumber')">
+
             License No.
+            {{ getSortIcon('licenseNumber') }}
+
           </th>
 
-          <th (click)="sortBy('softwareName')">
+          <th
+            class="sortable-column"
+            (click)="sortBy('softwareName')">
+
             Software
+            {{ getSortIcon('softwareName') }}
+
           </th>
 
-          <th (click)="sortBy('vendor')">
+          <th
+            class="sortable-column"
+            (click)="sortBy('vendor')">
+
             Vendor
+            {{ getSortIcon('vendor') }}
+
           </th>
 
-          <th (click)="sortBy('licenseType')">
+          <th
+            class="sortable-column"
+            (click)="sortBy('licenseType')">
+
             Type
+            {{ getSortIcon('licenseType') }}
+
           </th>
 
           <th>
+
             Usage
+
           </th>
 
           <th>
+
             Available
+
           </th>
 
-          <th (click)="sortBy('expirationDate')">
+          <th
+            class="sortable-column"
+            (click)="sortBy('expirationDate')">
+
             Expires
+            {{ getSortIcon('expirationDate') }}
+
           </th>
 
-          <th (click)="sortBy('status')">
+          <th
+            class="sortable-column"
+            (click)="sortBy('status')">
+
             Status
+            {{ getSortIcon('status') }}
+
           </th>
 
           <th>
+
             Actions
+
           </th>
 
         </tr>
@@ -119,30 +333,43 @@
           <tr>
 
             <td>
+
               {{ item.licenseNumber }}
+
             </td>
 
             <td>
+
               <strong>
+
                 {{ item.softwareName }}
+
               </strong>
+
             </td>
 
             <td>
+
               {{ item.vendor }}
+
             </td>
 
             <td>
+
               {{ item.licenseType }}
+
             </td>
 
             <td>
 
-              <div class="usage-wrapper">
+              <div
+                class="usage-wrapper">
 
                 <div
                   class="usage-bar"
-                  [style.width.%]="getUsagePercent(item)">
+                  [style.width.%]="
+                    getUsagePercent(item)
+                  ">
                 </div>
 
                 <span>
@@ -158,7 +385,9 @@
             </td>
 
             <td>
+
               {{ item.availableQuantity }}
+
             </td>
 
             <td>
@@ -183,15 +412,14 @@
             <td>
 
               <span
-                class="status-badge"
+                class="enterprise-badge"
                 [ngClass]="{
-
-                  'status-active':
+                  'enterprise-badge-success':
                     item.status === 'ACTIVE',
-
-                  'status-expired':
+                  'enterprise-badge-warning':
+                    item.status === 'EXPIRING',
+                  'enterprise-badge-danger':
                     item.status === 'EXPIRED'
-
                 }">
 
                 {{ item.status }}
@@ -200,15 +428,42 @@
 
             </td>
 
-            <td>
+            <td
+              class="actions-cell">
 
-              <button
-                class="btn-edit"
-                (click)="editLicense(item)">
+              <div
+                class="enterprise-actions">
 
-                Edit
+                <button
+                  class="
+                    enterprise-btn
+                    enterprise-btn-secondary
+                    enterprise-actions-button
+                  "
+                  (click)="toggleMenu(item.id)">
 
-              </button>
+                  ⋮
+
+                </button>
+
+                <div
+                  *ngIf="
+                    openMenuId === item.id
+                  "
+                  class="
+                    enterprise-actions-menu
+                  ">
+
+                  <button
+                    (click)="editLicense(item)">
+
+                    Edit
+
+                  </button>
+
+                </div>
+
+              </div>
 
             </td>
 
@@ -220,96 +475,145 @@
 
       </table>
 
-    </div>
+      <div
+        *ngIf="
+          filteredLicenses.length === 0
+        "
+        class="empty-state">
 
-  }
+        <div>
 
-  @if (showDialog) {
+          <h3>
 
-    <div class="dialog-backdrop">
+            No licenses found
 
-      <div class="dialog-window">
+          </h3>
 
-        <h2>
+          <p>
 
-          {{ isEditMode
-            ? 'Edit License'
-            : 'New License' }}
+            Try changing the search or filter criteria.
 
-        </h2>
+          </p>
 
-        <form
-          (ngSubmit)="saveLicense()">
-
-          <input
-            type="text"
-            placeholder="License Number"
-            [(ngModel)]="licenseForm.licenseNumber"
-            name="licenseNumber">
-
-          <input
-            type="text"
-            placeholder="Software Name"
-            [(ngModel)]="licenseForm.softwareName"
-            name="softwareName">
-
-          <input
-            type="text"
-            placeholder="Vendor"
-            [(ngModel)]="licenseForm.vendor"
-            name="vendor">
-
-          <input
-            type="text"
-            placeholder="License Key"
-            [(ngModel)]="licenseForm.licenseKey"
-            name="licenseKey">
-
-          <input
-            type="text"
-            placeholder="License Type"
-            [(ngModel)]="licenseForm.licenseType"
-            name="licenseType">
-
-          <input
-            type="number"
-            [(ngModel)]="licenseForm.quantity"
-            name="quantity">
-
-          <textarea
-            rows="4"
-            [(ngModel)]="licenseForm.notes"
-            name="notes"
-            placeholder="Notes">
-          </textarea>
-
-          <div class="dialog-actions">
-
-            <button
-              type="submit"
-              class="primary-button">
-
-              Save
-
-            </button>
-
-            <button
-              type="button"
-              class="secondary-button"
-              (click)="closeDialog()">
-
-              Cancel
-
-            </button>
-
-          </div>
-
-        </form>
+        </div>
 
       </div>
 
     </div>
 
   }
+
+  <div
+    *ngIf="showDialog"
+    class="enterprise-dialog-overlay">
+
+    <div
+      class="enterprise-dialog">
+
+      <h2>
+
+        {{
+          isEditMode
+            ? 'Edit License'
+            : 'New License'
+        }}
+
+      </h2>
+
+      <form
+        class="enterprise-form-grid"
+        (ngSubmit)="saveLicense()">
+
+        <input
+          type="text"
+          placeholder="License Number"
+          [(ngModel)]="licenseForm.licenseNumber"
+          name="licenseNumber">
+
+        <input
+          type="text"
+          placeholder="Software Name"
+          [(ngModel)]="licenseForm.softwareName"
+          name="softwareName">
+
+        <input
+          type="text"
+          placeholder="Vendor"
+          [(ngModel)]="licenseForm.vendor"
+          name="vendor">
+
+        <input
+          type="text"
+          placeholder="License Key"
+          [(ngModel)]="licenseForm.licenseKey"
+          name="licenseKey">
+
+        <input
+          type="text"
+          placeholder="License Type"
+          [(ngModel)]="licenseForm.licenseType"
+          name="licenseType">
+
+        <input
+          type="number"
+          placeholder="Quantity"
+          [(ngModel)]="licenseForm.quantity"
+          name="quantity">
+
+        <input
+          type="date"
+          [(ngModel)]="licenseForm.purchaseDate"
+          name="purchaseDate">
+
+        <input
+          type="date"
+          [(ngModel)]="licenseForm.expirationDate"
+          name="expirationDate">
+
+        <textarea
+          rows="4"
+          placeholder="Notes"
+          [(ngModel)]="licenseForm.notes"
+          name="notes">
+        </textarea>
+
+      </form>
+
+      <div
+        class="enterprise-dialog-footer">
+
+        <button
+          type="button"
+          class="
+            enterprise-btn
+            enterprise-btn-secondary
+          "
+          (click)="closeDialog()">
+
+          Cancel
+
+        </button>
+
+        <button
+          type="submit"
+          class="
+            enterprise-btn
+            enterprise-btn-primary
+          "
+          (click)="saveLicense()">
+
+          {{
+            isEditMode
+              ? 'Save'
+              : 'Create'
+          }}
+
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
 
 </div>

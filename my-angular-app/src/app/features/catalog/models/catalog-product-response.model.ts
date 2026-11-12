@@ -13,4 +13,9 @@ export interface CatalogProductResponse {
   price: number;
 
   categoryName: string;
+
+  imageUrl: string;
+
+  lagerbestand: number;
+
 }

@@ -35,6 +35,8 @@ public class ProductCreateRequest {
 
     private String supplier;
 
+    private String imageUrl;
+
     @PositiveOrZero(message = "Lagerbestand darf nicht negativ sein.")
     private int lagerbestand;
 
@@ -111,6 +113,13 @@ public class ProductCreateRequest {
 
     public void setSupplier(String supplier) {
         this.supplier = supplier;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 
     public int getLagerbestand() {

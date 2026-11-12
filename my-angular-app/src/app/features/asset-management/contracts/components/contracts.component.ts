@@ -1,6 +1,7 @@
 import {
   Component,
-  OnInit
+  OnInit,
+  ChangeDetectorRef
 } from '@angular/core';
 
 import { CommonModule }
@@ -14,6 +15,9 @@ from '../../employees/services/employee.service';
 
 import { EmployeeResponse }
 from '../../employees/models/employee-response.model';
+
+import { ExportService }
+from '../../../../shared/services/export.service';
 
 import { EmploymentContractService }
 from '../services/employment-contract.service';
@@ -37,11 +41,30 @@ from '../models/employment-contract-create-request.model';
 export class ContractsComponent
 implements OnInit {
 
-  contracts:
+  allContracts:
+    EmploymentContractResponse[] = [];
+
+  filteredContracts:
     EmploymentContractResponse[] = [];
 
   employees:
     EmployeeResponse[] = [];
+
+  searchTerm = '';
+
+  selectedExportFormat = '';
+
+  exportMenuOpen = false;
+
+  sortColumn = 'contractNumber';
+
+  sortDirection:
+    'asc'
+    | 'desc'
+    = 'asc';
+
+  openMenuId:
+    number | null = null;
 
   successMessage = '';
 
@@ -55,11 +78,17 @@ implements OnInit {
     number | null = null;
 
   contractTypes = [
+
     'UNBEFRISTET',
+
     'BEFRISTET',
+
     'WERKSTUDENT',
+
     'PRAKTIKANT',
+
     'MINIJOB'
+
   ];
 
   contractForm:
@@ -82,11 +111,19 @@ implements OnInit {
   };
 
   constructor(
+
     private contractService:
       EmploymentContractService,
 
     private employeeService:
-      EmployeeService
+      EmployeeService,
+
+    private exportService:
+      ExportService,
+
+    private cdr:
+      ChangeDetectorRef
+
   ) {}
 
   ngOnInit(): void {
@@ -104,7 +141,11 @@ implements OnInit {
 
         next: (data) => {
 
-          this.contracts = data;
+          this.allContracts = data;
+
+          this.filteredContracts = data;
+
+          this.cdr.detectChanges();
         },
 
         error: () => {
@@ -125,9 +166,271 @@ implements OnInit {
         next: (data) => {
 
           this.employees = data;
+
+          this.cdr.detectChanges();
         }
 
       });
+  }
+
+  applyFilters(): void {
+
+    const search =
+      this.searchTerm
+        .trim()
+        .toLowerCase();
+
+    if (!search) {
+
+      this.filteredContracts =
+        [...this.allContracts];
+
+      return;
+    }
+
+    this.filteredContracts =
+      this.allContracts.filter(
+        contract =>
+
+          contract.contractNumber
+            .toLowerCase()
+            .includes(search)
+
+          ||
+
+          contract.employeeName
+            .toLowerCase()
+            .includes(search)
+
+          ||
+
+          contract.contractType
+            .toLowerCase()
+            .includes(search)
+      );
+  }
+
+  sortBy(
+    column: string
+  ): void {
+
+    if (
+      this.sortColumn === column
+    ) {
+
+      this.sortDirection =
+        this.sortDirection === 'asc'
+          ? 'desc'
+          : 'asc';
+
+      return;
+    }
+
+    this.sortColumn = column;
+
+    this.sortDirection = 'asc';
+  }
+
+  getSortIcon(
+    column: string
+  ): string {
+
+    if (
+      this.sortColumn !== column
+    ) {
+
+      return '↕';
+    }
+
+    return this.sortDirection === 'asc'
+      ? '↑'
+      : '↓';
+  }
+
+  get sortedContracts():
+    EmploymentContractResponse[] {
+
+    const data =
+      [...this.filteredContracts];
+
+    data.sort((a, b) => {
+
+      let valueA = '';
+
+      let valueB = '';
+
+      switch (
+        this.sortColumn
+      ) {
+
+        case 'contractNumber':
+
+          valueA =
+            a.contractNumber;
+
+          valueB =
+            b.contractNumber;
+
+          break;
+
+        case 'employeeName':
+
+          valueA =
+            a.employeeName;
+
+          valueB =
+            b.employeeName;
+
+          break;
+
+        case 'contractType':
+
+          valueA =
+            a.contractType;
+
+          valueB =
+            b.contractType;
+
+          break;
+
+        case 'weeklyHours':
+
+          valueA =
+            String(a.weeklyHours);
+
+          valueB =
+            String(b.weeklyHours);
+
+          break;
+
+        case 'salary':
+
+          valueA =
+            String(a.salary);
+
+          valueB =
+            String(b.salary);
+
+          break;
+      }
+
+      const result =
+        valueA.localeCompare(
+          valueB
+        );
+
+      return this.sortDirection === 'asc'
+        ? result
+        : -result;
+    });
+
+    return data;
+  }
+
+  exportData(): void {
+
+    const exportData =
+      this.sortedContracts.map(
+        contract => ({
+
+          ContractNumber:
+            contract.contractNumber,
+
+          Employee:
+            contract.employeeName,
+
+          ContractType:
+            contract.contractType,
+
+          WeeklyHours:
+            contract.weeklyHours,
+
+          Salary:
+            contract.salary,
+
+          StartDate:
+            contract.startDate,
+
+          EndDate:
+            contract.endDate ?? '',
+
+          Active:
+            contract.active
+              ? 'Yes'
+              : 'No'
+
+        })
+      );
+
+    switch (
+      this.selectedExportFormat
+    ) {
+
+      case 'csv':
+
+        this.exportService
+          .exportToCsv(
+            exportData,
+            'contracts'
+          );
+
+        break;
+
+      case 'excel':
+
+        this.exportService
+          .exportToExcel(
+            exportData,
+            'contracts'
+          );
+
+        break;
+
+      case 'pdf':
+
+        this.exportService
+          .exportToPdf(
+            exportData,
+            'contracts'
+          );
+
+        break;
+    }
+
+    this.selectedExportFormat = '';
+  }
+
+  toggleExportMenu(): void {
+
+  this.exportMenuOpen =
+    !this.exportMenuOpen;
+}
+
+exportAs(
+  format: string
+): void {
+
+  this.selectedExportFormat =
+    format;
+
+  this.exportData();
+
+  this.exportMenuOpen = false;
+}
+
+  toggleMenu(
+    contractId: number
+  ): void {
+
+    this.openMenuId =
+      this.openMenuId === contractId
+        ? null
+        : contractId;
+  }
+
+  closeMenu(): void {
+
+    this.openMenuId = null;
   }
 
   openCreateDialog(): void {
@@ -143,10 +446,12 @@ implements OnInit {
 
   closeDialog(): void {
 
-    this.showDialog = false;
+  this.showDialog = false;
 
-    this.cancelEdit();
-  }
+  this.exportMenuOpen = false;
+
+  this.cancelEdit();
+}
 
   saveContract(): void {
 
@@ -252,12 +557,16 @@ implements OnInit {
     };
 
     this.showDialog = true;
+
+    this.closeMenu();
   }
 
   archiveContract(
     contract:
       EmploymentContractResponse
   ): void {
+
+    this.closeMenu();
 
     if (
       !confirm(

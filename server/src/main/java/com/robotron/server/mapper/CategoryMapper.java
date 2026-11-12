@@ -14,7 +14,8 @@ public class CategoryMapper {
         return new CategoryResponse(
                 category.getId(),
                 category.getName(),
-                category.isActive()
+                category.isActive(),
+                0L
         );
     }
 }

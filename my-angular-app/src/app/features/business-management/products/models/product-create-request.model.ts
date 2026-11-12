@@ -10,6 +10,14 @@ export interface ProductCreateRequest {
 
   price: number;
 
+  purchasePrice: number;
+
+  salePrice: number;
+
+  supplier: string;
+
+  imageUrl: string;
+
   lagerbestand: number;
 
   minimumStock: number;

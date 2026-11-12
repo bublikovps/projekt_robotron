@@ -1,11 +1,16 @@
 import {
   Component,
-  OnInit
+  OnInit,
+  ChangeDetectorRef
 } from '@angular/core';
 
-import { CommonModule } from '@angular/common';
+import {
+  CommonModule
+} from '@angular/common';
 
-import { FormsModule } from '@angular/forms';
+import {
+  FormsModule
+} from '@angular/forms';
 
 import { ProductService }
 from '../services/product.service';
@@ -36,43 +41,82 @@ from '../../categories/models/category-response.model';
   styleUrls: ['./products.component.css']
 })
 export class ProductsComponent
-  implements OnInit {
+implements OnInit {
 
   products: ProductResponse[] = [];
 
-  categories: CategoryResponse[] = [];
+  filteredProducts:
+    ProductResponse[] = [];
+
+  categories:
+    CategoryResponse[] = [];
+
+  searchTerm = '';
+
+  selectedCategoryId:
+    number | null = null;
+
+  statusFilter:
+    'active'
+    | 'archived'
+    | 'all'
+    = 'active';
 
   successMessage = '';
 
   errorMessage = '';
 
+  showDialog = false;
+
   isEditMode = false;
 
-  editingProductId: number | null = null;
+  editingProductId:
+    number | null = null;
 
-  productForm: ProductCreateRequest = {
+  exportMenuOpen = false;
 
-    sku: '',
+  categoryMenuOpen = false;
 
-    name: '',
+  selectedImportFile:
+    File | null = null;
 
-    manufacturer: '',
+  productForm:
+    ProductCreateRequest = {
 
-    description: '',
+      sku: '',
 
-    price: 0,
+      name: '',
 
-    lagerbestand: 0,
+      manufacturer: '',
 
-    minimumStock: 0,
+      description: '',
 
-    categoryId: 0
+      price: 0,
 
-  };
+      purchasePrice: 0,
+
+      salePrice: 0,
+
+      supplier: '',
+
+      imageUrl: '',
+
+      lagerbestand: 0,
+
+      minimumStock: 0,
+
+      categoryId: 0
+    };
 
   constructor(
-    private productService: ProductService,
-    private categoryService: CategoryService
+    private productService:
+      ProductService,
+
+    private categoryService:
+      CategoryService,
+
+    private cdr:
+      ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
@@ -80,19 +124,21 @@ export class ProductsComponent
     this.loadProducts();
 
     this.loadCategories();
-
   }
 
   loadProducts(): void {
 
     this.productService
-      .getAllProducts()
+      .getAllProductsForManagement()
       .subscribe({
 
         next: data => {
 
           this.products = data;
 
+          this.applyFilters();
+
+          this.cdr.detectChanges();
         },
 
         error: () => {
@@ -100,10 +146,10 @@ export class ProductsComponent
           this.errorMessage =
             'Fehler beim Laden der Produkte.';
 
+          this.cdr.detectChanges();
         }
 
       });
-
   }
 
   loadCategories(): void {
@@ -114,18 +160,122 @@ export class ProductsComponent
 
         next: data => {
 
-          this.categories = data;
-
+          this.categories =
+            data.filter(
+              category =>
+                category.active
+            );
         }
 
       });
+  }
 
+  applyFilters(): void {
+
+    const search =
+      this.searchTerm
+        .toLowerCase()
+        .trim();
+
+    this.filteredProducts =
+      this.products.filter(product => {
+
+        const matchesSearch =
+
+          product.name
+            .toLowerCase()
+            .includes(search)
+
+          ||
+
+          product.sku
+            .toLowerCase()
+            .includes(search)
+
+          ||
+
+          product.manufacturer
+            .toLowerCase()
+            .includes(search);
+
+        const matchesCategory =
+
+          this.selectedCategoryId === null
+
+          ||
+
+          product.categoryId ===
+          this.selectedCategoryId;
+
+        const matchesStatus =
+
+          this.statusFilter === 'all'
+
+          ||
+
+          (
+            this.statusFilter === 'active'
+            &&
+            product.active
+          )
+
+          ||
+
+          (
+            this.statusFilter === 'archived'
+            &&
+            !product.active
+          );
+
+        return (
+          matchesSearch
+          &&
+          matchesCategory
+          &&
+          matchesStatus
+        );
+      });
+  }
+
+  setStatusFilter(
+    filter:
+      'active'
+      | 'archived'
+      | 'all'
+  ): void {
+
+    this.statusFilter =
+      filter;
+
+    this.applyFilters();
+  }
+
+  toggleCategoryMenu(): void {
+
+    this.categoryMenuOpen =
+      !this.categoryMenuOpen;
+  }
+
+  openCreateDialog(): void {
+
+    this.resetForm();
+
+    this.isEditMode = false;
+
+    this.editingProductId =
+      null;
+
+    this.showDialog = true;
+  }
+
+  closeDialog(): void {
+
+    this.showDialog = false;
+
+    this.cancelEdit();
   }
 
   saveProduct(): void {
-
-    this.successMessage = '';
-    this.errorMessage = '';
 
     if (
       this.isEditMode &&
@@ -135,28 +285,39 @@ export class ProductsComponent
       const updateRequest:
         ProductUpdateRequest = {
 
-        name:
-          this.productForm.name,
+          name:
+            this.productForm.name,
 
-        manufacturer:
-          this.productForm.manufacturer,
+          manufacturer:
+            this.productForm.manufacturer,
 
-        description:
-          this.productForm.description,
+          description:
+            this.productForm.description,
 
-        price:
-          this.productForm.price,
+          price:
+            this.productForm.price,
 
-        lagerbestand:
-          this.productForm.lagerbestand,
+          purchasePrice:
+            this.productForm.purchasePrice,
 
-        minimumStock:
-          this.productForm.minimumStock,
+          salePrice:
+            this.productForm.salePrice,
 
-        categoryId:
-          this.productForm.categoryId
+          supplier:
+            this.productForm.supplier,
 
-      };
+          imageUrl:
+            this.productForm.imageUrl,
+
+          lagerbestand:
+            this.productForm.lagerbestand,
+
+          minimumStock:
+            this.productForm.minimumStock,
+
+          categoryId:
+            this.productForm.categoryId
+        };
 
       this.productService
         .updateProduct(
@@ -167,38 +328,30 @@ export class ProductsComponent
 
           next: () => {
 
-            this.successMessage =
-              'Produkt aktualisiert.';
-
-            this.cancelEdit();
+            this.closeDialog();
 
             this.loadProducts();
-
           }
 
         });
 
       return;
-
     }
 
     this.productService
-      .createProduct(this.productForm)
+      .createProduct(
+        this.productForm
+      )
       .subscribe({
 
         next: () => {
 
-          this.successMessage =
-            'Produkt erstellt.';
-
-          this.resetForm();
+          this.closeDialog();
 
           this.loadProducts();
-
         }
 
       });
-
   }
 
   editProduct(
@@ -227,6 +380,18 @@ export class ProductsComponent
       price:
         product.price,
 
+      purchasePrice:
+        product.purchasePrice,
+
+      salePrice:
+        product.salePrice,
+
+      supplier:
+        product.supplier,
+
+      imageUrl:
+        product.imageUrl,
+
       lagerbestand:
         product.lagerbestand,
 
@@ -235,48 +400,137 @@ export class ProductsComponent
 
       categoryId:
         product.categoryId
-
     };
 
+    this.showDialog = true;
   }
 
   archiveProduct(
     product: ProductResponse
   ): void {
 
-    if (
-      !confirm(
-        `Produkt "${product.name}" archivieren?`
-      )
-    ) {
-      return;
-    }
-
     this.productService
-      .archiveProduct(product.id)
+      .archiveProduct(
+        product.id
+      )
       .subscribe({
 
-        next: (res) => {
-
-          this.successMessage =
-            res.message;
+        next: () => {
 
           this.loadProducts();
-
         }
 
       });
-
   }
+
+  restoreProduct(
+    product: ProductResponse
+  ): void {
+
+    this.productService
+      .restoreProduct(
+        product.id
+      )
+      .subscribe({
+
+        next: () => {
+
+          this.loadProducts();
+        }
+
+      });
+  }
+
+  openCatalogView(
+    product: ProductResponse
+  ): void {
+
+    window.open(
+      `/catalog/products/${product.id}`,
+      '_blank'
+    );
+  }
+
+  toggleExportMenu(): void {
+
+    this.exportMenuOpen =
+      !this.exportMenuOpen;
+  }
+
+  exportAs(
+    format:
+      'csv'
+      | 'excel'
+      | 'pdf'
+  ): void {
+
+    this.exportMenuOpen = false;
+
+    alert(
+      `${format.toUpperCase()} export coming soon`
+    );
+  }
+
+  importProducts(): void {
+
+    document
+      .getElementById(
+        'product-import-file'
+      )
+      ?.click();
+  }
+
+  onImportFileSelected(
+  event: Event
+): void {
+
+  const target =
+    event.target as HTMLInputElement;
+
+  if (
+    !target.files ||
+    target.files.length === 0
+  ) {
+    return;
+  }
+
+  const file =
+    target.files[0];
+
+  this.productService
+    .importProducts(file)
+    .subscribe({
+
+      next: response => {
+
+        this.successMessage =
+          response.message;
+
+        this.loadProducts();
+
+        target.value = '';
+      },
+
+      error: error => {
+
+        this.errorMessage =
+          error.error?.message
+          || 'Import fehlgeschlagen';
+
+        target.value = '';
+      }
+
+    });
+}
 
   cancelEdit(): void {
 
     this.isEditMode = false;
 
-    this.editingProductId = null;
+    this.editingProductId =
+      null;
 
     this.resetForm();
-
   }
 
   private resetForm(): void {
@@ -293,14 +547,20 @@ export class ProductsComponent
 
       price: 0,
 
+      purchasePrice: 0,
+
+      salePrice: 0,
+
+      supplier: '',
+
+      imageUrl: '',
+
       lagerbestand: 0,
 
       minimumStock: 0,
 
       categoryId: 0
-
     };
-
   }
 
 }

@@ -2,16 +2,20 @@ import {
   Component,
   OnInit,
   inject,
-  ChangeDetectorRef,
-  afterNextRender
+  ChangeDetectorRef
 } from '@angular/core';
 
-import { CommonModule } from '@angular/common';
+import { CommonModule }
+from '@angular/common';
 
-import { FormsModule } from '@angular/forms';
+import { FormsModule }
+from '@angular/forms';
 
 import { AssetReportService }
 from '../services/asset-report.service';
+
+import { ExportService }
+from '../../../../shared/services/export.service';
 
 import { DepartmentAssetValueResponse }
 from '../models/department-asset-value-response.model';
@@ -25,8 +29,9 @@ from '../models/department-asset-value-response.model';
   ],
   templateUrl:
     './department-assets.component.html',
-  styleUrls:
-    ['./department-assets.component.css']
+  styleUrls: [
+    './department-assets.component.css'
+  ]
 })
 export class DepartmentAssetsComponent
 implements OnInit {
@@ -37,14 +42,8 @@ implements OnInit {
   private readonly reportService =
     inject(AssetReportService);
 
-  constructor() {
-
-    afterNextRender(() => {
-
-      this.cdr.detectChanges();
-
-    });
-  }
+  private readonly exportService =
+    inject(ExportService);
 
   reportData:
     DepartmentAssetValueResponse[] = [];
@@ -53,8 +52,9 @@ implements OnInit {
 
   searchTerm = '';
 
-  readonly generatedAt =
-    new Date();
+  exportMenuOpen = false;
+
+  selectedExportFormat = '';
 
   sortColumn:
     keyof DepartmentAssetValueResponse =
@@ -62,8 +62,40 @@ implements OnInit {
 
   sortDirection:
     'asc'
-    | 'desc' =
-      'desc';
+    | 'desc'
+    = 'desc';
+
+  ngOnInit(): void {
+
+    this.loadReport();
+  }
+
+  private loadReport(): void {
+
+    this.loading = true;
+
+    this.reportService
+      .getDepartmentAssetValueReport()
+      .subscribe({
+
+        next: data => {
+
+          this.reportData = data;
+
+          this.loading = false;
+
+          this.cdr.detectChanges();
+        },
+
+        error: () => {
+
+          this.loading = false;
+
+          this.cdr.detectChanges();
+        }
+
+      });
+  }
 
   get totalDepartments(): number {
 
@@ -91,7 +123,9 @@ implements OnInit {
   get topDepartment():
     DepartmentAssetValueResponse | null {
 
-    if (!this.reportData.length) {
+    if (
+      !this.reportData.length
+    ) {
 
       return null;
     }
@@ -107,19 +141,22 @@ implements OnInit {
   get filteredData():
     DepartmentAssetValueResponse[] {
 
-    if (!this.searchTerm.trim()) {
+    const search =
+      this.searchTerm
+        .trim()
+        .toLowerCase();
+
+    if (!search) {
 
       return this.reportData;
     }
 
-    const term =
-      this.searchTerm.toLowerCase();
-
     return this.reportData.filter(
       item =>
+
         item.departmentName
           .toLowerCase()
-          .includes(term)
+          .includes(search)
     );
   }
 
@@ -138,12 +175,14 @@ implements OnInit {
         b[this.sortColumn];
 
       if (valueA < valueB) {
+
         return this.sortDirection === 'asc'
           ? -1
           : 1;
       }
 
       if (valueA > valueB) {
+
         return this.sortDirection === 'asc'
           ? 1
           : -1;
@@ -172,38 +211,100 @@ implements OnInit {
       return;
     }
 
-    this.sortColumn =
-      column;
+    this.sortColumn = column;
 
-    this.sortDirection =
-      'asc';
+    this.sortDirection = 'asc';
   }
 
-  ngOnInit(): void {
+  getSortIcon(
+    column:
+      keyof DepartmentAssetValueResponse
+  ): string {
 
-    this.reportService
-      .getDepartmentAssetValueReport()
-      .subscribe({
+    if (
+      this.sortColumn !== column
+    ) {
 
-        next: (data) => {
+      return '↕';
+    }
 
-          this.reportData =
-            data;
-
-          this.loading =
-            false;
-
-          this.cdr.detectChanges();
-
-        },
-
-        error: () => {
-
-          this.loading =
-            false;
-
-        }
-
-      });
+    return this.sortDirection === 'asc'
+      ? '↑'
+      : '↓';
   }
+
+  toggleExportMenu(): void {
+
+    this.exportMenuOpen =
+      !this.exportMenuOpen;
+  }
+
+  exportAs(
+    format: string
+  ): void {
+
+    this.selectedExportFormat =
+      format;
+
+    this.exportData();
+
+    this.exportMenuOpen = false;
+  }
+
+  exportData(): void {
+
+    const exportData =
+      this.sortedData.map(
+        item => ({
+
+          Department:
+            item.departmentName,
+
+          Devices:
+            item.deviceCount,
+
+          AssetValue:
+            item.totalAssetValue
+
+        })
+      );
+
+    switch (
+      this.selectedExportFormat
+    ) {
+
+      case 'csv':
+
+        this.exportService
+          .exportToCsv(
+            exportData,
+            'department-assets-report'
+          );
+
+        break;
+
+      case 'excel':
+
+        this.exportService
+          .exportToExcel(
+            exportData,
+            'department-assets-report'
+          );
+
+        break;
+
+      case 'pdf':
+
+        this.exportService
+          .exportToPdf(
+            exportData,
+            'department-assets-report'
+          );
+
+        break;
+    }
+
+    this.selectedExportFormat = '';
+  }
+
 }

@@ -14,11 +14,6 @@ export const CATALOG_ROUTES: Routes = [
   },
 
   {
-    path: 'catalog/category/:id',
-    component: CatalogComponent
-  },
-
-  {
     path: 'catalog/products/:id',
     component: ProductDetailsComponent
   }

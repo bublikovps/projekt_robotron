@@ -1,9 +1,12 @@
 import {
   Component,
-  OnInit
+  OnInit,
+  ChangeDetectorRef
 } from '@angular/core';
 
-import { CommonModule } from '@angular/common';
+import {
+  CommonModule
+} from '@angular/common';
 
 import {
   ActivatedRoute,
@@ -37,14 +40,45 @@ implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
-    private catalogService: CatalogService
+    private catalogService: CatalogService,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
 
-    const id = Number(
-      this.route.snapshot.paramMap.get('id')
-    );
+    this.route.paramMap
+      .subscribe(params => {
+
+        const id =
+          Number(
+            params.get('id')
+          );
+
+        if (!id) {
+
+          this.errorMessage =
+            'Ungültige Produkt-ID';
+
+          this.isLoading = false;
+
+          this.cdr.markForCheck();
+
+          return;
+        }
+
+        this.loadProduct(id);
+      });
+  }
+
+  private loadProduct(
+    id: number
+  ): void {
+
+    this.product = undefined;
+
+    this.isLoading = true;
+
+    this.errorMessage = '';
 
     this.catalogService
       .getProductById(id)
@@ -52,20 +86,35 @@ implements OnInit {
 
         next: product => {
 
+          this.product = product;
 
-        this.product = product;
+          this.isLoading = false;
 
-        this.isLoading = false;
+          this.cdr.markForCheck();
+        },
 
-      },
-
-        error: err => {
+        error: () => {
 
           this.errorMessage =
             'Produkt nicht gefunden.';
 
           this.isLoading = false;
+
+          this.cdr.markForCheck();
         }
+
       });
+  }
+
+  addToCart(): void {
+
+    if (!this.product) {
+
+      return;
+    }
+
+    alert(
+      `${this.product.name} wurde zum Warenkorb hinzugefügt.`
+    );
   }
 }

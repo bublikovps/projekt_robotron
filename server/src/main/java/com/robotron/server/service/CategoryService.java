@@ -25,11 +25,19 @@ public class CategoryService {
 
     public List<CategoryResponse> getAllCategories() {
 
-        return categoryRepository.findByActiveTrue()
+        return categoryRepository
+                .findCategoryOverview()
                 .stream()
-                .map(CategoryMapper::toResponse)
+                .map(item ->
+                        new CategoryResponse(
+                                item.getId(),
+                                item.getName(),
+                                item.isActive(),
+                                item.getProductCount()
+                        )
+                )
                 .toList();
-    }
+        }
 
     public CategoryResponse createCategory(
             CategoryCreateRequest request) {

@@ -1,26 +1,96 @@
-<div class="devices-container">
+<div class="enterprise-page">
 
-  <div class="page-header">
+  <div class="report-toolbar">
 
-    <div>
+  <input
+    type="text"
+    class="
+      enterprise-search
+      report-search
+    "
+    placeholder="Search devices..."
+    [(ngModel)]="searchTerm"
+    (input)="applyFilters()">
 
-      <h1>Devices</h1>
+  <div
+    class="enterprise-toolbar-right">
 
-      <p>
+    <div
+      class="enterprise-dropdown">
 
-        Verwaltung von Geräten
+      <button
+        type="button"
+        class="enterprise-dropdown-trigger"
+        (click)="toggleExportMenu()">
 
-      </p>
+        <span
+          class="enterprise-dropdown-label">
+
+          Export
+
+        </span>
+
+        <span
+          class="enterprise-dropdown-arrow">
+
+          ▼
+
+        </span>
+
+      </button>
+
+      <div
+        *ngIf="exportMenuOpen"
+        class="enterprise-dropdown-menu">
+
+        <button
+          type="button"
+          (click)="exportAs('csv')">
+
+          CSV
+
+        </button>
+
+        <button
+          type="button"
+          (click)="exportAs('excel')">
+
+          Excel
+
+        </button>
+
+        <button
+          type="button"
+          (click)="exportAs('pdf')">
+
+          PDF
+
+        </button>
+
+      </div>
 
     </div>
 
     <button
-      class="btn-primary"
+      class="
+        enterprise-btn
+        enterprise-btn-primary
+      "
       (click)="openCreateDialog()">
 
-      + New Device
+      + Device
 
     </button>
+
+  </div>
+
+</div>
+
+  <div
+    class="table-info">
+
+    {{ filteredDevices.length }}
+    devices found
 
   </div>
 
@@ -40,33 +110,72 @@
 
   </div>
 
-  <div class="card">
+  <div
+    class="enterprise-table-card">
 
-    <h2>
-
-      Geräte
-
-    </h2>
-
-    <table>
+    <table
+      class="enterprise-table">
 
       <thead>
 
       <tr>
 
-        <th>Inventarnummer</th>
+        <th
+          class="sortable-column"
+          (click)="sortBy('inventoryNumber')">
 
-        <th>Produkt</th>
+          Inventory No.
+          {{ getSortIcon('inventoryNumber') }}
 
-        <th>Seriennummer</th>
+        </th>
 
-        <th>Asset Tag</th>
+        <th
+          class="sortable-column"
+          (click)="sortBy('productName')">
 
-        <th>Status</th>
+          Product
+          {{ getSortIcon('productName') }}
 
-        <th>Standort</th>
+        </th>
 
-        <th>Aktionen</th>
+        <th
+          class="sortable-column"
+          (click)="sortBy('serialNumber')">
+
+          Serial Number
+          {{ getSortIcon('serialNumber') }}
+
+        </th>
+
+        <th>
+
+          Asset Tag
+
+        </th>
+
+        <th
+          class="sortable-column"
+          (click)="sortBy('status')">
+
+          Status
+          {{ getSortIcon('status') }}
+
+        </th>
+
+        <th
+          class="sortable-column"
+          (click)="sortBy('location')">
+
+          Location
+          {{ getSortIcon('location') }}
+
+        </th>
+
+        <th>
+
+          Actions
+
+        </th>
 
       </tr>
 
@@ -75,49 +184,100 @@
       <tbody>
 
       <tr
-        *ngFor="let device of devices">
+        *ngFor="
+          let device
+          of sortedDevices
+        ">
 
         <td>
+
           {{ device.inventoryNumber }}
+
         </td>
 
         <td>
+
           {{ device.productName }}
+
         </td>
 
         <td>
+
           {{ device.serialNumber }}
+
         </td>
 
         <td>
+
           {{ device.manufacturerAssetTag }}
+
         </td>
 
         <td>
-          {{ device.status }}
+
+          <span
+            class="status-badge"
+            [ngClass]="
+              getStatusClass(
+                device.status
+              )
+            ">
+
+            {{ device.status }}
+
+          </span>
+
         </td>
 
         <td>
+
           {{ device.location }}
+
         </td>
 
-        <td>
+        <td
+          class="actions-cell">
 
-          <button
-            class="btn-edit"
-            (click)="editDevice(device)">
+          <div
+            class="enterprise-actions">
 
-            Bearbeiten
+            <button
+              class="
+                enterprise-btn
+                enterprise-btn-secondary
+                enterprise-actions-button
+              "
+              (click)="toggleMenu(device.id)">
 
-          </button>
+              ⋮
 
-          <button
-            class="btn-danger"
-            (click)="archiveDevice(device)">
+            </button>
 
-            Archivieren
+            <div
+              *ngIf="
+                openMenuId === device.id
+              "
+              class="
+                enterprise-actions-menu
+              ">
 
-          </button>
+              <button
+                (click)="editDevice(device)">
+
+                Edit
+
+              </button>
+
+              <button
+                (click)="archiveDevice(device)">
+
+                Archive
+
+              </button>
+
+            </div>
+
+          </div>
 
         </td>
 
@@ -127,39 +287,71 @@
 
     </table>
 
+    <div
+      *ngIf="
+        filteredDevices.length === 0
+      "
+      class="empty-state">
+
+      <div>
+
+        <h3>
+
+          No devices found
+
+        </h3>
+
+        <p>
+
+          Try changing the search
+          criteria.
+
+        </p>
+
+      </div>
+
+    </div>
+
   </div>
 
   <div
     *ngIf="showDialog"
-    class="dialog-backdrop">
+    class="enterprise-dialog-overlay">
 
-    <div class="dialog-window">
+    <div
+      class="enterprise-dialog">
 
       <h2>
 
         {{
           isEditMode
-          ? 'Gerät bearbeiten'
-          : 'Neues Gerät'
+            ? 'Edit Device'
+            : 'New Device'
         }}
 
       </h2>
 
       <form
+        class="enterprise-form-grid"
         (ngSubmit)="saveDevice()">
 
         <select
-          [(ngModel)]="deviceForm.productId"
+          [(ngModel)]="
+            deviceForm.productId
+          "
           name="productId">
 
           <option [value]="0">
 
-            Produkt auswählen
+            Select Product
 
           </option>
 
           <option
-            *ngFor="let product of products"
+            *ngFor="
+              let product
+              of products
+            "
             [value]="product.id">
 
             {{ product.name }}
@@ -170,44 +362,61 @@
 
         <input
           type="text"
-          placeholder="Inventarnummer"
-          [(ngModel)]="deviceForm.inventoryNumber"
+          placeholder="Inventory Number"
+          [(ngModel)]="
+            deviceForm.inventoryNumber
+          "
           name="inventoryNumber">
 
         <input
           type="text"
-          placeholder="Seriennummer"
-          [(ngModel)]="deviceForm.serialNumber"
+          placeholder="Serial Number"
+          [(ngModel)]="
+            deviceForm.serialNumber
+          "
           name="serialNumber">
 
         <input
           type="text"
           placeholder="Manufacturer Asset Tag"
-          [(ngModel)]="deviceForm.manufacturerAssetTag"
+          [(ngModel)]="
+            deviceForm.manufacturerAssetTag
+          "
           name="manufacturerAssetTag">
 
         <input
           type="date"
-          [(ngModel)]="deviceForm.purchaseDate"
+          [(ngModel)]="
+            deviceForm.purchaseDate
+          "
           name="purchaseDate">
 
         <input
           type="number"
           placeholder="Purchase Price"
-          [(ngModel)]="deviceForm.purchasePrice"
+          [(ngModel)]="
+            deviceForm.purchasePrice
+          "
           name="purchasePrice">
 
         <input
           type="date"
-          [(ngModel)]="deviceForm.warrantyUntil"
+          [(ngModel)]="
+            deviceForm.warrantyUntil
+          "
           name="warrantyUntil">
 
         <select
-          [(ngModel)]="deviceForm.status"
+          [(ngModel)]="
+            deviceForm.status
+          "
           name="status">
 
           <option
-            *ngFor="let status of statuses"
+            *ngFor="
+              let status
+              of statuses
+            "
             [value]="status">
 
             {{ status }}
@@ -218,42 +427,55 @@
 
         <input
           type="text"
-          placeholder="Standort"
-          [(ngModel)]="deviceForm.location"
+          placeholder="Location"
+          [(ngModel)]="
+            deviceForm.location
+          "
           name="location">
 
         <textarea
-          placeholder="Notizen"
-          [(ngModel)]="deviceForm.notes"
+          rows="4"
+          placeholder="Notes"
+          [(ngModel)]="
+            deviceForm.notes
+          "
           name="notes">
         </textarea>
 
-        <div class="button-group">
-
-          <button
-            type="submit"
-            class="btn-primary">
-
-            {{
-              isEditMode
-              ? 'Speichern'
-              : 'Erstellen'
-            }}
-
-          </button>
-
-          <button
-            type="button"
-            class="btn-secondary"
-            (click)="closeDialog()">
-
-            Abbrechen
-
-          </button>
-
-        </div>
-
       </form>
+
+      <div
+        class="enterprise-dialog-footer">
+
+        <button
+          type="button"
+          class="
+            enterprise-btn
+            enterprise-btn-secondary
+          "
+          (click)="closeDialog()">
+
+          Cancel
+
+        </button>
+
+        <button
+          type="submit"
+          class="
+            enterprise-btn
+            enterprise-btn-primary
+          "
+          (click)="saveDevice()">
+
+          {{
+            isEditMode
+              ? 'Save'
+              : 'Create'
+          }}
+
+        </button>
+
+      </div>
 
     </div>
 

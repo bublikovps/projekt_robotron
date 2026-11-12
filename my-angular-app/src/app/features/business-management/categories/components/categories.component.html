@@ -1,6 +1,165 @@
-<div class="categories-container">
+<div class="enterprise-page">
 
-  <h1>Category Management</h1>
+  <div class="report-toolbar">
+
+    <input
+      type="text"
+      class="
+        enterprise-search
+        report-search
+      "
+      placeholder="Search categories..."
+      [(ngModel)]="searchTerm"
+      (input)="applyFilters()">
+
+    
+    <div
+      class="enterprise-toolbar-right">
+
+      <div
+        class="enterprise-dropdown">
+
+        <button
+          type="button"
+          class="
+            enterprise-dropdown-trigger
+          "
+          (click)="toggleExportMenu()">
+
+          <span
+            class="
+              enterprise-dropdown-label
+            ">
+
+            Export
+
+          </span>
+
+          <span
+            class="
+              enterprise-dropdown-arrow
+            ">
+
+            ▼
+
+          </span>
+
+        </button>
+
+        <div
+          *ngIf="exportMenuOpen"
+          class="
+            enterprise-dropdown-menu
+          ">
+
+          <button
+            (click)="exportAs('csv')">
+
+            CSV
+
+          </button>
+
+          <button
+            (click)="exportAs('excel')">
+
+            Excel
+
+          </button>
+
+          <button
+            (click)="exportAs('pdf')">
+
+            PDF
+
+          </button>
+
+        </div>
+
+      </div>
+
+      <button
+        class="
+          enterprise-btn
+          enterprise-btn-secondary
+        "
+        (click)="importCategories()">
+
+        Import
+
+      </button>
+
+      <button
+        class="
+          enterprise-btn
+          enterprise-btn-primary
+        "
+        (click)="openCreateDialog()">
+
+        + Category
+
+      </button>
+
+    </div>
+
+  </div>
+
+  <div class="table-header">
+
+  <div class="table-info">
+
+    {{
+      filteredCategories.length === 1
+        ? '1 Kategorie'
+        : filteredCategories.length +
+          ' Kategorien'
+    }}
+
+  </div>
+
+  <div class="filter-group">
+
+    <button
+      class="filter-btn"
+      [class.active]="
+        statusFilter === 'active'
+      "
+      (click)="
+        setStatusFilter('active')
+      ">
+
+      Active
+
+    </button>
+
+    <button
+      class="filter-btn"
+      [class.active]="
+        statusFilter === 'archived'
+      "
+      (click)="
+        setStatusFilter('archived')
+      ">
+
+      Archived
+
+    </button>
+
+    <button
+      class="filter-btn"
+      [class.active]="
+        statusFilter === 'all'
+      "
+      (click)="
+        setStatusFilter('all')
+      ">
+
+      All
+
+    </button>
+
+  </div>
+
+</div>
 
   <div
     *ngIf="successMessage"
@@ -18,88 +177,128 @@
 
   </div>
 
-  <div class="card">
+  <div
+    class="enterprise-table-card">
 
-    <h2>
-      {{ isEditMode
-        ? 'Kategorie bearbeiten'
-        : 'Kategorie erstellen'
-      }}
-    </h2>
-
-    <form (ngSubmit)="saveCategory()">
-
-      <input
-        type="text"
-        placeholder="Kategoriename"
-        [(ngModel)]="categoryForm.name"
-        name="name">
-
-      <div class="button-group">
-
-        <button type="submit">
-
-          {{ isEditMode
-            ? 'Speichern'
-            : 'Erstellen'
-          }}
-
-        </button>
-
-        <button
-          *ngIf="isEditMode"
-          type="button"
-          (click)="cancelEdit()">
-
-          Abbrechen
-
-        </button>
-
-      </div>
-
-    </form>
-
-  </div>
-
-  <div class="card">
-
-    <h2>Kategorien</h2>
-
-    <table>
+    <table
+      class="enterprise-table">
 
       <thead>
 
       <tr>
+
         <th>ID</th>
+
         <th>Name</th>
-        <th>Aktionen</th>
+
+        <th>Products</th>
+
+        <th>Status</th>
+
+        <th>Actions</th>
+
       </tr>
 
       </thead>
 
       <tbody>
 
-      <tr *ngFor="let category of categories">
+      <tr
+        *ngFor="
+          let category
+          of filteredCategories
+        ">
 
-        <td>{{ category.id }}</td>
+        <td>
+          {{ category.id }}
+        </td>
 
-        <td>{{ category.name }}</td>
+        <td>
+          <strong>
+            {{ category.name }}
+          </strong>
+        </td>
+
+        <td>
+          {{ category.productCount }}
+        </td>
 
         <td>
 
-          <button
-            (click)="editCategory(category)">
+          <span
+            class="enterprise-badge"
+            [ngClass]="{
+              'enterprise-badge-success':
+                category.active,
+              'enterprise-badge-danger':
+                !category.active
+            }">
 
-            Bearbeiten
+            {{
+              category.active
+                ? 'Aktiv'
+                : 'Archiviert'
+            }}
 
-          </button>
+          </span>
 
-          <button
-            (click)="archiveCategory(category)">
+        </td>
 
-            Archivieren
+        <td>
 
-          </button>
+          <div
+            class="
+              enterprise-actions
+            ">
+
+            @if (category.active) {
+
+              <button
+                class="
+                  enterprise-btn
+                  enterprise-btn-secondary
+                "
+                (click)="
+                  editCategory(category)
+                ">
+
+                Edit
+
+              </button>
+
+              <button
+                class="
+                  enterprise-btn
+                  enterprise-btn-danger
+                "
+                (click)="
+                  archiveCategory(category)
+                ">
+
+                Archive
+
+              </button>
+
+            }
+
+            @if (!category.active) {
+
+              <button
+                class="
+                  enterprise-btn
+                  enterprise-btn-primary
+                "
+                (click)="
+                  restoreCategory(category)
+                ">
+
+                Restore
+
+              </button>
+
+            }
+
+          </div>
 
         </td>
 
@@ -108,6 +307,78 @@
       </tbody>
 
     </table>
+
+  </div>
+
+  <div
+    *ngIf="showDialog"
+    class="
+      enterprise-dialog-overlay
+    ">
+
+    <div
+      class="
+        enterprise-dialog
+      ">
+
+      <h2>
+
+        {{
+          isEditMode
+            ? 'Edit Category'
+            : 'New Category'
+        }}
+
+      </h2>
+
+      <form>
+
+        <input
+          type="text"
+          placeholder="Category Name"
+          [(ngModel)]="
+            categoryForm.name
+          "
+          name="name">
+
+      </form>
+
+      <div
+        class="
+          enterprise-dialog-footer
+        ">
+
+        <button
+          type="button"
+          class="
+            enterprise-btn
+            enterprise-btn-secondary
+          "
+          (click)="closeDialog()">
+
+          Cancel
+
+        </button>
+
+        <button
+          type="button"
+          class="
+            enterprise-btn
+            enterprise-btn-primary
+          "
+          (click)="saveCategory()">
+
+          {{
+            isEditMode
+              ? 'Save'
+              : 'Create'
+          }}
+
+        </button>
+
+      </div>
+
+    </div>
 
   </div>
 
