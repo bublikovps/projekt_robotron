@@ -1,269 +1,255 @@
 <div class="report-page">
 
-  <h1>Low Stock Report</h1>
+  <div class="enterprise-kpi-grid">
 
-  <p class="report-date">
-    Letzte Aktualisierung:
-    {{ generatedAt | date:'dd.MM.yyyy HH:mm' }}
-  </p>
-
-  <p>
-    Produkte mit kritischem Lagerbestand.
-  </p>
-
-  <div class="kpi-container">
-
-    <div class="kpi-card">
-
-      <span class="kpi-label">
-        🎯 Aktive Grenze
+    <div class="enterprise-kpi-card">
+      <span class="enterprise-kpi-label">
+        Aktive Grenze
       </span>
-
-      <span class="kpi-value">
+      <span class="enterprise-kpi-value">
         {{ activeThreshold }}
       </span>
-
     </div>
 
-    <div class="kpi-card">
-
-      <span class="kpi-label">
-        📦 Produkte unter Grenze
+    <div class="enterprise-kpi-card">
+      <span class="enterprise-kpi-label">
+        Produkte unter Grenze
       </span>
-
-      <span class="kpi-value">
+      <span class="enterprise-kpi-value">
         {{ totalProducts }}
       </span>
-
     </div>
 
-    <div class="kpi-card">
-
-      <span class="kpi-label">
-        🔴 Unter Minimum
+    <div class="enterprise-kpi-card">
+      <span class="enterprise-kpi-label">
+        Unter Minimum
       </span>
-
-      <span class="kpi-value">
+      <span class="enterprise-kpi-value">
         {{ productsUnderMinimum }}
       </span>
-
     </div>
 
-    <div class="kpi-card">
-
-      <span class="kpi-label">
-        🛒 Fehlende Einheiten
+    <div class="enterprise-kpi-card">
+      <span class="enterprise-kpi-label">
+        Fehlende Einheiten
       </span>
-
-      <span class="kpi-value">
+      <span class="enterprise-kpi-value">
         {{ totalDeficit }}
       </span>
-
     </div>
 
   </div>
 
-  <div class="threshold-panel">
-
-    <label>
-
-      Kritische Grenze
-
-    </label>
+  <div class="report-toolbar">
 
     <input
-      type="number"
-      min="1"
-      [(ngModel)]="threshold">
-
-    <button
-      class="btn-apply"
-      (click)="applyThreshold()">
-
-      Anwenden
-
-    </button>
-
-  </div>
-
-  <div class="toolbar">
-
-    <input
-      class="search-input"
       type="text"
+      class="enterprise-search report-search"
       placeholder="Produkt suchen..."
       [(ngModel)]="searchTerm">
 
-    <div class="threshold-buttons">
+    <div class="enterprise-toolbar-right">
 
-      <button
-        class="btn-threshold"
-        (click)="setThreshold(2)">
-        2
-      </button>
+      <div class="threshold-buttons">
 
-      <button
-        class="btn-threshold"
-        (click)="setThreshold(5)">
-        5
-      </button>
+        <button
+          type="button"
+          class="threshold-button"
+          (click)="setThreshold(2)">
+          2
+        </button>
 
-      <button
-        class="btn-threshold"
-        (click)="setThreshold(10)">
-        10
-      </button>
+        <button
+          type="button"
+          class="threshold-button"
+          (click)="setThreshold(5)">
+          5
+        </button>
 
-      <button
-        class="btn-threshold"
-        (click)="setThreshold(20)">
-        20
-      </button>
+        <button
+          type="button"
+          class="threshold-button"
+          (click)="setThreshold(10)">
+          10
+        </button>
+
+        <button
+          type="button"
+          class="threshold-button"
+          (click)="setThreshold(20)">
+          20
+        </button>
+
+      </div>
+
+      <div class="enterprise-dropdown">
+
+        <button
+          type="button"
+          class="enterprise-dropdown-trigger"
+          (click)="exportMenuOpen = !exportMenuOpen">
+
+          <span class="enterprise-dropdown-label">
+            Export
+          </span>
+
+          <span class="enterprise-dropdown-arrow">
+            ▼
+          </span>
+
+        </button>
+
+        <div
+          *ngIf="exportMenuOpen"
+          class="enterprise-dropdown-menu">
+
+          <button
+            type="button"
+            (click)="exportCsv()">
+            CSV
+          </button>
+
+          <button
+            type="button"
+            (click)="exportExcel()">
+            Excel
+          </button>
+
+          <button
+            type="button"
+            (click)="exportPdf()">
+            PDF
+          </button>
+
+        </div>
+
+      </div>
 
     </div>
 
-    <div class="toolbar-buttons">
+  </div>
 
-      <button
-        class="btn-csv"
-        (click)="exportCsv()">
-
-        📄 CSV
-
-      </button>
-
-      <button
-        class="btn-excel"
-        (click)="exportExcel()">
-
-        📊 Excel
-
-      </button>
-
-      <button
-        class="btn-pdf"
-        (click)="exportPdf()">
-
-        🧾 PDF
-
-      </button>
-
-    </div>
-
+  <div class="table-info">
+    {{ sortedData.length }}
+    Produkte gefunden
   </div>
 
   @if (loading) {
 
-    <p>Daten werden geladen...</p>
+    <div class="empty-state">
+
+      <div>
+
+        <h3>
+          Daten werden geladen...
+        </h3>
+
+      </div>
+
+    </div>
 
   } @else {
 
-    <div class="table-wrapper">
+    <div class="enterprise-table-card">
 
-      <table class="report-table">
+      <div class="table-wrapper">
 
-        <thead>
+        <table class="enterprise-table">
 
-          <tr>
-
-            <th
-              (click)="sortBy('sku')"
-              [class.active-sort]="sortColumn === 'sku'">
-
-              SKU
-
-            </th>
-
-            <th
-              (click)="sortBy('name')"
-              [class.active-sort]="sortColumn === 'name'">
-
-              Name
-
-            </th>
-
-            <th
-              (click)="sortBy('lagerbestand')"
-              [class.active-sort]="sortColumn === 'lagerbestand'">
-
-              Bestand
-
-            </th>
-
-            <th
-              (click)="sortBy('minimumStock')"
-              [class.active-sort]="sortColumn === 'minimumStock'">
-
-              Minimum
-
-            </th>
-
-            <th>
-
-              Defizit
-
-            </th>
-
-          </tr>
-
-        </thead>
-
-        <tbody>
-
-          @for (
-            item of sortedData;
-            track item.productId
-          ) {
+          <thead>
 
             <tr>
 
-              <td>
-                {{ item.sku }}
-              </td>
+              <th
+                class="sortable-column"
+                (click)="sortBy('sku')">
 
-              <td>
-                {{ item.name }}
-              </td>
+                SKU
+                {{ getSortIcon('sku') }}
 
-              <td>
-                {{ item.lagerbestand }}
-              </td>
+              </th>
 
-              <td>
-                {{ item.minimumStock }}
-              </td>
+              <th
+                class="sortable-column"
+                (click)="sortBy('name')">
 
-              <td>
+                Name
+                {{ getSortIcon('name') }}
 
-                @if (
-                  getDeficit(item) > 0
-                ) {
+              </th>
 
-                  <span class="danger-value">
+              <th
+                class="sortable-column"
+                (click)="sortBy('lagerbestand')">
+
+                Bestand
+                {{ getSortIcon('lagerbestand') }}
+
+              </th>
+
+              <th
+                class="sortable-column"
+                (click)="sortBy('minimumStock')">
+
+                Minimum
+                {{ getSortIcon('minimumStock') }}
+
+              </th>
+
+              <th>
+                Defizit
+              </th>
+
+            </tr>
+
+          </thead>
+
+          <tbody>
+
+            @for (
+              item of sortedData;
+              track item.productId
+            ) {
+
+              <tr>
+
+                <td>
+                  {{ item.sku }}
+                </td>
+
+                <td>
+                  {{ item.name }}
+                </td>
+
+                <td>
+                  {{ item.lagerbestand }}
+                </td>
+
+                <td>
+                  {{ item.minimumStock }}
+                </td>
+
+                <td>
+
+                  <span
+                    [class.report-negative]="getDeficit(item) > 0"
+                    [class.report-positive]="getDeficit(item) === 0">
 
                     {{ getDeficit(item) }}
 
                   </span>
 
-                } @else {
+                </td>
 
-                  <span class="ok-value">
+              </tr>
 
-                    0
+            }
 
-                  </span>
+          </tbody>
 
-                }
+        </table>
 
-              </td>
-
-            </tr>
-
-          }
-
-        </tbody>
-
-      </table>
+      </div>
 
     </div>
 

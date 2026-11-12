@@ -46,13 +46,12 @@ public class CatalogService {
 
         } else if (!query.isEmpty()) {
 
-            products =
-                    productRepository
-                            .findByIsActiveTrueAndNameContainingIgnoreCaseOrIsActiveTrueAndManufacturerContainingIgnoreCase(
-                                    query,
-                                    query
-                            );
-        } else {
+                products =
+                        productRepository
+                                .searchProducts(
+                                        query
+                                );
+                } else {
 
             products =
                     productRepository.findByIsActiveTrue();
@@ -78,21 +77,37 @@ public class CatalogService {
     }
 
     public List<CatalogCategoryResponse>
-    getCategories() {
+        getCategories() {
 
         return categoryRepository
                 .findAll()
                 .stream()
                 .filter(Category::isActive)
-                .map(category ->
-                        new CatalogCategoryResponse(
-                                category.getId(),
-                                category.getName()
-                        )
-                )
-                .toList();
-    }
+                .map(category -> {
 
+                        long productCount =
+                                productRepository
+                                        .findByIsActiveTrue()
+                                        .stream()
+                                        .filter(product ->
+                                                product.getCategory() != null
+                                                        &&
+                                                        product.getCategory()
+                                                                .getId()
+                                                                .equals(
+                                                                        category.getId()
+                                                                )
+                                        )
+                                        .count();
+
+                        return new CatalogCategoryResponse(
+                                category.getId(),
+                                category.getName(),
+                                productCount
+                        );
+                })
+                .toList();
+        }
     private CatalogProductResponse
     toCatalogProductResponse(
             Product product) {
@@ -109,7 +124,9 @@ public class CatalogService {
                 product.getManufacturer(),
                 product.getDescription(),
                 product.getPrice(),
-                categoryName
+                categoryName,
+                product.getImageUrl(),
+                product.getLagerbestand()
         );
     }
 }

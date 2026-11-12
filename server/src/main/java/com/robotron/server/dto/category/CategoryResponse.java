@@ -15,20 +15,21 @@ public class CategoryResponse {
             example = "Notebook"
     )
     private String name;
+
     private boolean active;
+
+    private Long productCount;
 
     public CategoryResponse(
             Long id,
             String name,
-            boolean active) {
+            boolean active,
+            Long productCount) {
 
         this.id = id;
         this.name = name;
         this.active = active;
-    }
-
-    public boolean isActive() {
-        return active;
+        this.productCount = productCount;
     }
 
     public Long getId() {
@@ -37,5 +38,13 @@ public class CategoryResponse {
 
     public String getName() {
         return name;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public Long getProductCount() {
+        return productCount;
     }
 }

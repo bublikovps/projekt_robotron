@@ -1,13 +1,12 @@
 <div class="asset-container page-content">
 
-  <div class="asset-header">
+  <div class="workspace-header">
 
-    <h1>Asset Management</h1>
+    <h1>
 
-    <p>
-      Central workspace for managing enterprise assets,
-      employees, devices, software licenses and reporting.
-    </p>
+      Asset Management
+
+    </h1>
 
   </div>
 
@@ -100,14 +99,18 @@
       </button>
 
       <button
-        class="module-tab disabled">
+        class="module-tab"
+        [class.active]="selectedModule === 'device-assignments'"
+        (click)="selectModule('device-assignments')">
 
         Device Assignments
 
       </button>
 
       <button
-        class="module-tab disabled">
+        class="module-tab"
+        [class.active]="selectedModule === 'license-assignments'"
+        (click)="selectModule('license-assignments')">
 
         License Assignments
 
@@ -123,10 +126,37 @@
 
       <button
         class="module-tab"
-        [class.active]="selectedModule === 'reports'"
-        (click)="selectModule('reports')">
+        [class.active]="selectedModule === 'asset-value'"
+        (click)="selectModule('asset-value')">
 
-        Asset Reports
+        Asset Value
+
+      </button>
+
+      <button
+        class="module-tab"
+        [class.active]="selectedModule === 'department-assets'"
+        (click)="selectModule('department-assets')">
+
+        Department Assets
+
+      </button>
+
+      <button
+        class="module-tab"
+        [class.active]="selectedModule === 'active-devices'"
+        (click)="selectModule('active-devices')">
+
+        Active Devices
+
+      </button>
+
+      <button
+        class="module-tab"
+        [class.active]="selectedModule === 'expiring-licenses'"
+        (click)="selectModule('expiring-licenses')">
+
+        Expiring Licenses
 
       </button>
 
@@ -134,53 +164,75 @@
 
   }
 
+  <app-breadcrumb
+    [items]="breadcrumbItems">
+  </app-breadcrumb>
+
   <div class="workspace-content">
 
-    @if (
-      selectedModule === 'departments'
-    ) {
+    @if (selectedModule === 'departments') {
 
       <app-departments />
 
     }
 
-    @else if (
-      selectedModule === 'employees'
-    ) {
+    @if (selectedModule === 'employees') {
 
       <app-employees />
 
     }
 
-    @else if (
-      selectedModule === 'contracts'
-    ) {
+    @if (selectedModule === 'contracts') {
 
       <app-contracts />
 
     }
 
-    @else if (
-      selectedModule === 'devices'
-    ) {
+    @if (selectedModule === 'devices') {
 
       <app-devices />
 
     }
 
-    @else if (
-      selectedModule === 'software-licenses'
-    ) {
+    @if (selectedModule === 'software-licenses') {
 
       <app-software-licenses />
 
     }
 
-    @else if (
-      selectedModule === 'reports'
-    ) {
+    @if (selectedModule === 'device-assignments') {
 
-      <app-asset-reports />
+      <app-device-assignments />
+
+    }
+
+    @if (selectedModule === 'license-assignments') {
+
+      <app-license-assignments />
+
+    }
+
+    @if (selectedModule === 'asset-value') {
+
+      <app-asset-value />
+
+    }
+
+    @if (selectedModule === 'department-assets') {
+
+      <app-department-assets />
+
+    }
+
+    @if (selectedModule === 'active-devices') {
+
+      <app-active-devices />
+
+    }
+
+    @if (selectedModule === 'expiring-licenses') {
+
+      <app-expiring-licenses />
 
     }
 

@@ -1,0 +1,476 @@
+<div class="enterprise-page">
+
+ <div class="report-toolbar">
+
+  <input
+    type="text"
+    class="
+      enterprise-search
+      report-search
+    "
+    placeholder="Search license assignments..."
+    [(ngModel)]="searchTerm"
+    (input)="applyFilters()">
+
+  <div
+    class="enterprise-toolbar-right">
+
+    <div
+      class="enterprise-dropdown">
+
+      <button
+        type="button"
+        class="enterprise-dropdown-trigger"
+        (click)="toggleStatusMenu()">
+
+        <span
+          class="enterprise-dropdown-label">
+
+          {{
+            selectedStatus ||
+            'All Statuses'
+          }}
+
+        </span>
+
+        <span
+          class="enterprise-dropdown-arrow">
+
+          ▼
+
+        </span>
+
+      </button>
+
+      <div
+        *ngIf="statusMenuOpen"
+        class="enterprise-dropdown-menu">
+
+        <button
+          type="button"
+          (click)="clearStatusFilter()">
+
+          All Statuses
+
+        </button>
+
+        <button
+          *ngFor="
+            let status
+            of statuses
+          "
+          type="button"
+          (click)="selectStatus(status)">
+
+          {{ status }}
+
+        </button>
+
+      </div>
+
+    </div>
+
+    <div
+      class="enterprise-dropdown">
+
+      <button
+        type="button"
+        class="enterprise-dropdown-trigger"
+        (click)="toggleExportMenu()">
+
+        <span
+          class="enterprise-dropdown-label">
+
+          Export
+
+        </span>
+
+        <span
+          class="enterprise-dropdown-arrow">
+
+          ▼
+
+        </span>
+
+      </button>
+
+      <div
+        *ngIf="exportMenuOpen"
+        class="enterprise-dropdown-menu">
+
+        <button
+          type="button"
+          (click)="exportAs('csv')">
+
+          CSV
+
+        </button>
+
+        <button
+          type="button"
+          (click)="exportAs('excel')">
+
+          Excel
+
+        </button>
+
+        <button
+          type="button"
+          (click)="exportAs('pdf')">
+
+          PDF
+
+        </button>
+
+      </div>
+
+    </div>
+
+    <button
+      class="
+        enterprise-btn
+        enterprise-btn-primary
+      "
+      (click)="openDialog()">
+
+      + Assignment
+
+    </button>
+
+  </div>
+
+</div>
+
+  <div class="table-info">
+
+    {{ filteredAssignments.length }}
+    assignments found
+
+  </div>
+
+  <div
+    *ngIf="successMessage"
+    class="success-message">
+
+    {{ successMessage }}
+
+  </div>
+
+  <div
+    *ngIf="errorMessage"
+    class="error-message">
+
+    {{ errorMessage }}
+
+  </div>
+
+  <div
+    class="enterprise-table-card">
+
+    <table
+      class="enterprise-table">
+
+      <thead>
+
+      <tr>
+
+        <th
+          class="sortable-column"
+          (click)="sortBy('softwareName')">
+
+          Software
+          {{ getSortIcon('softwareName') }}
+
+        </th>
+
+        <th
+          class="sortable-column"
+          (click)="sortBy('employeeName')">
+
+          Employee
+          {{ getSortIcon('employeeName') }}
+
+        </th>
+
+        <th
+          class="sortable-column"
+          (click)="sortBy('assignedDate')">
+
+          Assigned
+          {{ getSortIcon('assignedDate') }}
+
+        </th>
+
+        <th
+          class="sortable-column"
+          (click)="sortBy('expirationDate')">
+
+          Expires
+          {{ getSortIcon('expirationDate') }}
+
+        </th>
+
+        <th
+          class="sortable-column"
+          (click)="sortBy('status')">
+
+          Status
+          {{ getSortIcon('status') }}
+
+        </th>
+
+        <th>
+
+          Actions
+
+        </th>
+
+      </tr>
+
+      </thead>
+
+      <tbody>
+
+      <tr
+        *ngFor="
+          let item
+          of sortedAssignments
+        ">
+
+        <td>
+
+          {{ item.softwareName }}
+
+        </td>
+
+        <td>
+
+          {{ item.employeeName }}
+
+        </td>
+
+        <td>
+
+          {{ item.assignedDate }}
+
+        </td>
+
+        <td>
+
+          {{
+            item.expirationDate
+            || '-'
+          }}
+
+        </td>
+
+        <td>
+
+          <span
+            class="enterprise-badge"
+            [ngClass]="
+              getStatusClass(
+                item.status
+              )
+            ">
+
+            {{ item.status }}
+
+          </span>
+
+        </td>
+
+        <td
+          class="actions-cell">
+
+          <div
+            class="enterprise-actions">
+
+            <button
+              class="
+                enterprise-btn
+                enterprise-btn-secondary
+                enterprise-actions-button
+              "
+              (click)="toggleMenu(item.id)">
+
+              ⋮
+
+            </button>
+
+            <div
+              *ngIf="
+                openMenuId === item.id
+              "
+              class="
+                enterprise-actions-menu
+              ">
+
+              <button
+                *ngIf="
+                  item.status === 'ACTIVE'
+                "
+                (click)="revokeAssignment(item)">
+
+                Revoke License
+
+              </button>
+
+            </div>
+
+          </div>
+
+        </td>
+
+      </tr>
+
+      </tbody>
+
+    </table>
+
+    <div
+      *ngIf="
+        filteredAssignments.length === 0
+      "
+      class="empty-state">
+
+      <div>
+
+        <h3>
+
+          No assignments found
+
+        </h3>
+
+        <p>
+
+          Try changing the search or filter criteria.
+
+        </p>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <div
+    *ngIf="showDialog"
+    class="enterprise-dialog-overlay">
+
+    <div
+      class="enterprise-dialog">
+
+      <h2>
+
+        Assign License
+
+      </h2>
+
+      <form
+        class="enterprise-form-grid"
+        (ngSubmit)="saveAssignment()">
+
+        <select
+          [(ngModel)]="
+            form.employeeId
+          "
+          name="employeeId">
+
+          <option [value]="0">
+
+            Employee
+
+          </option>
+
+          <option
+            *ngFor="
+              let employee
+              of employees
+            "
+            [value]="employee.id">
+
+            {{ employee.firstName }}
+            {{ employee.lastName }}
+
+          </option>
+
+        </select>
+
+        <select
+          [(ngModel)]="
+            form.licenseId
+          "
+          name="licenseId">
+
+          <option [value]="0">
+
+            License
+
+          </option>
+
+          <option
+            *ngFor="
+              let license
+              of licenses
+            "
+            [value]="license.id">
+
+            {{ license.softwareName }}
+
+          </option>
+
+        </select>
+
+        <input
+          type="date"
+          [(ngModel)]="
+            form.expirationDate
+          "
+          name="expirationDate">
+
+        <textarea
+          rows="4"
+          placeholder="Notes"
+          [(ngModel)]="
+            form.notes
+          "
+          name="notes">
+        </textarea>
+
+      </form>
+
+      <div
+        class="enterprise-dialog-footer">
+
+        <button
+          type="button"
+          class="
+            enterprise-btn
+            enterprise-btn-secondary
+          "
+          (click)="closeDialog()">
+
+          Cancel
+
+        </button>
+
+        <button
+          type="submit"
+          class="
+            enterprise-btn
+            enterprise-btn-primary
+          "
+          (click)="saveAssignment()">
+
+          Assign
+
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>

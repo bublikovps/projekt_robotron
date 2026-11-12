@@ -45,7 +45,6 @@ export class ProductService {
           'search',
           search
         );
-
     }
 
     if (categoryId !== null) {
@@ -55,7 +54,6 @@ export class ProductService {
           'categoryId',
           categoryId
         );
-
     }
 
     return this.http.get<
@@ -63,6 +61,16 @@ export class ProductService {
     >(
       this.apiUrl,
       { params }
+    );
+  }
+
+  getAllProductsForManagement():
+    Observable<ProductResponse[]> {
+
+    return this.http.get<
+      ProductResponse[]
+    >(
+      `${this.apiUrl}/management`
     );
   }
 
@@ -133,6 +141,24 @@ export class ProductService {
       ApiMessageResponse
     >(
       `${this.apiUrl}/${id}/permanent`
+    );
+  }
+
+  importProducts(
+    file: File
+  ): Observable<any> {
+
+    const formData =
+      new FormData();
+
+    formData.append(
+      'file',
+      file
+    );
+
+    return this.http.post(
+      `${this.apiUrl}/import`,
+      formData
     );
   }
 

@@ -1,53 +1,201 @@
-<div class="asset-container">
+<div class="business-container page-content">
 
-  <div class="asset-header">
+  <div class="workspace-header">
 
-    <h1>Business Management</h1>
+    <h1>
 
-    <p>
-      Verwaltung von Produkten,
-      Kategorien, Lagerbestand
-      und Geschäftsberichten.
-    </p>
+      Business Management
+
+    </h1>
 
   </div>
 
-  <section>
+  <div class="workspace-tabs">
 
-    <h2 class="section-title">
-      Verfügbare Bereiche
-    </h2>
+    <button
+      class="workspace-tab"
+      [class.active]="
+        selectedArea === 'master-data'
+      "
+      (click)="selectArea('master-data')">
 
-    <div class="asset-grid">
+      Master Data
 
-      <div
-        class="asset-card"
-        *ngFor="let module of modules">
+    </button>
 
-        <div class="card-icon">
-          {{ module.icon }}
-        </div>
+    <button
+      class="workspace-tab"
+      [class.active]="
+        selectedArea === 'analytics'
+      "
+      (click)="selectArea('analytics')">
 
-        <h3>
-          {{ module.title }}
-        </h3>
+      Analytics
 
-        <p>
-          {{ module.description }}
-        </p>
+    </button>
 
-        <a
-          [routerLink]="module.route"
-          class="card-button">
+  </div>
 
-          Öffnen
+  @if (
+    selectedArea === 'master-data'
+  ) {
 
-        </a>
+    <div class="module-tabs">
 
-      </div>
+      <button
+        class="module-tab"
+        [class.active]="
+          selectedModule === 'categories'
+        "
+        (click)="
+          selectModule('categories')
+        ">
+
+        Categories
+
+      </button>
+
+      <button
+        class="module-tab"
+        [class.active]="
+          selectedModule === 'products'
+        "
+        (click)="
+          selectModule('products')
+        ">
+
+        Products
+
+      </button>
 
     </div>
 
-  </section>
+  }
+
+  @if (
+    selectedArea === 'analytics'
+  ) {
+
+    <div class="module-tabs">
+
+      <button
+        class="module-tab"
+        [class.active]="
+          selectedModule === 'inventory-value'
+        "
+        (click)="
+          selectModule(
+            'inventory-value'
+          )
+        ">
+
+        Inventory Value
+
+      </button>
+
+      <button
+        class="module-tab"
+        [class.active]="
+          selectedModule === 'low-stock'
+        "
+        (click)="
+          selectModule(
+            'low-stock'
+          )
+        ">
+
+        Low Stock
+
+      </button>
+
+      <button
+        class="module-tab"
+        [class.active]="
+          selectedModule === 'product-margin'
+        "
+        (click)="
+          selectModule(
+            'product-margin'
+          )
+        ">
+
+        Product Margin
+
+      </button>
+
+      <button
+        class="module-tab"
+        [class.active]="
+          selectedModule === 'supplier-inventory'
+        "
+        (click)="
+          selectModule(
+            'supplier-inventory'
+          )
+        ">
+
+        Supplier Inventory
+
+      </button>
+
+    </div>
+
+  }
+
+  <app-breadcrumb
+    [items]="breadcrumbItems">
+  </app-breadcrumb>
+
+  <div class="workspace-content">
+
+    @if (
+      selectedModule === 'categories'
+    ) {
+
+      <app-categories />
+
+    }
+
+    @if (
+      selectedModule === 'products'
+    ) {
+
+      <app-products />
+
+    }
+
+    @if (
+      selectedModule === 'inventory-value'
+    ) {
+
+      <app-inventory-value />
+
+    }
+
+    @if (
+      selectedModule === 'low-stock'
+    ) {
+
+      <app-low-stock />
+
+    }
+
+    @if (
+      selectedModule === 'product-margin'
+    ) {
+
+      <app-product-margin />
+
+    }
+
+    @if (
+      selectedModule === 'supplier-inventory'
+    ) {
+
+      <app-supplier-inventory />
+
+    }
+
+  </div>
 
 </div>

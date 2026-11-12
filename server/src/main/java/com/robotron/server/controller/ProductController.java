@@ -60,6 +60,13 @@ public class ProductController {
         );
     }
 
+    @GetMapping("/management")
+        public List<ProductResponse> getAllProductsForManagement() {
+
+        return productService
+                .getAllProductsForManagement();
+        }
+
     @Operation(
             summary = "Produkt nach ID laden",
             description = "Lädt ein einzelnes Produkt anhand der ID."

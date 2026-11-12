@@ -1,82 +1,171 @@
 <div class="catalog-container">
 
-  <section class="hero">
-    <h1>IT Portal</h1>
-    <p>Zentrale Plattform für Produkte, Assets und Unternehmensservices.</p>
-    <div class="hero-buttons">
-      <a routerLink="/dashboard" class="primary-btn">Arbeitsbereich</a>
-    </div>
-  </section>
+  <div class="catalog-toolbar">
 
-  <section class="catalog-section">
-    <h2>Kategorien</h2>
-    <div class="category-grid">
-      <a
-        routerLink="/catalog"
-        class="category-card all-category"
-        [class.active-category]="selectedCategoryId === null">
+    <input
+      type="text"
+      class="catalog-search-input"
+      placeholder="Produkte suchen..."
+      [(ngModel)]="searchTerm"
+      (input)="onSearch()">
+
+  </div>
+
+  <div class="category-scroll">
+
+    <button
+      type="button"
+      class="category-chip"
+      [class.active-category]="
+        selectedCategoryId === null
+      "
+      (click)="selectCategory(null)">
+
+      <span class="category-name">
+
         Alle Produkte
-      </a>
 
-      <!-- Синхронное чтение из Сигнала -->
-      <a
-        *ngFor="let category of categories()"
-        [routerLink]="['/catalog/category', category.id]"
-        class="category-card"
-        [class.active-category]="selectedCategoryId === category.id">
+      </span>
+
+    </button>
+
+    <button
+      type="button"
+      *ngFor="
+        let category
+        of categories()
+      "
+      class="category-chip"
+      [class.active-category]="
+        selectedCategoryId === category.id
+      "
+      (click)="
+        selectCategory(category.id)
+      ">
+
+      <span class="category-name">
+
         {{ category.name }}
-      </a>
-    </div>
-  </section>
 
-  <section class="catalog-section">
-    <h2>Produkte</h2>
+      </span>
 
-    <div class="catalog-search">
+      <span class="category-count">
 
-      <input
-        type="text"
-        placeholder="Produkt oder Hersteller suchen..."
-        [(ngModel)]="searchTerm"
-        (keyup.enter)="onSearch()">
+        {{ category.productCount }}
 
-      <button
-        type="button"
-        (click)="onSearch()">
+      </span>
 
-        🔍 Suchen
+    </button>
 
-      </button>
+  </div>
 
-      <button
-        type="button"
-        (click)="clearSearch()">
+  <div
+    class="product-grid"
+    [class.loading]="isLoading">
 
-        Zurücksetzen
+    <div
+      class="product-card"
+      *ngFor="
+        let product
+        of products;
+        trackBy: trackByProductId
+      ">
 
-      </button>
+      <div
+        class="product-image-container">
 
-    </div>
+        <img
+          *ngIf="product.imageUrl"
+          [src]="product.imageUrl"
+          [alt]="product.name"
+          class="product-image">
 
+        <div
+          *ngIf="!product.imageUrl"
+          class="product-image-placeholder">
 
-    <div class="empty-state" *ngIf="products.length === 0">
-      Keine Produkte gefunden.
-    </div>
+          📦
 
-    <div class="product-grid" *ngIf="products.length > 0">
-      <div class="product-card" *ngFor="let product of products">
-        <div class="product-header">
-          <span class="product-category">{{ product.categoryName }}</span>
         </div>
-        <h3 class="product-title">{{ product.name }}</h3>
-        <p class="product-manufacturer">{{ product.manufacturer }}</p>
-        <p class="product-sku">SKU: {{ product.sku }}</p>
-        <div class="product-footer">
-          <div class="price">{{ product.price }} €</div>
-          <a [routerLink]="['/catalog/products', product.id]" class="details-btn">Details</a>
-        </div>
+
       </div>
+
+      <div class="product-header">
+
+        <span
+          class="product-category">
+
+          {{ product.categoryName }}
+
+        </span>
+
+      </div>
+
+      <h3 class="product-title">
+
+        {{ product.name }}
+
+      </h3>
+
+      <p class="product-manufacturer">
+
+        {{ product.manufacturer }}
+
+      </p>
+
+      <p class="product-stock">
+
+        Lagerbestand:
+        {{ product.lagerbestand }}
+
+      </p>
+
+      <div class="product-footer">
+
+        <div class="price">
+
+          {{ product.price }} €
+
+        </div>
+
+        <a
+          [routerLink]="[
+            '/catalog/products',
+            product.id
+          ]"
+          class="details-btn">
+
+          Produkt ansehen
+
+        </a>
+
+      </div>
+
     </div>
-  </section>
+
+  </div>
+
+  <div
+    *ngIf="
+      !isLoading &&
+      products.length === 0
+    "
+    class="empty-state">
+
+    <h3>
+
+      Keine Produkte gefunden
+
+    </h3>
+
+    <p>
+
+      Versuchen Sie einen anderen
+      Suchbegriff oder wählen Sie
+      eine andere Kategorie.
+
+    </p>
+
+  </div>
 
 </div>

@@ -1,11 +1,16 @@
 import {
   Component,
-  OnInit
+  OnInit,
+  ChangeDetectorRef
 } from '@angular/core';
 
-import { CommonModule } from '@angular/common';
+import {
+  CommonModule
+} from '@angular/common';
 
-import { FormsModule } from '@angular/forms';
+import {
+  FormsModule
+} from '@angular/forms';
 
 import { CategoryService }
 from '../services/category.service';
@@ -26,26 +31,47 @@ from '../models/category-create-request.model';
   templateUrl: './categories.component.html',
   styleUrls: ['./categories.component.css']
 })
-export class CategoriesComponent implements OnInit {
+export class CategoriesComponent
+implements OnInit {
 
-  categories: CategoryResponse[] = [];
+  categories:
+    CategoryResponse[] = [];
+
+  filteredCategories:
+    CategoryResponse[] = [];
+
+  searchTerm = '';
+
+  statusFilter:
+    'active'
+    | 'archived'
+    | 'all'
+    = 'active';
 
   successMessage = '';
 
   errorMessage = '';
 
+  showDialog = false;
+
   isEditMode = false;
 
-  editingCategoryId: number | null = null;
+  editingCategoryId:
+    number | null = null;
 
-  categoryForm: CategoryCreateRequest = {
+  exportMenuOpen = false;
 
-    name: ''
-
-  };
+  categoryForm:
+    CategoryCreateRequest = {
+      name: ''
+    };
 
   constructor(
-    private categoryService: CategoryService
+    private categoryService:
+      CategoryService,
+
+    private cdr:
+      ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
@@ -59,18 +85,98 @@ export class CategoriesComponent implements OnInit {
       .getAllCategories()
       .subscribe({
 
-        next: (data) => {
+        next: data => {
 
           this.categories = data;
+
+          this.applyFilters();
+
+          this.cdr.detectChanges();
         },
 
         error: () => {
 
           this.errorMessage =
             'Fehler beim Laden der Kategorien.';
+
+          this.cdr.detectChanges();
         }
 
       });
+  }
+
+  applyFilters(): void {
+
+    const term =
+      this.searchTerm
+        .toLowerCase()
+        .trim();
+
+    this.filteredCategories =
+      this.categories.filter(category => {
+
+        const matchesSearch =
+          category.name
+            .toLowerCase()
+            .includes(term);
+
+        const matchesStatus =
+
+          this.statusFilter === 'all'
+
+          ||
+
+          (
+            this.statusFilter === 'active'
+            &&
+            category.active
+          )
+
+          ||
+
+          (
+            this.statusFilter === 'archived'
+            &&
+            !category.active
+          );
+
+        return (
+          matchesSearch
+          &&
+          matchesStatus
+        );
+      });
+  }
+
+  setStatusFilter(
+    filter:
+      'active'
+      | 'archived'
+      | 'all'
+  ): void {
+
+    this.statusFilter = filter;
+
+    this.applyFilters();
+  }
+
+  openCreateDialog(): void {
+
+    this.resetForm();
+
+    this.isEditMode = false;
+
+    this.editingCategoryId =
+      null;
+
+    this.showDialog = true;
+  }
+
+  closeDialog(): void {
+
+    this.showDialog = false;
+
+    this.cancelEdit();
   }
 
   saveCategory(): void {
@@ -95,7 +201,7 @@ export class CategoriesComponent implements OnInit {
             this.successMessage =
               'Kategorie aktualisiert.';
 
-            this.cancelEdit();
+            this.closeDialog();
 
             this.loadCategories();
           }
@@ -116,7 +222,7 @@ export class CategoriesComponent implements OnInit {
           this.successMessage =
             'Kategorie erstellt.';
 
-          this.resetForm();
+          this.closeDialog();
 
           this.loadCategories();
         }
@@ -135,9 +241,12 @@ export class CategoriesComponent implements OnInit {
 
     this.categoryForm = {
 
-      name: category.name
+      name:
+        category.name
 
     };
+
+    this.showDialog = true;
   }
 
   archiveCategory(
@@ -149,17 +258,17 @@ export class CategoriesComponent implements OnInit {
         `Kategorie "${category.name}" archivieren?`
       )
     ) {
+
       return;
     }
 
     this.categoryService
-      .archiveCategory(category.id)
+      .archiveCategory(
+        category.id
+      )
       .subscribe({
 
-        next: (res) => {
-
-          this.successMessage =
-            res.message;
+        next: () => {
 
           this.loadCategories();
         }
@@ -167,11 +276,57 @@ export class CategoriesComponent implements OnInit {
       });
   }
 
+  restoreCategory(
+  category: CategoryResponse
+): void {
+
+  this.categoryService
+    .restoreCategory(
+      category.id
+    )
+    .subscribe({
+
+      next: () => {
+
+        this.loadCategories();
+      }
+
+    });
+}
+
+  toggleExportMenu(): void {
+
+    this.exportMenuOpen =
+      !this.exportMenuOpen;
+  }
+
+  exportAs(
+    format:
+      'csv'
+      | 'excel'
+      | 'pdf'
+  ): void {
+
+    this.exportMenuOpen = false;
+
+    alert(
+      `${format.toUpperCase()} export coming soon`
+    );
+  }
+
+  importCategories(): void {
+
+    alert(
+      'Import coming soon'
+    );
+  }
+
   cancelEdit(): void {
 
     this.isEditMode = false;
 
-    this.editingCategoryId = null;
+    this.editingCategoryId =
+      null;
 
     this.resetForm();
   }

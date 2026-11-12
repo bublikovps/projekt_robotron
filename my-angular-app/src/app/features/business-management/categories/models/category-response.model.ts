@@ -6,4 +6,6 @@ export interface CategoryResponse {
 
   active: boolean;
 
+  productCount: number;
+
 }

@@ -1,26 +1,97 @@
-<div class="contracts-container">
+<div class="enterprise-page">
 
-  <div class="page-header">
+  <div class="report-toolbar">
 
-    <div>
+  <input
+    type="text"
+    class="
+      enterprise-search
+      report-search
+    "
+    placeholder="Search contracts..."
+    [(ngModel)]="searchTerm"
+    (input)="applyFilters()">
 
-      <h1>Employment Contracts</h1>
+  <div
+    class="enterprise-toolbar-right">
 
-      <p>
+    <div
+      class="enterprise-dropdown">
 
-        Verwaltung von Arbeitsverträgen
+      <button
+        type="button"
+        class="enterprise-dropdown-trigger"
+        (click)="toggleExportMenu()">
 
-      </p>
+        <span
+          class="enterprise-dropdown-label">
+
+          Export
+
+        </span>
+
+        <span
+          class="enterprise-dropdown-arrow">
+
+          ▼
+
+        </span>
+
+      </button>
+
+      <div
+        *ngIf="exportMenuOpen"
+        class="enterprise-dropdown-menu">
+
+        <button
+          type="button"
+          (click)="exportAs('csv')">
+
+          CSV
+
+        </button>
+
+        <button
+          type="button"
+          (click)="exportAs('excel')">
+
+          Excel
+
+        </button>
+
+        <button
+          type="button"
+          (click)="exportAs('pdf')">
+
+          PDF
+
+        </button>
+
+      </div>
 
     </div>
 
     <button
-      class="btn-primary"
+      class="
+        enterprise-btn
+        enterprise-btn-primary
+      "
       (click)="openCreateDialog()">
 
-      + New Contract
+      + Contract
 
     </button>
+
+  </div>
+
+</div>
+
+
+  <div
+    class="table-info">
+
+    {{ filteredContracts.length }}
+    contracts found
 
   </div>
 
@@ -40,31 +111,66 @@
 
   </div>
 
-  <div class="card">
+  <div
+    class="enterprise-table-card">
 
-    <h2>
-
-      Verträge
-
-    </h2>
-
-    <table>
+    <table
+      class="enterprise-table">
 
       <thead>
 
       <tr>
 
-        <th>Nr.</th>
+        <th
+          class="sortable-column"
+          (click)="sortBy('contractNumber')">
 
-        <th>Mitarbeiter</th>
+          Contract No.
+          {{ getSortIcon('contractNumber') }}
 
-        <th>Typ</th>
+        </th>
 
-        <th>Wochenstunden</th>
+        <th
+          class="sortable-column"
+          (click)="sortBy('employeeName')">
 
-        <th>Gehalt</th>
+          Employee
+          {{ getSortIcon('employeeName') }}
 
-        <th>Aktionen</th>
+        </th>
+
+        <th
+          class="sortable-column"
+          (click)="sortBy('contractType')">
+
+          Type
+          {{ getSortIcon('contractType') }}
+
+        </th>
+
+        <th
+          class="sortable-column"
+          (click)="sortBy('weeklyHours')">
+
+          Hours
+          {{ getSortIcon('weeklyHours') }}
+
+        </th>
+
+        <th
+          class="sortable-column"
+          (click)="sortBy('salary')">
+
+          Salary
+          {{ getSortIcon('salary') }}
+
+        </th>
+
+        <th>
+
+          Actions
+
+        </th>
 
       </tr>
 
@@ -73,7 +179,10 @@
       <tbody>
 
       <tr
-        *ngFor="let contract of contracts">
+        *ngFor="
+          let contract
+          of sortedContracts
+        ">
 
         <td>
 
@@ -105,23 +214,49 @@
 
         </td>
 
-        <td>
+        <td
+          class="actions-cell">
 
-          <button
-            class="btn-edit"
-            (click)="editContract(contract)">
+          <div
+            class="enterprise-actions">
 
-            Bearbeiten
+            <button
+              class="
+                enterprise-btn
+                enterprise-btn-secondary
+                enterprise-actions-button
+              "
+              (click)="toggleMenu(contract.id)">
 
-          </button>
+              ⋮
 
-          <button
-            class="btn-danger"
-            (click)="archiveContract(contract)">
+            </button>
 
-            Archivieren
+            <div
+              *ngIf="
+                openMenuId === contract.id
+              "
+              class="
+                enterprise-actions-menu
+              ">
 
-          </button>
+              <button
+                (click)="editContract(contract)">
+
+                Edit
+
+              </button>
+
+              <button
+                (click)="archiveContract(contract)">
+
+                Archive
+
+              </button>
+
+            </div>
+
+          </div>
 
         </td>
 
@@ -131,37 +266,69 @@
 
     </table>
 
+    <div
+      *ngIf="
+        filteredContracts.length === 0
+      "
+      class="empty-state">
+
+      <div>
+
+        <h3>
+
+          No contracts found
+
+        </h3>
+
+        <p>
+
+          Try changing the search
+          criteria.
+
+        </p>
+
+      </div>
+
+    </div>
+
   </div>
 
   <div
     *ngIf="showDialog"
-    class="dialog-backdrop">
+    class="enterprise-dialog-overlay">
 
-    <div class="dialog-window">
+    <div
+      class="enterprise-dialog">
 
       <h2>
 
         {{ isEditMode
-          ? 'Vertrag bearbeiten'
-          : 'Neuer Vertrag' }}
+          ? 'Edit Contract'
+          : 'New Contract' }}
 
       </h2>
 
       <form
+        class="enterprise-form-grid"
         (ngSubmit)="saveContract()">
 
         <select
-          [(ngModel)]="contractForm.employeeId"
+          [(ngModel)]="
+            contractForm.employeeId
+          "
           name="employeeId">
 
           <option [value]="0">
 
-            Mitarbeiter auswählen
+            Select Employee
 
           </option>
 
           <option
-            *ngFor="let employee of employees"
+            *ngFor="
+              let employee
+              of employees
+            "
             [value]="employee.id">
 
             {{ employee.employeeNumber }}
@@ -175,16 +342,23 @@
 
         <input
           type="text"
-          placeholder="Vertragsnummer"
-          [(ngModel)]="contractForm.contractNumber"
+          placeholder="Contract Number"
+          [(ngModel)]="
+            contractForm.contractNumber
+          "
           name="contractNumber">
 
         <select
-          [(ngModel)]="contractForm.contractType"
+          [(ngModel)]="
+            contractForm.contractType
+          "
           name="contractType">
 
           <option
-            *ngFor="let type of contractTypes"
+            *ngFor="
+              let type
+              of contractTypes
+            "
             [value]="type">
 
             {{ type }}
@@ -195,50 +369,66 @@
 
         <input
           type="date"
-          [(ngModel)]="contractForm.startDate"
+          [(ngModel)]="
+            contractForm.startDate
+          "
           name="startDate">
 
         <input
           type="date"
-          [(ngModel)]="contractForm.endDate"
+          [(ngModel)]="
+            contractForm.endDate
+          "
           name="endDate">
 
         <input
           type="number"
           placeholder="Weekly Hours"
-          [(ngModel)]="contractForm.weeklyHours"
+          [(ngModel)]="
+            contractForm.weeklyHours
+          "
           name="weeklyHours">
 
         <input
           type="number"
           placeholder="Salary"
-          [(ngModel)]="contractForm.salary"
+          [(ngModel)]="
+            contractForm.salary
+          "
           name="salary">
 
-        <div class="button-group">
-
-          <button
-            type="submit"
-            class="btn-primary">
-
-            {{ isEditMode
-              ? 'Speichern'
-              : 'Erstellen' }}
-
-          </button>
-
-          <button
-            type="button"
-            class="btn-secondary"
-            (click)="closeDialog()">
-
-            Abbrechen
-
-          </button>
-
-        </div>
-
       </form>
+
+      <div
+        class="enterprise-dialog-footer">
+
+        <button
+          type="button"
+          class="
+            enterprise-btn
+            enterprise-btn-secondary
+          "
+          (click)="closeDialog()">
+
+          Cancel
+
+        </button>
+
+        <button
+          type="submit"
+          class="
+            enterprise-btn
+            enterprise-btn-primary
+          "
+          (click)="saveContract()">
+
+          {{ isEditMode
+            ? 'Save'
+            : 'Create' }}
+
+        </button>
+
+      </div>
 
     </div>
 

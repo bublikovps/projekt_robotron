@@ -1,64 +1,71 @@
 <div class="report-page">
 
-  <h1>Department Asset Value Report</h1>
+  <div class="enterprise-kpi-grid">
 
-  <p class="report-date">
-    Letzte Aktualisierung:
-    {{ generatedAt | date:'dd.MM.yyyy HH:mm' }}
-  </p>
+    <div class="enterprise-kpi-card">
 
-  <p>
-    Analyse der Vermögenswerte nach Abteilungen.
-  </p>
+      <span class="enterprise-kpi-label">
 
-  <div class="kpi-container">
+        Departments
 
-    <div class="kpi-card">
-
-      <span class="kpi-label">
-        🏢 Abteilungen
       </span>
 
-      <span class="kpi-value">
+      <span class="enterprise-kpi-value">
+
         {{ totalDepartments }}
+
       </span>
 
     </div>
 
-    <div class="kpi-card">
+    <div class="enterprise-kpi-card">
 
-      <span class="kpi-label">
-        💻 Geräte
+      <span class="enterprise-kpi-label">
+
+        Devices
+
       </span>
 
-      <span class="kpi-value">
+      <span class="enterprise-kpi-value">
+
         {{ totalDevices }}
+
       </span>
 
     </div>
 
-    <div class="kpi-card">
+    <div class="enterprise-kpi-card">
 
-      <span class="kpi-label">
-        💰 Gesamtwert
+      <span class="enterprise-kpi-label">
+
+        Asset Value
+
       </span>
 
-      <span class="kpi-value">
+      <span
+        class="
+          enterprise-kpi-value
+          enterprise-kpi-primary
+        ">
+
         {{
           totalAssetValue
           | currency:'EUR':'symbol':'1.2-2':'de-DE'
         }}
+
       </span>
 
     </div>
 
-    <div class="kpi-card">
+    <div class="enterprise-kpi-card">
 
-      <span class="kpi-label">
-        🏆 Wertvollste Abteilung
+      <span class="enterprise-kpi-label">
+
+        Top Department
+
       </span>
 
-      <span class="kpi-value">
+      <span class="enterprise-kpi-value">
 
         {{ topDepartment?.departmentName }}
 
@@ -68,48 +75,125 @@
 
   </div>
 
-  <div class="toolbar">
+  <div class="report-toolbar">
 
     <input
-      class="search-input"
       type="text"
-      placeholder="Abteilung suchen..."
+      class="
+        enterprise-search
+        report-search
+      "
+      placeholder="Search department..."
       [(ngModel)]="searchTerm">
+
+    <div
+      class="enterprise-dropdown">
+
+      <button
+        type="button"
+        class="enterprise-dropdown-trigger"
+        (click)="toggleExportMenu()">
+
+        <span
+          class="enterprise-dropdown-label">
+
+          Export
+
+        </span>
+
+        <span
+          class="enterprise-dropdown-arrow">
+
+          ▼
+
+        </span>
+
+      </button>
+
+      <div
+        *ngIf="exportMenuOpen"
+        class="enterprise-dropdown-menu">
+
+        <button
+          type="button"
+          (click)="exportAs('csv')">
+
+          CSV
+
+        </button>
+
+        <button
+          type="button"
+          (click)="exportAs('excel')">
+
+          Excel
+
+        </button>
+
+        <button
+          type="button"
+          (click)="exportAs('pdf')">
+
+          PDF
+
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <div class="report-counter">
+
+    {{ filteredData.length }}
+    records found
 
   </div>
 
   @if (loading) {
 
-    <p>Daten werden geladen...</p>
+    <div class="report-loading">
+
+      Loading report...
+
+    </div>
 
   } @else {
 
-    <div class="table-wrapper">
+    <div class="enterprise-table-card">
 
-      <table class="report-table">
+      <table
+        class="enterprise-table">
 
         <thead>
 
           <tr>
 
             <th
+              class="sortable-column"
               (click)="sortBy('departmentName')">
 
-              Abteilung
+              Department
+              {{ getSortIcon('departmentName') }}
 
             </th>
 
             <th
+              class="sortable-column"
               (click)="sortBy('deviceCount')">
 
-              Geräte
+              Devices
+              {{ getSortIcon('deviceCount') }}
 
             </th>
 
             <th
+              class="sortable-column"
               (click)="sortBy('totalAssetValue')">
 
-              Vermögenswert
+              Asset Value
+              {{ getSortIcon('totalAssetValue') }}
 
             </th>
 
@@ -127,14 +211,19 @@
             <tr>
 
               <td>
+
                 {{ item.departmentName }}
+
               </td>
 
               <td>
+
                 {{ item.deviceCount }}
+
               </td>
 
-              <td>
+              <td
+                class="department-value">
 
                 {{
                   item.totalAssetValue
@@ -150,6 +239,16 @@
         </tbody>
 
       </table>
+
+      <div
+        *ngIf="
+          filteredData.length === 0
+        "
+        class="report-empty">
+
+        No records found
+
+      </div>
 
     </div>
 

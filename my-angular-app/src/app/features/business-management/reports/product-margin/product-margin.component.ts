@@ -7,7 +7,6 @@ import {
 } from '@angular/core';
 
 import { CommonModule } from '@angular/common';
-
 import { FormsModule } from '@angular/forms';
 
 import { BusinessReportService }
@@ -50,6 +49,7 @@ implements OnInit {
       this.cdr.detectChanges();
 
     });
+
   }
 
   reportData:
@@ -59,8 +59,7 @@ implements OnInit {
 
   searchTerm = '';
 
-  readonly generatedAt =
-    new Date();
+  exportMenuOpen = false;
 
   sortColumn:
     keyof ProductMarginResponse =
@@ -76,15 +75,18 @@ implements OnInit {
     if (!this.reportData.length) {
 
       return 0;
+
     }
 
     return this.totalMargin
       / this.reportData.length;
+
   }
 
   get totalProducts(): number {
 
     return this.reportData.length;
+
   }
 
   get totalMargin(): number {
@@ -94,6 +96,7 @@ implements OnInit {
         sum + item.margin,
       0
     );
+
   }
 
   get highestMargin(): number {
@@ -101,6 +104,7 @@ implements OnInit {
     if (!this.reportData.length) {
 
       return 0;
+
     }
 
     return Math.max(
@@ -108,6 +112,7 @@ implements OnInit {
         item => item.margin
       )
     );
+
   }
 
   get lowestMargin(): number {
@@ -115,6 +120,7 @@ implements OnInit {
     if (!this.reportData.length) {
 
       return 0;
+
     }
 
     return Math.min(
@@ -122,6 +128,7 @@ implements OnInit {
         item => item.margin
       )
     );
+
   }
 
   get filteredData():
@@ -132,6 +139,7 @@ implements OnInit {
     ) {
 
       return this.reportData;
+
     }
 
     const term =
@@ -147,6 +155,7 @@ implements OnInit {
           .toLowerCase()
           .includes(term)
     );
+
   }
 
   get sortedData():
@@ -168,6 +177,7 @@ implements OnInit {
         return this.sortDirection === 'asc'
           ? -1
           : 1;
+
       }
 
       if (valueA > valueB) {
@@ -175,12 +185,33 @@ implements OnInit {
         return this.sortDirection === 'asc'
           ? 1
           : -1;
+
       }
 
       return 0;
+
     });
 
     return data;
+
+  }
+
+  getSortIcon(
+    column: string
+  ): string {
+
+    if (
+      this.sortColumn !== column
+    ) {
+
+      return '↕';
+
+    }
+
+    return this.sortDirection === 'asc'
+      ? '↑'
+      : '↓';
+
   }
 
   sortBy(
@@ -198,13 +229,13 @@ implements OnInit {
           : 'asc';
 
       return;
+
     }
 
-    this.sortColumn =
-      column;
+    this.sortColumn = column;
 
-    this.sortDirection =
-      'asc';
+    this.sortDirection = 'asc';
+
   }
 
   exportCsv(): void {
@@ -223,6 +254,7 @@ implements OnInit {
         .join('\n');
 
     saveAs(
+
       new Blob(
         [csv],
         {
@@ -230,8 +262,13 @@ implements OnInit {
             'text/csv;charset=utf-8;'
         }
       ),
+
       'product-margin-report.csv'
+
     );
+
+    this.exportMenuOpen = false;
+
   }
 
   exportExcel(): void {
@@ -244,12 +281,11 @@ implements OnInit {
     const workbook =
       XLSX.utils.book_new();
 
-    XLSX.utils
-      .book_append_sheet(
-        workbook,
-        worksheet,
-        'Margin'
-      );
+    XLSX.utils.book_append_sheet(
+      workbook,
+      worksheet,
+      'Margin'
+    );
 
     const excelBuffer =
       XLSX.write(
@@ -261,11 +297,17 @@ implements OnInit {
       );
 
     saveAs(
+
       new Blob(
         [excelBuffer]
       ),
+
       'product-margin-report.xlsx'
+
     );
+
+    this.exportMenuOpen = false;
+
   }
 
   exportPdf(): void {
@@ -282,6 +324,7 @@ implements OnInit {
     autoTable(
       doc,
       {
+
         startY: 25,
 
         head: [[
@@ -308,12 +351,16 @@ implements OnInit {
 
             ]
           )
+
       }
     );
 
     doc.save(
       'product-margin-report.pdf'
     );
+
+    this.exportMenuOpen = false;
+
   }
 
   ngOnInit(): void {
@@ -353,6 +400,7 @@ implements OnInit {
         }
 
       });
+
   }
 
 }

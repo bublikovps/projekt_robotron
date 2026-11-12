@@ -7,7 +7,6 @@ import {
 } from '@angular/core';
 
 import { CommonModule } from '@angular/common';
-
 import { FormsModule } from '@angular/forms';
 
 import { BusinessReportService }
@@ -50,6 +49,7 @@ implements OnInit {
       this.cdr.detectChanges();
 
     });
+
   }
 
   reportData: LowStockResponse[] = [];
@@ -60,29 +60,30 @@ implements OnInit {
 
   threshold = 5;
 
-  readonly generatedAt =
-    new Date();
+  exportMenuOpen = false;
 
   sortColumn:
-    'sku'
+    | 'sku'
     | 'name'
     | 'lagerbestand'
-    | 'minimumStock' =
-      'lagerbestand';
+    | 'minimumStock'
+    = 'lagerbestand';
 
   sortDirection:
-    'asc'
-    | 'desc' =
-      'asc';
+    | 'asc'
+    | 'desc'
+    = 'asc';
 
   get activeThreshold(): number {
 
     return this.threshold;
+
   }
 
   get totalProducts(): number {
 
     return this.reportData.length;
+
   }
 
   get productsUnderMinimum(): number {
@@ -92,6 +93,7 @@ implements OnInit {
         item.lagerbestand <
         item.minimumStock
     ).length;
+
   }
 
   get totalDeficit(): number {
@@ -106,6 +108,7 @@ implements OnInit {
         ),
       0
     );
+
   }
 
   get filteredData():
@@ -114,6 +117,7 @@ implements OnInit {
     if (!this.searchTerm.trim()) {
 
       return this.reportData;
+
     }
 
     const term =
@@ -129,6 +133,7 @@ implements OnInit {
           .toLowerCase()
           .includes(term)
     );
+
   }
 
   get sortedData():
@@ -150,6 +155,7 @@ implements OnInit {
         return this.sortDirection === 'asc'
           ? -1
           : 1;
+
       }
 
       if (valueA > valueB) {
@@ -157,23 +163,46 @@ implements OnInit {
         return this.sortDirection === 'asc'
           ? 1
           : -1;
+
       }
 
       return 0;
+
     });
 
     return data;
+
+  }
+
+  getSortIcon(
+    column: string
+  ): string {
+
+    if (
+      this.sortColumn !== column
+    ) {
+
+      return '↕';
+
+    }
+
+    return this.sortDirection === 'asc'
+      ? '↑'
+      : '↓';
+
   }
 
   sortBy(
     column:
-      'sku'
+      | 'sku'
       | 'name'
       | 'lagerbestand'
       | 'minimumStock'
   ): void {
 
-    if (this.sortColumn === column) {
+    if (
+      this.sortColumn === column
+    ) {
 
       this.sortDirection =
         this.sortDirection === 'asc'
@@ -181,11 +210,13 @@ implements OnInit {
           : 'asc';
 
       return;
+
     }
 
     this.sortColumn = column;
 
     this.sortDirection = 'asc';
+
   }
 
   getDeficit(
@@ -197,6 +228,7 @@ implements OnInit {
       item.minimumStock -
       item.lagerbestand
     );
+
   }
 
   setThreshold(
@@ -206,11 +238,13 @@ implements OnInit {
     this.threshold = value;
 
     this.loadReport();
+
   }
 
   applyThreshold(): void {
 
     this.loadReport();
+
   }
 
   private loadReport(): void {
@@ -236,6 +270,7 @@ implements OnInit {
             this.cdr.detectChanges();
 
           });
+
         },
 
         error: () => {
@@ -247,6 +282,7 @@ implements OnInit {
         }
 
       });
+
   }
 
   exportCsv(): void {
@@ -261,7 +297,8 @@ implements OnInit {
       );
 
     const csv =
-      [header, ...rows].join('\n');
+      [header, ...rows]
+        .join('\n');
 
     saveAs(
       new Blob(
@@ -273,19 +310,26 @@ implements OnInit {
       ),
       'low-stock-report.csv'
     );
+
+    this.exportMenuOpen = false;
+
   }
 
   exportExcel(): void {
 
     const worksheet =
       XLSX.utils.json_to_sheet(
-        this.sortedData.map(item => ({
-          SKU: item.sku,
-          Name: item.name,
-          Stock: item.lagerbestand,
-          MinimumStock: item.minimumStock,
-          Deficit: this.getDeficit(item)
-        }))
+        this.sortedData.map(
+          item => ({
+            SKU: item.sku,
+            Name: item.name,
+            Stock: item.lagerbestand,
+            MinimumStock:
+              item.minimumStock,
+            Deficit:
+              this.getDeficit(item)
+          })
+        )
       );
 
     const workbook =
@@ -310,6 +354,9 @@ implements OnInit {
       new Blob([excelBuffer]),
       'low-stock-report.xlsx'
     );
+
+    this.exportMenuOpen = false;
+
   }
 
   exportPdf(): void {
@@ -350,10 +397,15 @@ implements OnInit {
     doc.save(
       'low-stock-report.pdf'
     );
+
+    this.exportMenuOpen = false;
+
   }
 
   ngOnInit(): void {
 
     this.loadReport();
+
   }
+
 }

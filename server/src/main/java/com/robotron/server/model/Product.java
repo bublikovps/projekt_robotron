@@ -14,13 +14,13 @@ public class Product {
     private Long id;
 
     @Column(nullable = false, unique = true)
-    private String sku; // Универсальный заводской артикул
+    private String sku; 
 
     @Column(nullable = false)
     private String name;
 
     @Column(nullable = false)
-    private String manufacturer; // Производитель оборудования
+    private String manufacturer; 
 
     @Column(columnDefinition = "TEXT")
     private String description;
@@ -37,6 +37,9 @@ public class Product {
     @Column(name = "supplier")
     private String supplier;
 
+    @Column(name = "image_url")
+    private String imageUrl;
+
     @Column(nullable = false)
     private int lagerbestand;
 
@@ -44,7 +47,7 @@ public class Product {
     private int minimumStock = 0;
 
     @Column(name = "is_active", nullable = false)
-    private boolean isActive = true; // Мягкое удаление для DSGVO/Бизнес-логики
+    private boolean isActive = true; 
 
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
@@ -112,6 +115,14 @@ public class Product {
 
     public void setSupplier(String supplier) {
         this.supplier = supplier;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 
 

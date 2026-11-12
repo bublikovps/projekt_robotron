@@ -1,126 +1,252 @@
-<div class="products-container">
+<div class="enterprise-page">
 
-  <h1>Products</h1>
+  <div class="report-toolbar">
 
-  <div
-    *ngIf="successMessage"
-    class="success-message">
+    <input
+      type="text"
+      class="
+        enterprise-search
+        report-search
+      "
+      placeholder="Search products..."
+      [(ngModel)]="searchTerm"
+      (input)="applyFilters()">
 
-    {{ successMessage }}
+    <div
+      class="enterprise-toolbar-right">
 
-  </div>
-
-  <div
-    *ngIf="errorMessage"
-    class="error-message">
-
-    {{ errorMessage }}
-
-  </div>
-
-  <div class="card">
-
-    <h2>
-      {{ isEditMode
-        ? 'Produkt bearbeiten'
-        : 'Produkt erstellen'
-      }}
-    </h2>
-
-    <form (ngSubmit)="saveProduct()">
-
-      <select
-        [(ngModel)]="productForm.categoryId"
-        name="categoryId">
-
-        <option [value]="0">
-          Kategorie auswählen
-        </option>
-
-        <option
-          *ngFor="let category of categories"
-          [value]="category.id">
-
-          {{ category.name }}
-
-        </option>
-
-      </select>
-
-      <input
-        type="text"
-        placeholder="SKU"
-        [(ngModel)]="productForm.sku"
-        name="sku"
-        [readonly]="isEditMode">
-
-      <input
-        type="text"
-        placeholder="Produktname"
-        [(ngModel)]="productForm.name"
-        name="name">
-
-      <input
-        type="text"
-        placeholder="Hersteller"
-        [(ngModel)]="productForm.manufacturer"
-        name="manufacturer">
-
-      <textarea
-        placeholder="Beschreibung"
-        [(ngModel)]="productForm.description"
-        name="description">
-      </textarea>
-
-      <input
-        type="number"
-        placeholder="Preis"
-        [(ngModel)]="productForm.price"
-        name="price">
-
-      <input
-        type="number"
-        placeholder="Lagerbestand"
-        [(ngModel)]="productForm.lagerbestand"
-        name="lagerbestand">
-
-      <input
-        type="number"
-        placeholder="Minimum Stock"
-        [(ngModel)]="productForm.minimumStock"
-        name="minimumStock">
-
-      <div class="button-group">
-
-        <button type="submit">
-
-          {{ isEditMode
-            ? 'Speichern'
-            : 'Erstellen'
-          }}
-
-        </button>
+      <div
+        class="enterprise-dropdown">
 
         <button
-          *ngIf="isEditMode"
           type="button"
-          (click)="cancelEdit()">
+          class="enterprise-dropdown-trigger"
+          (click)="toggleCategoryMenu()">
 
-          Abbrechen
+          <span
+            class="enterprise-dropdown-label">
+
+            {{
+              selectedCategoryId
+                ? categories.find(
+                    c =>
+                      c.id ===
+                      selectedCategoryId
+                  )?.name
+                : 'All Categories'
+            }}
+
+          </span>
+
+          <span
+            class="enterprise-dropdown-arrow">
+
+            ▼
+
+          </span>
 
         </button>
+
+        <div
+          *ngIf="categoryMenuOpen"
+          class="enterprise-dropdown-menu">
+
+          <button
+            type="button"
+            (click)="
+              selectedCategoryId = null;
+              categoryMenuOpen = false;
+              applyFilters()
+            ">
+
+            All Categories
+
+          </button>
+
+          <button
+            *ngFor="
+              let category
+              of categories
+            "
+            type="button"
+            (click)="
+              selectedCategoryId =
+                category.id;
+                categoryMenuOpen = false;
+              applyFilters()
+            ">
+
+            {{ category.name }}
+
+          </button>
+
+        </div>
 
       </div>
 
-    </form>
+      <div
+        class="enterprise-dropdown">
+
+        <button
+          type="button"
+          class="
+            enterprise-dropdown-trigger
+          "
+          (click)="toggleExportMenu()">
+
+          <span
+            class="
+              enterprise-dropdown-label
+            ">
+
+            Export
+
+          </span>
+
+          <span
+            class="
+              enterprise-dropdown-arrow
+            ">
+
+            ▼
+
+          </span>
+
+        </button>
+
+        <div
+          *ngIf="exportMenuOpen"
+          class="
+            enterprise-dropdown-menu
+          ">
+
+          <button
+            (click)="exportAs('csv')">
+
+            CSV
+
+          </button>
+
+          <button
+            (click)="exportAs('excel')">
+
+            Excel
+
+          </button>
+
+          <button
+            (click)="exportAs('pdf')">
+
+            PDF
+
+          </button>
+
+        </div>
+
+      </div>
+
+      <button
+        class="
+          enterprise-btn
+          enterprise-btn-secondary
+        "
+        (click)="importProducts()">
+
+        Import
+
+      </button>
+
+      <input
+      id="product-import-file"
+      type="file"
+      accept=".xlsx"
+      style="display:none"
+      (change)="
+        onImportFileSelected($event)
+      ">
+
+      <button
+        class="
+          enterprise-btn
+          enterprise-btn-primary
+        "
+        (click)="openCreateDialog()">
+
+        + Product
+
+      </button>
+
+    </div>
 
   </div>
 
-  <div class="card">
+  <div class="table-header">
 
-    <h2>Produkte</h2>
+    <div class="table-info">
 
-    <table>
+      {{
+        filteredProducts.length === 1
+          ? '1 Produkt'
+          : filteredProducts.length +
+            ' Produkte'
+      }}
+
+    </div>
+
+    <div class="filter-group">
+
+      <button
+        class="filter-btn"
+        [class.active]="
+          statusFilter === 'active'
+        "
+        (click)="
+          setStatusFilter('active')
+        ">
+
+        Active
+
+      </button>
+
+      <button
+        class="filter-btn"
+        [class.active]="
+          statusFilter === 'archived'
+        "
+        (click)="
+          setStatusFilter('archived')
+        ">
+
+        Archived
+
+      </button>
+
+      <button
+        class="filter-btn"
+        [class.active]="
+          statusFilter === 'all'
+        "
+        (click)="
+          setStatusFilter('all')
+        ">
+
+        All
+
+      </button>
+
+    </div>
+
+  </div>
+
+  <div
+    class="
+      enterprise-table-card
+    ">
+
+    <table
+      class="
+        enterprise-table
+      ">
 
       <thead>
 
@@ -130,17 +256,17 @@
 
         <th>Name</th>
 
-        <th>Hersteller</th>
+        <th>Category</th>
 
-        <th>Kategorie</th>
+        <th>Supplier</th>
 
-        <th>Preis</th>
+        <th>Price</th>
 
-        <th>Bestand</th>
+        <th>Stock</th>
 
-        <th>Min.</th>
+        <th>Status</th>
 
-        <th>Aktionen</th>
+        <th>Actions</th>
 
       </tr>
 
@@ -148,37 +274,143 @@
 
       <tbody>
 
-      <tr *ngFor="let product of products">
-
-        <td>{{ product.sku }}</td>
-
-        <td>{{ product.name }}</td>
-
-        <td>{{ product.manufacturer }}</td>
-
-        <td>{{ product.categoryName }}</td>
-
-        <td>{{ product.price }}</td>
-
-        <td>{{ product.lagerbestand }}</td>
-
-        <td>{{ product.minimumStock }}</td>
+      <tr
+        *ngFor="
+          let product
+          of filteredProducts
+        ">
 
         <td>
 
-          <button
-            (click)="editProduct(product)">
+          {{ product.sku }}
 
-            Bearbeiten
+        </td>
 
-          </button>
+        <td>
 
-          <button
-            (click)="archiveProduct(product)">
+          <strong>
 
-            Archivieren
+            {{ product.name }}
 
-          </button>
+          </strong>
+
+        </td>
+
+        <td>
+
+          {{ product.categoryName }}
+
+        </td>
+
+        <td>
+
+          {{ product.supplier }}
+
+        </td>
+
+        <td>
+
+          {{ product.price }}
+
+        </td>
+
+        <td>
+
+          {{ product.lagerbestand }}
+
+        </td>
+
+        <td>
+
+          <span
+            class="
+              enterprise-badge
+            "
+            [ngClass]="{
+              'enterprise-badge-success':
+                product.active,
+              'enterprise-badge-danger':
+                !product.active
+            }">
+
+            {{
+              product.active
+                ? 'Aktiv'
+                : 'Archiviert'
+            }}
+
+          </span>
+
+        </td>
+
+        <td>
+
+          <div
+            class="
+              enterprise-actions
+            ">
+
+            @if (product.active) {
+
+              <button
+                class="
+                  enterprise-btn
+                  enterprise-btn-secondary
+                "
+                (click)="
+                  editProduct(product)
+                ">
+
+                Edit
+
+              </button>
+
+              <button
+                class="
+                  enterprise-btn
+                  enterprise-btn-secondary
+                "
+                (click)="
+                  openCatalogView(product)
+                ">
+
+                Preview
+
+              </button>
+
+              <button
+                class="
+                  enterprise-btn
+                  enterprise-btn-danger
+                "
+                (click)="
+                  archiveProduct(product)
+                ">
+
+                Archive
+
+              </button>
+
+            }
+
+            @if (!product.active) {
+
+              <button
+                class="
+                  enterprise-btn
+                  enterprise-btn-primary
+                "
+                (click)="
+                  restoreProduct(product)
+                ">
+
+                Restore
+
+              </button>
+
+            }
+
+          </div>
 
         </td>
 
@@ -187,6 +419,318 @@
       </tbody>
 
     </table>
+
+  </div>
+
+  <div
+    *ngIf="showDialog"
+    class="
+      enterprise-dialog-overlay
+    ">
+
+    <div
+      class="
+        enterprise-dialog
+      ">
+
+      <h2>
+
+        {{
+          isEditMode
+            ? 'Edit Product'
+            : 'New Product'
+        }}
+
+      </h2>
+
+      <form
+        class="
+          enterprise-form-grid
+        ">
+
+        <div class="form-field">
+
+  <label>Category</label>
+
+  <div
+    class="
+      enterprise-dropdown
+      dialog-category-dropdown
+    ">
+
+    <button
+      type="button"
+      class="
+        enterprise-dropdown-trigger
+      "
+      (click)="toggleCategoryMenu()">
+
+      <span
+        class="
+          enterprise-dropdown-label
+        ">
+
+        {{
+          productForm.categoryId
+            ? categories.find(
+                c =>
+                  c.id ===
+                  productForm.categoryId
+              )?.name
+            : 'Select Category'
+        }}
+
+      </span>
+
+      <span
+        class="
+          enterprise-dropdown-arrow
+        ">
+
+        ▼
+
+      </span>
+
+    </button>
+
+    <div
+      *ngIf="categoryMenuOpen"
+      class="
+        enterprise-dropdown-menu
+      ">
+
+      <button
+        *ngFor="
+          let category
+          of categories
+        "
+        type="button"
+        (click)="
+          productForm.categoryId =
+            category.id;
+
+          categoryMenuOpen = false
+        ">
+
+        {{ category.name }}
+
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
+
+        <div class="form-field">
+
+          <label>SKU</label>
+
+          <input
+            type="text"
+            [(ngModel)]="
+              productForm.sku
+            "
+            name="sku"
+            [readonly]="
+              isEditMode
+            ">
+
+        </div>
+
+        <div class="form-field">
+
+          <label>Product Name</label>
+
+          <input
+            type="text"
+            [(ngModel)]="
+              productForm.name
+            "
+            name="name">
+
+        </div>
+
+        <div class="form-field">
+
+          <label>Manufacturer</label>
+
+          <input
+            type="text"
+            [(ngModel)]="
+              productForm.manufacturer
+            "
+            name="manufacturer">
+
+        </div>
+
+        <div class="form-field">
+
+          <label>Supplier</label>
+
+          <input
+            type="text"
+            [(ngModel)]="
+              productForm.supplier
+            "
+            name="supplier">
+
+        </div>
+
+        <div class="form-field">
+
+          <label>Catalog Price</label>
+
+          <input
+            type="number"
+            [(ngModel)]="
+              productForm.price
+            "
+            name="price">
+
+        </div>
+
+        <div class="form-field">
+
+          <label>Purchase Price</label>
+
+          <input
+            type="number"
+            [(ngModel)]="
+              productForm.purchasePrice
+            "
+            name="purchasePrice">
+
+        </div>
+
+        <div class="form-field">
+
+          <label>Sale Price</label>
+
+          <input
+            type="number"
+            [(ngModel)]="
+              productForm.salePrice
+            "
+            name="salePrice">
+
+        </div>
+
+        <div class="form-field">
+
+          <label>Current Stock</label>
+
+          <input
+            type="number"
+            [(ngModel)]="
+              productForm.lagerbestand
+            "
+            name="lagerbestand">
+
+        </div>
+
+        <div class="form-field">
+
+          <label>Minimum Stock</label>
+
+          <input
+            type="number"
+            [(ngModel)]="
+              productForm.minimumStock
+            "
+            name="minimumStock">
+
+        </div>
+
+        <div class="form-field form-field-full">
+
+          <label>Image URL</label>
+
+          <input
+            type="text"
+            [(ngModel)]="
+              productForm.imageUrl
+            "
+            name="imageUrl">
+
+        </div>
+
+        <div
+          *ngIf="productForm.imageUrl"
+          class="
+            form-field
+            form-field-full
+          ">
+
+          <label>Image Preview</label>
+
+          <div class="image-preview-card">
+
+            <img
+              [src]="productForm.imageUrl"
+              alt="Product Preview"
+              class="image-preview">
+
+          </div>
+
+        </div>
+
+        <div
+          class="
+            form-field
+            form-field-full
+          ">
+
+          <label>Description</label>
+
+          <textarea
+            rows="4"
+            [(ngModel)]="
+              productForm.description
+            "
+            name="description">
+          </textarea>
+
+        </div>
+
+      </form>
+
+      <div
+        class="
+          enterprise-dialog-footer
+        ">
+
+        <button
+          type="button"
+          class="
+            enterprise-btn
+            enterprise-btn-secondary
+          "
+          (click)="closeDialog()">
+
+          Cancel
+
+        </button>
+
+        <button
+          type="button"
+          class="
+            enterprise-btn
+            enterprise-btn-primary
+          "
+          (click)="saveProduct()">
+
+          {{
+            isEditMode
+              ? 'Save'
+              : 'Create'
+          }}
+
+        </button>
+
+      </div>
+
+    </div>
 
   </div>
 

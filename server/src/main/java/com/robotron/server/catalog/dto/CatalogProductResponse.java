@@ -18,6 +18,10 @@ public class CatalogProductResponse {
 
     private String categoryName;
 
+    private String imageUrl;
+
+    private int lagerbestand;
+
     public CatalogProductResponse() {
     }
 
@@ -28,7 +32,9 @@ public class CatalogProductResponse {
             String manufacturer,
             String description,
             BigDecimal price,
-            String categoryName) {
+            String categoryName,
+            String imageUrl,
+            int lagerbestand) {
 
         this.id = id;
         this.sku = sku;
@@ -37,6 +43,8 @@ public class CatalogProductResponse {
         this.description = description;
         this.price = price;
         this.categoryName = categoryName;
+        this.imageUrl = imageUrl;
+        this.lagerbestand = lagerbestand;
     }
 
     public Long getId() {
@@ -97,5 +105,23 @@ public class CatalogProductResponse {
     public void setCategoryName(
             String categoryName) {
         this.categoryName = categoryName;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(
+            String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
+
+    public int getLagerbestand() {
+        return lagerbestand;
+    }
+
+    public void setLagerbestand(
+            int lagerbestand) {
+        this.lagerbestand = lagerbestand;
     }
 }

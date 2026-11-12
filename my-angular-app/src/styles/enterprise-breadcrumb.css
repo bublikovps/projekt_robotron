@@ -1,0 +1,26 @@
+.enterprise-breadcrumb {
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 8px;
+
+  margin-bottom: 20px;
+
+  font-size: 14px;
+
+  color: var(--enterprise-text-muted);
+}
+
+.enterprise-breadcrumb-current {
+
+  color: var(--enterprise-text);
+
+  font-weight: 600;
+}
+
+.enterprise-breadcrumb-separator {
+
+  opacity: .5;
+}

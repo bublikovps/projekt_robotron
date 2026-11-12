@@ -2,27 +2,23 @@ import {
   Component,
   OnInit,
   inject,
-  ChangeDetectorRef,
-  afterNextRender
+  ChangeDetectorRef
 } from '@angular/core';
 
-import { CommonModule } from '@angular/common';
+import { CommonModule }
+from '@angular/common';
 
-import { FormsModule } from '@angular/forms';
+import { FormsModule }
+from '@angular/forms';
 
 import { AssetReportService }
 from '../services/asset-report.service';
 
+import { ExportService }
+from '../../../../shared/services/export.service';
+
 import { AssetValueResponse }
 from '../models/asset-value-response.model';
-
-import * as XLSX from 'xlsx';
-
-import { saveAs } from 'file-saver';
-
-import jsPDF from 'jspdf';
-
-import autoTable from 'jspdf-autotable';
 
 @Component({
   selector: 'app-asset-value',
@@ -31,8 +27,11 @@ import autoTable from 'jspdf-autotable';
     CommonModule,
     FormsModule
   ],
-  templateUrl: './asset-value.component.html',
-  styleUrls: ['./asset-value.component.css']
+  templateUrl:
+    './asset-value.component.html',
+  styleUrls: [
+    './asset-value.component.css'
+  ]
 })
 export class AssetValueComponent
 implements OnInit {
@@ -43,14 +42,8 @@ implements OnInit {
   private readonly reportService =
     inject(AssetReportService);
 
-  constructor() {
-
-    afterNextRender(() => {
-
-      this.cdr.detectChanges();
-
-    });
-  }
+  private readonly exportService =
+    inject(ExportService);
 
   reportData:
     AssetValueResponse[] = [];
@@ -59,8 +52,9 @@ implements OnInit {
 
   searchTerm = '';
 
-  readonly generatedAt =
-    new Date();
+  exportMenuOpen = false;
+
+  selectedExportFormat = '';
 
   sortColumn:
     keyof AssetValueResponse =
@@ -68,8 +62,40 @@ implements OnInit {
 
   sortDirection:
     'asc'
-    | 'desc' =
-      'desc';
+    | 'desc'
+    = 'desc';
+
+  ngOnInit(): void {
+
+    this.loadReport();
+  }
+
+  private loadReport(): void {
+
+    this.loading = true;
+
+    this.reportService
+      .getAssetValueReport()
+      .subscribe({
+
+        next: data => {
+
+          this.reportData = data;
+
+          this.loading = false;
+
+          this.cdr.detectChanges();
+        },
+
+        error: () => {
+
+          this.loading = false;
+
+          this.cdr.detectChanges();
+        }
+
+      });
+  }
 
   get totalDevices(): number {
 
@@ -106,23 +132,34 @@ implements OnInit {
   get filteredData():
     AssetValueResponse[] {
 
-    if (!this.searchTerm.trim()) {
+    const search =
+      this.searchTerm
+        .trim()
+        .toLowerCase();
+
+    if (!search) {
 
       return this.reportData;
     }
 
-    const term =
-      this.searchTerm.toLowerCase();
-
     return this.reportData.filter(
       item =>
+
         item.inventoryNumber
           .toLowerCase()
-          .includes(term)
+          .includes(search)
+
         ||
+
         item.serialNumber
           .toLowerCase()
-          .includes(term)
+          .includes(search)
+
+        ||
+
+        item.status
+          .toLowerCase()
+          .includes(search)
     );
   }
 
@@ -184,142 +221,104 @@ implements OnInit {
       'asc';
   }
 
-  exportCsv(): void {
+  getSortIcon(
+    column:
+      keyof AssetValueResponse
+  ): string {
 
-    const header =
-      'InventoryNumber,SerialNumber,Status,PurchaseValue,CurrentValue,Depreciation';
+    if (
+      this.sortColumn !== column
+    ) {
 
-    const rows =
+      return '↕';
+    }
+
+    return this.sortDirection === 'asc'
+      ? '↑'
+      : '↓';
+  }
+
+  toggleExportMenu(): void {
+
+    this.exportMenuOpen =
+      !this.exportMenuOpen;
+  }
+
+  exportAs(
+    format: string
+  ): void {
+
+    this.selectedExportFormat =
+      format;
+
+    this.exportData();
+
+    this.exportMenuOpen = false;
+  }
+
+  exportData(): void {
+
+    const exportData =
       this.sortedData.map(
-        item =>
-          `${item.inventoryNumber},${item.serialNumber},${item.status},${item.purchasePrice},${item.currentValue},${item.depreciationValue}`
+        item => ({
+
+          InventoryNumber:
+            item.inventoryNumber,
+
+          SerialNumber:
+            item.serialNumber,
+
+          Status:
+            item.status,
+
+          PurchaseValue:
+            item.purchasePrice,
+
+          CurrentValue:
+            item.currentValue,
+
+          Depreciation:
+            item.depreciationValue
+
+        })
       );
 
-    const csv =
-      [header, ...rows]
-        .join('\n');
+    switch (
+      this.selectedExportFormat
+    ) {
 
-    saveAs(
-      new Blob(
-        [csv],
-        {
-          type:
-            'text/csv;charset=utf-8;'
-        }
-      ),
-      'asset-value-report.csv'
-    );
-  }
+      case 'csv':
 
-  exportExcel(): void {
+        this.exportService
+          .exportToCsv(
+            exportData,
+            'asset-value-report'
+          );
 
-    const worksheet =
-      XLSX.utils.json_to_sheet(
-        this.sortedData
-      );
+        break;
 
-    const workbook =
-      XLSX.utils.book_new();
+      case 'excel':
 
-    XLSX.utils.book_append_sheet(
-      workbook,
-      worksheet,
-      'Asset Value'
-    );
+        this.exportService
+          .exportToExcel(
+            exportData,
+            'asset-value-report'
+          );
 
-    const excelBuffer =
-      XLSX.write(
-        workbook,
-        {
-          bookType: 'xlsx',
-          type: 'array'
-        }
-      );
+        break;
 
-    saveAs(
-      new Blob([excelBuffer]),
-      'asset-value-report.xlsx'
-    );
-  }
+      case 'pdf':
 
-  exportPdf(): void {
+        this.exportService
+          .exportToPdf(
+            exportData,
+            'asset-value-report'
+          );
 
-    const doc =
-      new jsPDF();
+        break;
+    }
 
-    doc.text(
-      'Asset Value Report',
-      14,
-      15
-    );
-
-    autoTable(
-      doc,
-      {
-        startY: 25,
-
-        head: [[
-          'Inventory',
-          'Serial',
-          'Status',
-          'Purchase',
-          'Current',
-          'Depreciation'
-        ]],
-
-        body:
-          this.sortedData.map(
-            item => [
-              item.inventoryNumber,
-              item.serialNumber,
-              item.status,
-              item.purchasePrice,
-              item.currentValue,
-              item.depreciationValue
-            ]
-          )
-      }
-    );
-
-    doc.save(
-      'asset-value-report.pdf'
-    );
-  }
-
-  ngOnInit(): void {
-
-    this.reportService
-      .getAssetValueReport()
-      .subscribe({
-
-        next: (data) => {
-
-          this.reportData =
-            data;
-
-          this.loading =
-            false;
-
-          this.cdr.detectChanges();
-
-          setTimeout(() => {
-
-            this.cdr.detectChanges();
-
-          });
-
-        },
-
-        error: () => {
-
-          this.loading =
-            false;
-
-          this.cdr.detectChanges();
-
-        }
-
-      });
+    this.selectedExportFormat = '';
   }
 
 }

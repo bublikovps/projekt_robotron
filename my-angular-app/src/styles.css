@@ -1,3 +1,29 @@
+@import './styles/enterprise-tokens.css';
+
+@import './styles/enterprise-layout.css';
+
+@import './styles/enterprise-buttons.css';
+
+@import './styles/enterprise-dialog.css';
+
+@import './styles/enterprise-table.css';
+
+@import './styles/enterprise-badges.css';
+
+@import './styles/enterprise-toolbar-v1.css';
+
+@import './styles/enterprise-breadcrumb.css';
+
+@import './styles/enterprise-actions.css';
+
+@import './styles/enterprise-dropdown.css';
+
+@import './styles/report-enterprise.css';
+
+@import './styles/enterprise-kpi.css';
+
+
+
 :root {
   --primary-color: #0f172a;
   --primary-light: #1e293b;
@@ -6,7 +32,7 @@
   --success-color: #10b981;
   --danger-color: #ef4444;
   --warning-color: #f59e0b;
-  --bg-main: #f1f5f9; /* Сделали фон чуть контрастнее */
+  --bg-main: #f1f5f9; 
   --bg-card: #ffffff;
   --text-main: #1e293b;
   --text-muted: #64748b;
@@ -21,7 +47,6 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* Глобальный ограничитель ширины сайта - спасение от растягивания! */
 .container {
   max-width: 1200px;
   margin: 0 auto;

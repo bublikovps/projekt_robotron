@@ -23,6 +23,8 @@ public class ProductResponse {
 
     private String supplier;
 
+    private String imageUrl;
+
     private int lagerbestand;
 
     private int minimumStock;
@@ -50,6 +52,7 @@ public class ProductResponse {
             BigDecimal purchasePrice,
             BigDecimal salePrice,
             String supplier,
+            String imageUrl,
             int lagerbestand,
             int minimumStock,
             boolean active,
@@ -67,6 +70,7 @@ public class ProductResponse {
         this.purchasePrice = purchasePrice;
         this.salePrice = salePrice;
         this.supplier = supplier;
+        this.imageUrl = imageUrl;
         this.lagerbestand = lagerbestand;
         this.minimumStock = minimumStock;
         this.active = active;
@@ -149,6 +153,15 @@ public class ProductResponse {
     public void setSupplier(String supplier) {
         this.supplier = supplier;
     }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
+
 
     public int getLagerbestand() {
         return lagerbestand;
