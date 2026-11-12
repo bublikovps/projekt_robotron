@@ -1,10 +1,12 @@
 # Robotron
 
-## IT Resource & Asset Management Platform
+## Enterprise IT Asset & Business Management Platform
 
-Robotron ist eine Full-Stack-Webanwendung zur Verwaltung von IT-Ressourcen, Mitarbeitern, Benutzerkonten, Verträgen, Geräten, Software-Lizenzen und Berechtigungen innerhalb eines Unternehmens.
+Robotron ist eine Full-Stack-Enterprise-Anwendung zur Verwaltung von IT-Assets, Mitarbeitern, Software-Lizenzen, Verträgen, Produkten, Lagerbeständen und Geschäftsprozessen innerhalb eines Unternehmens.
 
-Das Projekt verfolgt einen Domain-Driven-Ansatz und kombiniert Asset Management, Benutzerverwaltung, Sicherheitskonzepte und Business Management in einer zentralen Plattform.
+Das Projekt wird mit Angular 20, Spring Boot 3, PostgreSQL und Docker entwickelt und verfolgt einen Domain-Driven-Design-Ansatz mit klarer Trennung fachlicher Domänen.
+
+Ziel des Projekts ist die Entwicklung einer modernen Enterprise-Plattform unter Anwendung von Best Practices aus den Bereichen Softwarearchitektur, Security, Datenmodellierung, UI/UX und Full-Stack-Entwicklung.
 
 ---
 
@@ -18,6 +20,7 @@ Das Projekt verfolgt einen Domain-Driven-Ansatz und kombiniert Asset Management,
 - PostgreSQL Datenbank
 - Flyway Migrationen
 - Mailpit SMTP Testumgebung
+- Swagger/OpenAPI Dokumentation
 
 ### Security
 
@@ -30,6 +33,7 @@ Das Projekt verfolgt einen Domain-Driven-Ansatz und kombiniert Asset Management,
 - Passwortänderung beim ersten Login
 - Rollenbasierte Zugriffskontrolle (RBAC)
 - Rollen- und Berechtigungssystem
+- Permission-basierte Endpoint-Sicherheit
 
 ### Rollenmodell
 
@@ -41,102 +45,298 @@ Das Projekt verfolgt einen Domain-Driven-Ansatz und kombiniert Asset Management,
 ### Berechtigungssystem
 
 - Über 80 individuelle Berechtigungen
-- Role-Permission-Mapping
-- Benutzer-Rollen-Zuordnung
-- Permission-basierte Backend-Sicherheit
+- Rollen-Permission-Mapping
+- Benutzer-Rollen-Zuordnungen
+- Granulare Zugriffskontrolle auf Backend-Ebene
 
-### Business Management
+---
+
+# Frontend Enterprise Architektur
+
+## Implementierte Enterprise Patterns
+
+- Workspace Pattern
+- Breadcrumb Navigation Pattern
+- Enterprise Toolbar Pattern
+- Enterprise Table Pattern
+- Enterprise KPI Pattern
+- Enterprise Dropdown Pattern
+- Enterprise Dialog Pattern
+- Enterprise Actions Pattern
+- Enterprise Badge Pattern
+- Query Parameter Navigation Pattern
+- Responsive Enterprise Layout System
+
+### Globales Design System
+
+Gemeinsame UI-Komponenten und Styles:
+
+```text
+enterprise-tokens.css
+enterprise-layout.css
+enterprise-buttons.css
+enterprise-dropdown.css
+enterprise-table.css
+enterprise-kpi.css
+enterprise-dialog.css
+enterprise-actions.css
+enterprise-badges.css
+enterprise-breadcrumb.css
+report-enterprise.css
+```
+
+---
+
+# Catalog Module
+
+Der Produktkatalog wurde als eigenständiges Frontend-Modul umgesetzt.
+
+### Funktionen
+
+- Produktübersicht
+- Kategorienavigation
+- Query-Parameter Routing
+- Produktdetails
+- Category Statistics
+- Category Counts
+- Enterprise Product Cards
+- Enterprise Search
+
+### Suchfunktionen
+
+Suche über:
+
+- Name
+- SKU
+- Hersteller
+- Beschreibung
+- Kategorie
+
+### Routing
+
+Verwendet Query Parameters:
+
+```text
+/catalog?category=1
+```
+
+anstelle von:
+
+```text
+/catalog/category/1
+```
+
+um unnötige Component-Recreation und UI-Flackern zu vermeiden.
+
+---
+
+# Business Management
+
+## Workspace Struktur
+
+```text
+Business Management
+
+Master Data
+├── Categories
+└── Products
+
+Analytics
+├── Inventory Value
+├── Low Stock
+├── Product Margin
+└── Supplier Inventory
+```
+
+### Master Data
+
+#### Categories
+
+- Kategorienverwaltung
+- CRUD Operationen
+- Enterprise Toolbar
+- Enterprise Tabellen
+
+#### Products
 
 - Produktverwaltung
-- Kategorienverwaltung
-- Lagerverwaltung
-- Bestellverwaltung
+- CRUD Operationen
+- Suchfunktion
+- Exportfunktionen
+- Backend Integration
+- Enterprise Workspace Design
 
-### Asset Management
+### Analytics
+
+#### Inventory Value Report
+
+Analyse des Lagerwertes auf Produktebene.
+
+#### Low Stock Report
+
+Analyse kritischer Lagerbestände.
+
+#### Product Margin Report
+
+Analyse von Produktmargen und Profitabilität.
+
+#### Supplier Inventory Report
+
+Analyse der Lagerbestände nach Lieferanten.
+
+### Reporting Funktionen
+
+- Suche
+- Sortierung
+- KPI Dashboards
+- CSV Export
+- Excel Export
+- PDF Export
+
+---
+
+# Asset Management
+
+## Workspace Struktur
+
+```text
+Asset Management
+
+Master Data
+├── Departments
+├── Employees
+├── Contracts
+├── Devices
+└── Software Licenses
+
+Operations
+├── Device Assignments
+└── License Assignments
+
+Analytics
+├── Asset Value
+├── Active Devices
+├── Department Assets
+└── Expiring Licenses
+```
+
+### Departments
 
 - Abteilungsverwaltung
-- Mitarbeiterverwaltung
-- Arbeitsverträge
-- Geräteverwaltung
-- Software-Lizenzverwaltung
-- Gerätezuweisungen
-- Lizenzzuweisungen
+- CRUD Funktionen
 
-### Backend
+### Employees
+
+- Mitarbeiterverwaltung
+- Benutzerverknüpfung
+
+### Contracts
+
+- Vertragsverwaltung
+
+### Devices
+
+- Geräteverwaltung
+- Asset Lifecycle
+
+### Software Licenses
+
+- Lizenzverwaltung
+- Lizenzstatus
+- Nutzungsübersicht
+
+### Device Assignments
+
+Verknüpfung von:
+
+```text
+Mitarbeiter
+↓
+Gerät
+```
+
+### License Assignments
+
+Verknüpfung von:
+
+```text
+Mitarbeiter
+↓
+Software-Lizenz
+```
+
+### Asset Analytics
+
+#### Asset Value
+
+Übersicht über den Gesamtwert aller Assets.
+
+#### Active Devices
+
+Analyse aktiver Geräte.
+
+#### Department Assets
+
+Asset-Verteilung nach Abteilungen.
+
+#### Expiring Licenses
+
+Überwachung ablaufender Software-Lizenzen.
+
+---
+
+# Rechtliche Bereiche
+
+Implementierte Seiten:
+
+- Impressum
+- Datenschutz
+- Nutzungsbedingungen
+
+---
+
+# Backend Architektur
+
+## Implementiert
 
 - REST API
-- Swagger/OpenAPI
-- DTO-basierte Datenübertragung
-- Service Layer Architektur
-- JPA/Hibernate Mapping
+- DTO Layer
+- Service Layer
+- Repository Layer
+- JPA/Hibernate
+- PostgreSQL
+- Flyway
+- OpenAPI / Swagger
 
-### Frontend
+### Architektur
 
-- Angular Architektur
-- Feature-basierte Struktur
-- Route Guards
-- JWT Session Handling
-- Authentifizierung
-- Profilverwaltung
-- Administrationsbereich
-- Asset Management Bereich
+```text
+Controller
+↓
+Service
+↓
+Repository
+↓
+Database
+```
 
----
+### Mapping
 
-## Aktuell in Arbeit 🚧
-
-### Frontend
-
-- Dashboard Erweiterungen
-- Geräteoberflächen
-- Lizenzoberflächen
-- Erweiterte Formulare
-- Berechtigungsabhängige UI-Sichtbarkeit
-
-### Datenbank
-
-- Weitere Flyway Migrationen
-- Migration bestehender Datenbankänderungen auf Flyway
-
-### Entwicklerdokumentation
-
-- Architekturdiagramme
-- Datenbankdiagramm
-- API Dokumentation vervollständigen
+- DTO Mapping
+- Entity Mapping
+- Projection Support
 
 ---
 
-## Geplante Erweiterungen 📌
+# Produktimport
 
-### Reporting
+Implementiert:
 
-- Statistische Auswertungen
-- Exportfunktionen
-- Management Reports
+- Product Import API
+- ProductImportController
+- ProductImportService
 
-### Audit Modul
-
-- Änderungsverfolgung
-- Ereignisprotokolle
-- Benutzeraktivitäten
-
-### Dashboard
-
-- KPIs
-- Übersichtsdaten
-- Asset Kennzahlen
-
-### Assignment Workflows
-
-- Erweiterte Asset-Prozesse
-- Historisierung
-- Nachvollziehbarkeit von Änderungen
-
-### Benachrichtigungen
-
-- Lizenzabläufe
-- Vertragsabläufe
-- Erinnerungen
+Grundlage für zukünftige Massenimporte von Produktdaten.
 
 ---
 
@@ -148,6 +348,7 @@ Das Projekt verfolgt einen Domain-Driven-Ansatz und kombiniert Asset Management,
 - Spring Boot 3
 - Spring Security
 - Spring Data JPA
+- Hibernate
 - JWT
 - Flyway
 - PostgreSQL
@@ -156,9 +357,11 @@ Das Projekt verfolgt einen Domain-Driven-Ansatz und kombiniert Asset Management,
 
 ## Frontend
 
-- Angular
+- Angular 20
 - TypeScript
 - RxJS
+- Standalone Components
+- Angular Signals (schrittweise Einführung)
 
 ## Infrastruktur
 
@@ -169,9 +372,9 @@ Das Projekt verfolgt einen Domain-Driven-Ansatz und kombiniert Asset Management,
 
 ---
 
-# Architekturprinzip
+# Projektarchitektur
 
-Das Projekt folgt konsequent dem Domain-First-Ansatz.
+Das Projekt folgt einem Domain-First-Ansatz.
 
 ```text
 Business Domain
@@ -183,11 +386,11 @@ Backend
 Frontend
 ```
 
-Neue Funktionen werden immer in dieser Reihenfolge entwickelt.
+Neue Funktionen werden grundsätzlich in dieser Reihenfolge entwickelt.
 
 ---
 
-# Frontend Architektur
+# Frontend Struktur
 
 ```text
 src/app
@@ -210,6 +413,7 @@ services
 
 ```text
 components
+services
 utils
 ```
 
@@ -219,14 +423,18 @@ utils
 auth
 dashboard
 profile
-administration
+catalog
 business-management
 asset-management
+administration
+legal
 ```
 
 ---
 
-# Asset Management Domain
+# Fachliche Domänen
+
+## Asset Domain
 
 ```text
 Department
@@ -250,13 +458,31 @@ SoftwareLicense
 LicenseAssignment
 ```
 
+## Business Domain
+
+```text
+Category
+↓
+Product
+↓
+Inventory
+
+Product
+↓
+Supplier Analytics
+
+Product
+↓
+Margin Analytics
+```
+
 ---
 
 # Datenbank
 
 ## PostgreSQL
 
-Wesentliche Bereiche:
+Wesentliche Tabellenbereiche:
 
 ```text
 users
@@ -284,13 +510,15 @@ license_assignment
 
 # Flyway Migrationen
 
-Flyway verwaltet zukünftige Änderungen der Datenbankstruktur.
+Flyway verwaltet die Datenbankstruktur vollständig versioniert.
 
 Aktueller Stand:
 
 ```text
 V1__baseline.sql
 V2__create_system_settings.sql
+...
+V7__product_image_support.sql
 ```
 
 Migrationen werden automatisch beim Start der Anwendung ausgeführt.
@@ -326,9 +554,9 @@ Installierte Software:
 
 - Java 21
 - Maven
-- Docker Desktop
 - Node.js
 - Angular CLI
+- Docker Desktop
 - Git
 
 ---
@@ -376,7 +604,13 @@ http://localhost:8080
 
 ## Frontend starten
 
-Im Frontend-Verzeichnis:
+Im Verzeichnis:
+
+```bash
+my-angular-app
+```
+
+Start:
 
 ```bash
 npm install
@@ -403,7 +637,7 @@ User: postgres
 Password: mysecretpassword
 ```
 
-Alternativ können Umgebungsvariablen verwendet werden:
+Alternativ:
 
 ```text
 DB_URL
@@ -440,18 +674,57 @@ http://localhost:8080/swagger-ui/index.html
 
 ---
 
+# Aktuelle Roadmap
+
+## Administration Refactoring
+
+Geplant:
+
+- Administration Workspace
+- Enterprise Toolbar Pattern
+- Enterprise Table Pattern
+- Administration Dashboard
+- Breadcrumb Integration
+- Modernisierung bestehender Administration Views
+
+## User Preferences
+
+Geplant:
+
+- UserPreferencesService
+- Persistente Benutzereinstellungen
+- Tabellenpräferenzen
+- Dashboard Einstellungen
+- Theme Einstellungen
+- Catalog Preferences
+
+## Audit Modul
+
+Geplant:
+
+- Änderungsverfolgung
+- Benutzeraktivitäten
+- Historisierung wichtiger Aktionen
+- Audit Logs
+
+---
+
 # Projektziel
 
-Robotron dient als Demonstration moderner Enterprise-Softwareentwicklung mit Fokus auf:
+Robotron dient als Portfolio- und Lernprojekt zur Demonstration moderner Enterprise-Softwareentwicklung.
 
-- Domain-Driven Design Prinzipien
-- Backend Entwicklung mit Java und Spring Boot
-- Angular Frontend Entwicklung
-- Rollen- und Berechtigungssysteme
+Schwerpunkte:
+
+- Domain-Driven Design
+- Java Backend Entwicklung
+- Spring Boot Architektur
+- Angular Enterprise Frontends
+- RBAC Sicherheitskonzepte
 - REST API Entwicklung
-- Datenbankmodellierung mit PostgreSQL
-- Datenbankmigrationen mit Flyway
-- Containerisierung mit Docker
-- Enterprise Application Architecture
+- PostgreSQL Datenmodellierung
+- Flyway Migrationen
+- Docker Infrastruktur
+- Enterprise UI/UX Patterns
+- Full-Stack Architektur
 
-Das Projekt wird kontinuierlich erweitert und dient als praktisches Portfolio-Projekt zur Demonstration von Full-Stack- und Backend-Entwicklung im Enterprise-Umfeld.
+Das Projekt wird kontinuierlich weiterentwickelt und orientiert sich an realen Anforderungen moderner Unternehmensanwendungen.
