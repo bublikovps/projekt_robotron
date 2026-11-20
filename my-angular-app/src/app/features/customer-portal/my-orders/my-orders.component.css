@@ -1,0 +1,108 @@
+.page-header {
+
+  margin-bottom: 20px;
+
+}
+
+.search-toolbar {
+
+  margin-bottom: 20px;
+
+}
+
+.search-toolbar input {
+
+  width: 320px;
+
+  max-width: 100%;
+
+}
+
+.order-row {
+
+  cursor: pointer;
+
+}
+
+.order-row:hover {
+
+  background:
+    rgba(59, 130, 246, 0.05);
+
+}
+
+.empty-state {
+
+  padding: 48px;
+
+  text-align: center;
+
+  background: white;
+
+  border: 1px solid
+    var(--border-color);
+
+  border-radius: 16px;
+
+}
+
+.details-card {
+
+  margin-top: 24px;
+
+  background: white;
+
+  border: 1px solid
+    var(--border-color);
+
+  border-radius: 16px;
+
+  padding: 24px;
+
+}
+
+.details-grid {
+
+  display: grid;
+
+  grid-template-columns:
+    repeat(2, 1fr);
+
+  gap: 20px;
+
+  margin-bottom: 24px;
+
+}
+
+.address-box {
+
+  margin-bottom: 24px;
+
+}
+
+.detail-table {
+
+  margin-top: 16px;
+
+}
+
+.total-box {
+
+  margin-top: 20px;
+
+  text-align: right;
+
+  font-size: 20px;
+
+}
+
+@media (max-width: 900px) {
+
+  .details-grid {
+
+    grid-template-columns:
+      1fr;
+
+  }
+
+}

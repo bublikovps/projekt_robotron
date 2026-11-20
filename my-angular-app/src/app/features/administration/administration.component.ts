@@ -1,28 +1,61 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import {
+  Component,
+  OnInit,
+  ChangeDetectorRef
+} from '@angular/core';
+
+import {
+  CommonModule
+} from '@angular/common';
+
+import {
+  FormsModule
+} from '@angular/forms';
 
 import {
   AdminService,
   AdminUserData
 } from '../../core/services/admin.service';
 
-import { AuthService }
-from '../../core/services/auth.service';
+import {
+  AuthService
+} from '../../core/services/auth.service';
+
+type AdminArea =
+  | 'users'
+  | 'customers'
+  | 'employees';
 
 @Component({
   selector: 'app-administration',
+
   standalone: true,
+
   imports: [
     CommonModule,
     FormsModule
   ],
-  templateUrl: './administration.component.html',
-  styleUrls: ['./administration.component.css']
+
+  templateUrl:
+    './administration.component.html',
+
+  styleUrls: [
+    './administration.component.css'
+  ]
 })
-export class AdministrationComponent implements OnInit {
+export class AdministrationComponent
+implements OnInit {
 
   users: AdminUserData[] = [];
+
+  filteredUsers:
+    AdminUserData[] = [];
+
+  selectedArea:
+    AdminArea =
+      'users';
+
+  searchTerm = '';
 
   errorMessage = '';
 
@@ -31,15 +64,24 @@ export class AdministrationComponent implements OnInit {
   isLoading = false;
 
   newEmployee = {
+
     login: '',
+
     email: '',
-    role: ''
+
+    role: 'ROLE_MANAGER'
+
   };
 
   constructor(
-    private adminService: AdminService,
-    private authService: AuthService,
-    private cdr: ChangeDetectorRef
+    private adminService:
+      AdminService,
+
+    private authService:
+      AuthService,
+
+    private cdr:
+      ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
@@ -51,33 +93,46 @@ export class AdministrationComponent implements OnInit {
         next: user => {
 
           if (
-            user.role === 'ROLE_ADMIN' ||
-            user.role === 'ROLE_DIRECTOR'
+            user.role ===
+              'ROLE_ADMIN' ||
+            user.role ===
+              'ROLE_DIRECTOR'
           ) {
 
             this.loadUsers();
 
           } else {
 
-            this.users = [];
-
             this.errorMessage =
-              'Zugriff verweigert! Sie haben keine Berechtigung für dieses Panel.';
+              'Zugriff verweigert.';
 
             this.cdr.detectChanges();
+
           }
+
         },
 
         error: () => {
 
-          this.users = [];
-
           this.errorMessage =
-            'Zugriff verweigert! Sie haben keine Berechtigung für dieses Panel.';
+            'Zugriff verweigert.';
 
           this.cdr.detectChanges();
+
         }
+
       });
+
+  }
+
+  selectArea(
+    area: AdminArea
+  ): void {
+
+    this.selectedArea = area;
+
+    this.filterUsers();
+
   }
 
   loadUsers(): void {
@@ -86,181 +141,181 @@ export class AdministrationComponent implements OnInit {
       .getAllUsers()
       .subscribe({
 
-        next: (data) => {
+        next: data => {
 
           this.users = data;
 
-          this.errorMessage = '';
+          this.filterUsers();
 
           this.cdr.detectChanges();
+
         },
 
-        error: (err) => {
-
-          this.users = [];
+        error: err => {
 
           this.errorMessage =
             err.error?.error ||
-            'Fehler beim Laden der Benutzerdaten vom Server.';
-
+            'Fehler beim Laden.';
 
           this.cdr.detectChanges();
+
         }
+
       });
+
+  }
+
+  filterUsers(): void {
+
+    const term =
+      this.searchTerm
+        .toLowerCase()
+        .trim();
+
+    let result =
+      [...this.users];
+
+    switch (
+      this.selectedArea
+    ) {
+
+      case 'customers':
+
+        result =
+          result.filter(
+            user =>
+              user.role ===
+              'ROLE_CUSTOMER'
+          );
+
+        break;
+
+      case 'employees':
+
+        result =
+          result.filter(
+            user =>
+              user.role !==
+              'ROLE_CUSTOMER'
+          );
+
+        break;
+
+    }
+
+    if (term) {
+
+      result =
+        result.filter(
+          user =>
+            user.login
+              .toLowerCase()
+              .includes(term)
+            ||
+            user.email
+              .toLowerCase()
+              .includes(term)
+        );
+
+    }
+
+    this.filteredUsers =
+      result;
+
   }
 
   onCreateEmployee(): void {
 
-    this.errorMessage = '';
-    this.successMessage = '';
-
-    if (
-      !this.newEmployee.login ||
-      !this.newEmployee.email ||
-      !this.newEmployee.role
-    ) {
-
-      this.errorMessage =
-        'Bitte füllen Sie alle Pflichtfelder aus!';
-
-      return;
-    }
-
-    this.isLoading = true;
-
     this.adminService
-      .createEmployee(this.newEmployee)
+      .createEmployee(
+        this.newEmployee
+      )
       .subscribe({
 
-        next: (res) => {
+        next: res => {
 
           this.successMessage =
-            res.message ||
-            'Mitarbeiter erfolgreich angelegt!';
+            res.message;
 
-          this.resetForm();
+          this.newEmployee = {
+
+            login: '',
+
+            email: '',
+
+            role:
+              'ROLE_MANAGER'
+
+          };
 
           this.loadUsers();
 
-          this.clearMessages();
         },
 
-        error: (err) => {
-
-          this.isLoading = false;
+        error: err => {
 
           this.errorMessage =
-            err.error?.error ||
-            'Fehler beim Anlegen des Mitarbeiters.';
+            err.error?.error
+            ||
+            'Fehler';
 
-          this.cdr.detectChanges();
         }
+
       });
+
   }
 
-  onChangeRole(
-    userId: number,
-    currentRole: string
+  onDeleteUser(
+    userId: number
   ): void {
 
     if (
-      currentRole === 'ROLE_ADMIN' ||
-      currentRole === 'ROLE_DIRECTOR'
+      !confirm(
+        'Benutzer löschen?'
+      )
     ) {
-
-      this.errorMessage =
-        'Systemrollen können nicht manipuliert werden!';
-
-      this.clearMessages();
-
       return;
     }
 
-    const newRole =
-      currentRole === 'ROLE_CUSTOMER'
-        ? 'ROLE_MANAGER'
-        : 'ROLE_CUSTOMER';
-
     this.adminService
-      .changeUserRole(userId, newRole)
+      .deleteUser(userId)
       .subscribe({
 
         next: () => {
 
-          this.successMessage =
-            `Rolle erfolgreich auf ${newRole} aktualisiert!`;
+          this.loadUsers();
+
+        }
+
+      });
+
+  }
+
+  onChangeRole(
+    userId: number,
+    role: string
+  ): void {
+
+    const newRole =
+      role === 'ROLE_MANAGER'
+        ? 'ROLE_CUSTOMER'
+        : 'ROLE_MANAGER';
+
+    this.adminService
+      .changeUserRole(
+        userId,
+        newRole
+      )
+      .subscribe({
+
+        next: () => {
 
           this.loadUsers();
 
-          this.clearMessages();
-        },
-
-        error: (err) => {
-
-          this.errorMessage =
-            err.error?.error ||
-            'Fehler beim Ändern der Rolle.';
-
-          this.clearMessages();
         }
+
       });
+
   }
 
-  onDeleteUser(userId: number): void {
-
-    if (
-      confirm(
-        'Möchten Sie diesen Benutzer wirklich unwiderruflich löschen?'
-      )
-    ) {
-
-      this.adminService
-        .deleteUser(userId)
-        .subscribe({
-
-          next: () => {
-
-            this.successMessage =
-              'Benutzerkonto erfolgreich gelöscht.';
-
-            this.loadUsers();
-
-            this.clearMessages();
-          },
-
-          error: (err) => {
-
-            this.errorMessage =
-              err.error?.error ||
-              'Fehler beim Löschen des Benutzers.';
-
-            this.clearMessages();
-          }
-        });
-    }
-  }
-
-  private resetForm(): void {
-
-    this.newEmployee = {
-      login: '',
-      email: '',
-      role: ''
-    };
-
-    this.isLoading = false;
-  }
-
-  private clearMessages(): void {
-
-    setTimeout(() => {
-
-      this.successMessage = '';
-
-      this.errorMessage = '';
-
-      this.cdr.detectChanges();
-
-    }, 4000);
-  }
 }

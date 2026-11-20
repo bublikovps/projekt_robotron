@@ -48,6 +48,22 @@
           <a routerLink="/register" class="nav-item reg-btn">Registrieren</a>
         </ng-container>
 
+        <a
+          routerLink="/cart"
+          class="nav-item cart-link">
+
+          🛒 Warenkorb
+
+          <span
+            *ngIf="cartItemCount() > 0"
+            class="cart-badge">
+
+            {{ cartItemCount() }}
+
+          </span>
+
+        </a>
+
         <ng-container *ngIf="isLoggedIn()">
           <div class="user-menu">
             <button class="user-menu-button" (click)="toggleUserMenu()">

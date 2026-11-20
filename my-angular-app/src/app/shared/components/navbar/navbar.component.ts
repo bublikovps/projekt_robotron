@@ -23,6 +23,9 @@ from '../../../core/services/auth.service';
 
 import { CurrentUserResponse }
 from '../../../core/models/current-user-response.model';
+import { CartService } from '../../../core/services/cart.service';
+
+
 
 @Component({
   selector: 'app-navbar',
@@ -49,6 +52,9 @@ implements OnInit {
   private readonly cdr =
     inject(ChangeDetectorRef);
 
+  private readonly cartService =
+  inject(CartService);
+
   categories =
     this.catalogService.categories;
 
@@ -56,6 +62,9 @@ implements OnInit {
     signal<CurrentUserResponse | null>(
       null
     );
+  
+  cartItemCount =
+  this.cartService.itemCount;
 
   isMobileMenuOpen = false;
 

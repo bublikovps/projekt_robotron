@@ -11,7 +11,13 @@ import com.robotron.server.mapper.UserMapper;
 import com.robotron.server.model.Role;
 
 import java.security.SecureRandom;
+import java.time.LocalDateTime;
+
 import com.robotron.server.security.permissions.SecurityRoles;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +26,9 @@ import java.util.List;
 
 @Service
 public class UserService {
+
+    private static final Logger log =
+            LoggerFactory.getLogger(UserService.class);
 
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
@@ -44,69 +53,103 @@ public class UserService {
         this.emailService = emailService;
     }
 
-    
-
     public void createEmployee(
-                EmployeeCreateRequest request) {
-                        if (SecurityRoles.ADMIN.equals(request.getRole())
-                || SecurityRoles.DIRECTOR.equals(request.getRole())) {
+            EmployeeCreateRequest request) {
+
+        if (
+                SecurityRoles.ADMIN.equals(
+                        request.getRole()
+                )
+                        || SecurityRoles.DIRECTOR.equals(
+                        request.getRole()
+                )
+        ) {
 
             throw new BusinessException(
                     "Sie haben keine Berechtigung, administrative Systemrollen zu erstellen!"
             );
         }
 
-        if (userRepository.findByLogin(request.getLogin()).isPresent()) {
+        if (
+                userRepository
+                        .findByLogin(
+                                request.getLogin()
+                        )
+                        .isPresent()
+        ) {
 
             throw new BusinessException(
                     "Benutzername ist bereits vergeben!"
             );
         }
 
-        if (userRepository.findByEmail(request.getEmail()).isPresent()) {
+        if (
+                userRepository
+                        .findByEmail(
+                                request.getEmail()
+                        )
+                        .isPresent()
+        ) {
 
             throw new BusinessException(
                     "E-Mail-Adresse wird bereits verwendet!"
             );
         }
 
-        Role targetRole = roleRepository.findByName(
-                        request.getRole()
-                ).orElseThrow(() ->
-                        new NotFoundException(
-                                "Rolle " + request.getRole() + " nicht gefunden!"
+        Role targetRole =
+                roleRepository
+                        .findByName(
+                                request.getRole()
                         )
+                        .orElseThrow(
+                                () ->
+                                        new NotFoundException(
+                                                "Rolle "
+                                                        + request.getRole()
+                                                        + " nicht gefunden!"
+                                        )
+                        );
+
+        String temporaryPassword =
+                generateRandomPassword(
+                        12
+                );
+
+        User employee =
+                new User();
+
+        employee.setLogin(
+                request.getLogin()
+                        .trim()
         );
 
-        String temporaryPassword = generateRandomPassword(12);
+        employee.setEmail(
+                request.getEmail()
+                        .trim()
+                        .toLowerCase()
+        );
 
-        User employee = new User();
+        employee.setPasswordHash(
+                passwordEncoder.encode(
+                        temporaryPassword
+                )
+        );
 
-            employee.setLogin(
-                    request.getLogin().trim()
-            );
+        employee.setRoles(
+                new java.util.HashSet<>(
+                        java.util.List.of(
+                                targetRole
+                        )
+                )
+        );
 
-            employee.setEmail(
-                    request.getEmail()
-                            .trim()
-                            .toLowerCase()
-            );
+        employee.setPasswordChangeRequired(
+                true
+        );
 
-            employee.setPasswordHash(
-                    passwordEncoder.encode(
-                            temporaryPassword
-                    )
-            );
-
-            employee.setRoles(
-                    new java.util.HashSet<>(
-                            java.util.List.of(targetRole)
-                    )
-            );
-
-        employee.setPasswordChangeRequired(true);
-
-        userRepository.save(employee);
+        userRepository.save(
+                employee
+        );
 
         try {
 
@@ -129,87 +172,132 @@ public class UserService {
 
     public List<UserResponse> getAllUsers() {
 
-        List<User> rawUsers = userRepository.findAll();
+        List<User> rawUsers =
+                userRepository.findAll();
 
         List<UserResponse> mappedUsers =
                 new ArrayList<>();
 
         for (User u : rawUsers) {
 
-                mappedUsers.add(
-                        UserMapper.toResponse(u)
-                );
+            mappedUsers.add(
+                    UserMapper.toResponse(
+                            u
+                    )
+            );
         }
 
         return mappedUsers;
     }
 
-    public void blockUser(Long userId) {
+    public void blockUser(
+            Long userId
+    ) {
 
-        var userOpt = userRepository.findById(userId);
+        var userOpt =
+                userRepository.findById(
+                        userId
+                );
 
         if (userOpt.isEmpty()) {
+
             throw new NotFoundException(
                     "Benutzer nicht gefunden."
             );
         }
 
-        var user = userOpt.get();
+        User user =
+                userOpt.get();
 
-        user.setActive(false);
+        user.setActive(
+                false
+        );
 
-        userRepository.save(user);
+        userRepository.save(
+                user
+        );
     }
 
-    public void unblockUser(Long userId) {
+    public void unblockUser(
+            Long userId
+    ) {
 
-        var userOpt = userRepository.findById(userId);
+        var userOpt =
+                userRepository.findById(
+                        userId
+                );
 
         if (userOpt.isEmpty()) {
+
             throw new NotFoundException(
                     "Benutzer nicht gefunden."
             );
         }
 
-        var user = userOpt.get();
+        User user =
+                userOpt.get();
 
-        user.setActive(true);
+        user.setActive(
+                true
+        );
 
-        userRepository.save(user);
+        userRepository.save(
+                user
+        );
     }
 
     public void changeUserRole(
             Long userId,
             String newRoleName,
-            boolean isDirector) {
+            boolean isDirector
+    ) {
 
-        var userOpt = userRepository.findById(userId);
+        var userOpt =
+                userRepository.findById(
+                        userId
+                );
 
         if (userOpt.isEmpty()) {
+
             throw new NotFoundException(
                     "Benutzer nicht gefunden."
             );
         }
 
-        User user = userOpt.get();
+        User user =
+                userOpt.get();
 
-        String targetUserCurrentRole = user.getRoles()
-                .stream()
-                .findFirst()
-                .map(r -> r.getName())
-                .orElse("");
+        String targetUserCurrentRole =
+                user.getRoles()
+                        .stream()
+                        .findFirst()
+                        .map(Role::getName)
+                        .orElse("");
 
-        // Защита последнего директора
-        if (SecurityRoles.DIRECTOR.equals(targetUserCurrentRole)
-                && !SecurityRoles.DIRECTOR.equals(newRoleName)) {
+        if (
+                SecurityRoles.DIRECTOR.equals(
+                        targetUserCurrentRole
+                )
+                        && !SecurityRoles.DIRECTOR.equals(
+                        newRoleName
+                )
+        ) {
 
-            long directorCount = userRepository.findAll()
-                    .stream()
-                    .filter(u -> u.getRoles()
+            long directorCount =
+                    userRepository.findAll()
                             .stream()
-                            .anyMatch(r ->
-                                    SecurityRoles.DIRECTOR.equals(r.getName())))
-                    .count();
+                            .filter(
+                                    u ->
+                                            u.getRoles()
+                                                    .stream()
+                                                    .anyMatch(
+                                                            r ->
+                                                                    SecurityRoles.DIRECTOR.equals(
+                                                                            r.getName()
+                                                                    )
+                                                    )
+                            )
+                            .count();
 
             if (directorCount <= 1) {
 
@@ -219,9 +307,14 @@ public class UserService {
             }
         }
 
-        // Только директор может менять ADMIN/DIRECTOR
-        if (SecurityRoles.ADMIN.equals(targetUserCurrentRole)
-                || SecurityRoles.DIRECTOR.equals(targetUserCurrentRole)) {
+        if (
+                SecurityRoles.ADMIN.equals(
+                        targetUserCurrentRole
+                )
+                        || SecurityRoles.DIRECTOR.equals(
+                        targetUserCurrentRole
+                )
+        ) {
 
             if (!isDirector) {
 
@@ -231,7 +324,10 @@ public class UserService {
             }
         }
 
-        var roleOpt = roleRepository.findByName(newRoleName);
+        var roleOpt =
+                roleRepository.findByName(
+                        newRoleName
+                );
 
         if (roleOpt.isEmpty()) {
 
@@ -242,18 +338,26 @@ public class UserService {
 
         user.setRoles(
                 new java.util.HashSet<>(
-                        java.util.List.of(roleOpt.get())
+                        java.util.List.of(
+                                roleOpt.get()
+                        )
                 )
         );
 
-        userRepository.save(user);
+        userRepository.save(
+                user
+        );
     }
 
     public void deleteUser(
             Long userId,
-            boolean isDirector) {
+            boolean isDirector
+    ) {
 
-        var userOpt = userRepository.findById(userId);
+        var userOpt =
+                userRepository.findById(
+                        userId
+                );
 
         if (userOpt.isEmpty()) {
 
@@ -262,24 +366,37 @@ public class UserService {
             );
         }
 
-        User user = userOpt.get();
+        User user =
+                userOpt.get();
 
-        String targetRole = user.getRoles()
-                .stream()
-                .findFirst()
-                .map(r -> r.getName())
-                .orElse("");
+        String targetRole =
+                user.getRoles()
+                        .stream()
+                        .findFirst()
+                        .map(Role::getName)
+                        .orElse("");
 
-        // Защита последнего директора
-        if (SecurityRoles.DIRECTOR.equals(targetRole)) {
+        if (
+                SecurityRoles.DIRECTOR.equals(
+                        targetRole
+                )
+        ) {
 
-            long directorCount = userRepository.findAll()
-                    .stream()
-                    .filter(u -> u.getRoles()
+            long directorCount =
+                    userRepository.findAll()
                             .stream()
-                            .anyMatch(r ->
-                                    SecurityRoles.DIRECTOR.equals(r.getName())))
-                    .count();
+                            .filter(
+                                    u ->
+                                            u.getRoles()
+                                                    .stream()
+                                                    .anyMatch(
+                                                            r ->
+                                                                    SecurityRoles.DIRECTOR.equals(
+                                                                            r.getName()
+                                                                    )
+                                                    )
+                            )
+                            .count();
 
             if (directorCount <= 1) {
 
@@ -289,10 +406,15 @@ public class UserService {
             }
         }
 
-        // Только директор может удалять ADMIN/DIRECTOR
         if (
-                (SecurityRoles.ADMIN.equals(targetRole)
-                        || SecurityRoles.DIRECTOR.equals(targetRole))
+                (
+                        SecurityRoles.ADMIN.equals(
+                                targetRole
+                        )
+                                || SecurityRoles.DIRECTOR.equals(
+                                targetRole
+                        )
+                )
                         && !isDirector
         ) {
 
@@ -301,20 +423,110 @@ public class UserService {
             );
         }
 
-        userRepository.deleteById(userId);
+        userRepository.deleteById(
+                userId
+        );
     }
 
-    private String generateRandomPassword(int length) {
+    public void anonymizeUser(
+            Long userId
+    ) {
 
-        StringBuilder sb = new StringBuilder(length);
+        User user =
+                userRepository
+                        .findById(
+                                userId
+                        )
+                        .orElseThrow(
+                                () ->
+                                        new NotFoundException(
+                                                "User not found."
+                                        )
+                        );
+
+        if (user.getAnonymizedAt() != null) {
+
+            throw new BusinessException(
+                    "User is already anonymized."
+            );
+        }
+
+        String originalLogin =
+                user.getLogin();
+
+        String originalEmail =
+                user.getEmail();
+
+        user.setLogin(
+                "deleted-user-" + user.getId()
+        );
+
+        user.setEmail(
+                "deleted-user-"
+                        + user.getId()
+                        + "@anonymized.local"
+        );
+
+        user.setVorname(
+                null
+        );
+
+        user.setNachname(
+                null
+        );
+
+        user.setCompanyName(
+                null
+        );
+
+        user.setUstIdnr(
+                null
+        );
+
+        user.setDefaultShippingAddress(
+                null
+        );
+
+        user.setActive(
+                false
+        );
+
+        user.setAnonymizedAt(
+                LocalDateTime.now()
+        );
+
+        userRepository.save(
+                user
+        );
+
+        log.warn(
+                "[DSGVO] User anonymized | id={} | login={} | email={}",
+                user.getId(),
+                originalLogin,
+                originalEmail
+        );
+    }
+
+    private String generateRandomPassword(
+            int length
+    ) {
+
+        StringBuilder sb =
+                new StringBuilder(
+                        length
+                );
 
         for (int i = 0; i < length; i++) {
 
             int randomIndex =
-                    random.nextInt(PASSWORD_ALLOW_BASE.length());
+                    random.nextInt(
+                            PASSWORD_ALLOW_BASE.length()
+                    );
 
             sb.append(
-                    PASSWORD_ALLOW_BASE.charAt(randomIndex)
+                    PASSWORD_ALLOW_BASE.charAt(
+                            randomIndex
+                    )
             );
         }
 

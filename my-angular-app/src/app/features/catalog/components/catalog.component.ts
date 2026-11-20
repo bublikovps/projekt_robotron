@@ -31,6 +31,9 @@ from '../services/catalog.service';
 import { CatalogProductResponse }
 from '../models/catalog-product-response.model';
 
+import { CartService }
+from '../../../core/services/cart.service';
+
 @Component({
   selector: 'app-catalog',
   standalone: true,
@@ -59,6 +62,10 @@ implements OnInit {
 
   private readonly searchSubject =
     new Subject<string>();
+
+  private readonly cartService =
+  inject(CartService);
+
 
   categories =
     this.catalogService.categories;
@@ -172,5 +179,15 @@ implements OnInit {
   ): number {
 
     return product.id;
+  }
+
+  addToCart(
+    product: CatalogProductResponse
+  ): void {
+
+    this.cartService.addToCart(
+      product
+    );
+
   }
 }

@@ -1,6 +1,14 @@
-import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import {
+  Injectable
+} from '@angular/core';
+
+import {
+  HttpClient
+} from '@angular/common/http';
+
+import {
+  Observable
+} from 'rxjs';
 
 export interface AdminUserData {
 
@@ -10,9 +18,20 @@ export interface AdminUserData {
 
   email: string;
 
+  role: string;
+
+  active: boolean;
+
   createdAt: string;
 
-  role: string;
+  customerType?: string | null;
+
+  companyName?: string | null;
+
+  ustIdnr?: string | null;
+
+  accountBalance?: number | null;
+
 }
 
 @Injectable({
@@ -27,14 +46,18 @@ export class AdminService {
     private http: HttpClient
   ) {}
 
-  getAllUsers(): Observable<AdminUserData[]> {
+  getAllUsers():
+  Observable<AdminUserData[]> {
 
-    return this.http.get<AdminUserData[]>(
+    return this.http.get<
+      AdminUserData[]
+    >(
       this.apiUrl,
       {
         withCredentials: true
       }
     );
+
   }
 
   changeUserRole(
@@ -43,14 +66,19 @@ export class AdminService {
   ): Observable<any> {
 
     return this.http.put(
+
       `${this.apiUrl}/${userId}/role`,
+
       {
         newRoleName
       },
+
       {
         withCredentials: true
       }
+
     );
+
   }
 
   deleteUser(
@@ -58,11 +86,15 @@ export class AdminService {
   ): Observable<any> {
 
     return this.http.delete(
+
       `${this.apiUrl}/${userId}`,
+
       {
         withCredentials: true
       }
+
     );
+
   }
 
   createEmployee(
@@ -75,10 +107,14 @@ export class AdminService {
 
     return this.http.post<any>(
       this.apiUrl,
+
       employeeData,
+
       {
         withCredentials: true
       }
     );
+
   }
+
 }

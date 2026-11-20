@@ -19,6 +19,9 @@ from '../services/catalog.service';
 import { CatalogProductResponse }
 from '../models/catalog-product-response.model';
 
+import { CartService }
+from '../../../core/services/cart.service';
+
 @Component({
   selector: 'app-product-details',
   standalone: true,
@@ -41,6 +44,7 @@ implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private catalogService: CatalogService,
+    private cartService: CartService,
     private cdr: ChangeDetectorRef
   ) {}
 
@@ -111,10 +115,12 @@ implements OnInit {
     if (!this.product) {
 
       return;
+
     }
 
-    alert(
-      `${this.product.name} wurde zum Warenkorb hinzugefügt.`
+    this.cartService.addToCart(
+      this.product
     );
+
   }
 }

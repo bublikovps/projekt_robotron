@@ -1,0 +1,648 @@
+<div class="enterprise-page">
+
+  <div class="page-header">
+
+    <div>
+
+      <h2>
+        Orders Management
+      </h2>
+
+      <p>
+        Enterprise Order-to-Cash Management
+      </p>
+
+    </div>
+
+    <button
+      class="
+        enterprise-btn
+        enterprise-btn-secondary
+      "
+      (click)="refresh()">
+
+      Refresh
+
+    </button>
+
+  </div>
+
+  @if (dashboard) {
+
+    <div class="enterprise-kpi-grid">
+
+      <div class="enterprise-kpi-card">
+
+        <span class="enterprise-kpi-label">
+          Total Orders
+        </span>
+
+        <span class="enterprise-kpi-value">
+          {{ dashboard.totalOrders }}
+        </span>
+
+      </div>
+
+      <div class="enterprise-kpi-card">
+
+        <span class="enterprise-kpi-label">
+          Pending Payment
+        </span>
+
+        <span class="enterprise-kpi-value enterprise-kpi-warning">
+          {{ dashboard.pendingOrders }}
+        </span>
+
+      </div>
+
+      <div class="enterprise-kpi-card">
+
+        <span class="enterprise-kpi-label">
+          Paid
+        </span>
+
+        <span class="enterprise-kpi-value enterprise-kpi-success">
+          {{ dashboard.paidOrders }}
+        </span>
+
+      </div>
+
+      <div class="enterprise-kpi-card">
+
+        <span class="enterprise-kpi-label">
+          Shipped
+        </span>
+
+        <span class="enterprise-kpi-value enterprise-kpi-primary">
+          {{ dashboard.shippedOrders }}
+        </span>
+
+      </div>
+
+      <div class="enterprise-kpi-card">
+
+        <span class="enterprise-kpi-label">
+          Revenue
+        </span>
+
+        <span class="enterprise-kpi-value">
+          {{ dashboard.totalRevenue }}
+          €
+        </span>
+
+      </div>
+
+    </div>
+
+  }
+
+  <div class="report-toolbar">
+
+    <input
+      type="text"
+      class="
+        enterprise-search
+        report-search
+      "
+      placeholder="Search orders..."
+      [(ngModel)]="searchTerm"
+      (input)="applyFilters()">
+
+    <div
+      class="enterprise-toolbar-right">
+
+      <div
+        class="enterprise-dropdown">
+
+        <button
+          type="button"
+          class="enterprise-dropdown-trigger"
+          (click)="statusMenuOpen = !statusMenuOpen">
+
+          <span
+            class="enterprise-dropdown-label">
+
+            {{ selectedStatus }}
+
+          </span>
+
+          <span
+            class="enterprise-dropdown-arrow">
+
+            ▼
+
+          </span>
+
+        </button>
+
+        <div
+          *ngIf="statusMenuOpen"
+          class="enterprise-dropdown-menu">
+
+          @for (
+            status of statuses;
+            track status
+          ) {
+
+            <button
+              type="button"
+              (click)="
+                selectedStatus =
+                status;
+                statusMenuOpen = false;
+                applyFilters()
+              ">
+
+              {{ status }}
+
+            </button>
+
+          }
+
+        </div>
+
+      </div>
+
+      <button
+        class="
+          enterprise-btn
+          enterprise-btn-secondary
+        "
+        (click)="refresh()">
+
+        Refresh
+
+      </button>
+
+      <button
+        class="
+          enterprise-btn
+          enterprise-btn-secondary
+        "
+        (click)="exportCsv()">
+
+        Export CSV
+
+      </button>
+
+    </div>
+
+  </div>
+
+  <div class="table-info">
+
+    {{ filteredOrders.length }}
+
+    orders found
+
+  </div>
+
+  @if (isLoading) {
+
+    <div class="empty-state">
+
+      <div>
+
+        <h3>
+          Loading orders...
+        </h3>
+
+      </div>
+
+    </div>
+
+  } @else {
+
+    <div
+      class="enterprise-table-card">
+
+      <table
+        class="enterprise-table">
+
+        <thead>
+
+          <tr>
+
+            <th>
+              Order
+            </th>
+
+            <th>
+              Customer
+            </th>
+
+            <th>
+              Status
+            </th>
+
+            <th>
+              Invoice
+            </th>
+
+            <th>
+              Delivery
+            </th>
+
+            <th>
+              Total
+            </th>
+
+          </tr>
+
+        </thead>
+
+        <tbody>
+
+          @for (
+            order of filteredOrders;
+            track order.id
+          ) {
+
+            <tr
+              class="order-row"
+              [class.selected]="
+                selectedOrderNumber ===
+                order.orderNumber
+              "
+              (click)="
+                loadOrderDetails(
+                  order.orderNumber
+                )
+              ">
+
+              <td class="order-number">
+
+                {{ order.orderNumber }}
+
+              </td>
+
+              <td>
+
+                {{ order.customerName }}
+
+              </td>
+
+              <td>
+
+                <span
+                  class="enterprise-badge"
+                  [ngClass]="{
+
+                    'enterprise-badge-success':
+                      order.status === 'PAID'
+                      || order.status === 'DELIVERED',
+
+                    'enterprise-badge-warning':
+                      order.status === 'PENDING_PAYMENT'
+                      || order.status === 'PROCESSING',
+
+                    'enterprise-badge-danger':
+                      order.status === 'CANCELLED'
+
+                  }">
+
+                  {{ order.status }}
+
+                </span>
+
+              </td>
+
+              <td>
+
+                {{
+                  order.invoiceNumber
+                  || '-'
+                }}
+
+              </td>
+
+              <td>
+
+                {{
+                  order.deliveryNumber
+                  || '-'
+                }}
+
+              </td>
+
+              <td>
+
+                {{ order.totalPrice }}
+                €
+
+              </td>
+
+            </tr>
+
+          }
+
+        </tbody>
+
+      </table>
+
+    </div>
+
+  }
+
+  @if (selectedOrder) {
+
+    <div class="details-panel">
+
+      <div class="details-header">
+
+        <h3>
+
+          Order Details
+
+        </h3>
+
+        <span
+          class="enterprise-badge"
+          [ngClass]="{
+
+            'enterprise-badge-success':
+              selectedOrder.status === 'PAID'
+              || selectedOrder.status === 'DELIVERED',
+
+            'enterprise-badge-warning':
+              selectedOrder.status === 'PENDING_PAYMENT'
+              || selectedOrder.status === 'PROCESSING',
+
+            'enterprise-badge-danger':
+              selectedOrder.status === 'CANCELLED'
+
+          }">
+
+          {{ selectedOrder.status }}
+
+        </span>
+
+      </div>
+
+      <div class="details-content">
+
+        <div class="details-grid">
+
+          <div class="details-section">
+
+            <h4>
+
+              Order Information
+
+            </h4>
+
+            <div class="detail-item">
+
+              <span class="label">
+                Order Number
+              </span>
+
+              <span class="value">
+                {{ selectedOrder.orderNumber }}
+              </span>
+
+            </div>
+
+            <div class="detail-item">
+
+              <span class="label">
+                Invoice
+              </span>
+
+              <span class="value">
+                {{
+                  selectedOrder.invoiceNumber
+                  || '-'
+                }}
+              </span>
+
+            </div>
+
+            <div class="detail-item">
+
+              <span class="label">
+                Delivery Note
+              </span>
+
+              <span class="value">
+                {{
+                  selectedOrder.deliveryNumber
+                  || '-'
+                }}
+              </span>
+
+            </div>
+
+            <div class="detail-item">
+
+              <span class="label">
+                Tracking
+              </span>
+
+              <span class="value">
+                {{
+                  selectedOrder.trackingNumber
+                  || '-'
+                }}
+              </span>
+
+            </div>
+
+            <div class="detail-item">
+
+              <span class="label">
+                Total
+              </span>
+
+              <span class="value">
+                {{ selectedOrder.totalPrice }}
+                €
+              </span>
+
+            </div>
+
+          </div>
+
+          <div class="details-section">
+
+            <h4>
+
+              Customer Information
+
+            </h4>
+
+            <div class="detail-item">
+
+              <span class="label">
+                Customer
+              </span>
+
+              <span class="value">
+                {{ selectedOrder.customerName }}
+              </span>
+
+            </div>
+
+            <div class="detail-item">
+
+              <span class="label">
+                Company
+              </span>
+
+              <span class="value">
+                {{
+                  selectedOrder.companyName
+                  || '-'
+                }}
+              </span>
+
+            </div>
+
+            <div class="detail-item">
+
+              <span class="label">
+                USt-ID
+              </span>
+
+              <span class="value">
+                {{
+                  selectedOrder.ustIdnr
+                  || '-'
+                }}
+              </span>
+
+            </div>
+
+          </div>
+
+          <div class="details-section">
+
+            <h4>
+
+              Documents
+
+            </h4>
+
+            <div
+              class="document-actions">
+
+              <button
+                class="
+                  enterprise-btn
+                  enterprise-btn-primary
+                "
+                (click)="openInvoice()">
+
+                Invoice PDF
+
+              </button>
+
+              <button
+                class="
+                  enterprise-btn
+                  enterprise-btn-secondary
+                "
+                (click)="openDeliveryNote()">
+
+                Delivery Note PDF
+
+              </button>
+
+            </div>
+
+          </div>
+
+          <div class="details-section">
+
+            <h4>
+
+              Shipping Address
+
+            </h4>
+
+            <div
+              class="address-box">
+
+              {{
+                selectedOrder.shippingAddress
+              }}
+
+            </div>
+
+          </div>
+
+        </div>
+
+        <div class="items-wrapper">
+
+          <h4>
+
+            Order Items
+
+          </h4>
+
+          <table
+            class="enterprise-table">
+
+            <thead>
+
+              <tr>
+
+                <th>SKU</th>
+                <th>Product</th>
+                <th>Qty</th>
+                <th>Net</th>
+                <th>Gross</th>
+
+              </tr>
+
+            </thead>
+
+            <tbody>
+
+              @for (
+                item of selectedOrder.items;
+                track item.sku
+              ) {
+
+                <tr>
+
+                  <td>
+                    {{ item.sku }}
+                  </td>
+
+                  <td>
+                    <strong>
+                      {{ item.productName }}
+                    </strong>
+                  </td>
+
+                  <td>
+                    {{ item.quantity }}
+                  </td>
+
+                  <td>
+                    {{ item.unitPriceNet }}
+                  </td>
+
+                  <td>
+                    {{ item.unitPriceGross }}
+                  </td>
+
+                </tr>
+
+              }
+
+            </tbody>
+
+          </table>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  }
+
+</div>

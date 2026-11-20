@@ -9,41 +9,149 @@ import org.springframework.stereotype.Service;
 @Service
 public class EmailService {
 
-    private static final Logger log = LoggerFactory.getLogger(EmailService.class);
-    
-    // Встроенный инструмент Spring, который сам подхватит наши настройки localhost:1025
+    private static final Logger log =
+            LoggerFactory.getLogger(
+                    EmailService.class
+            );
+
     private final JavaMailSender mailSender;
 
-    public EmailService(JavaMailSender mailSender) {
+    public EmailService(
+            JavaMailSender mailSender
+    ) {
+
         this.mailSender = mailSender;
+
     }
 
-    public void sendPasswordResetEmail(String toEmail, String resetLink) {
+    public void sendPasswordResetEmail(
+            String toEmail,
+            String resetLink
+    ) {
+
         try {
-            SimpleMailMessage message = new SimpleMailMessage();
-            
-            message.setFrom("noreply@it-portal.de"); // Красивый B2B адрес отправителя
-            message.setTo(toEmail);                  // Кому шлём (Email нашего юзера)
-            message.setSubject("IT-Portal: Passwort zuruecksetzen"); // Тема письма на немецком
-            
-            // Текст письма по стандартам B2B
-            String emailText = "Hallo,\n\n"
-                    + "Sie haben das Zuruecksetzen Ihres Passworts angefordert.\n"
-                    + "Klicken Sie auf den folgenden Link, um ein neues Passwort zu vergeben:\n\n"
-                    + resetLink + "\n\n"
-                    + "Dieser Link ist aus Sicherheitsgruenden nur 15 Minuten gueltig.\n\n"
-                    + "Mit freundlichen Gruessen,\n"
+
+            SimpleMailMessage message =
+                    new SimpleMailMessage();
+
+            message.setFrom(
+                    "noreply@it-portal.de"
+            );
+
+            message.setTo(
+                    toEmail
+            );
+
+            message.setSubject(
+                    "IT-Portal: Passwort zurücksetzen"
+            );
+
+            String emailText =
+
+                    "Hallo,\n\n"
+
+                    + "Sie haben das Zurücksetzen Ihres Passworts angefordert.\n"
+
+                    + "Klicken Sie auf den folgenden Link:\n\n"
+
+                    + resetLink
+
+                    + "\n\n"
+
+                    + "Der Link ist 15 Minuten gültig.\n\n"
+
+                    + "Mit freundlichen Grüßen\n"
+
                     + "Ihr IT-Portal Team";
-            
-            message.setText(emailText);
-            
-            log.info("Sende Passwort-Reset-Email an {}", toEmail);
-            mailSender.send(message); // Отправка!
-            log.info("Email erfolgreich an Mailpit uebergeben.");
-            
+
+            message.setText(
+                    emailText
+            );
+
+            mailSender.send(
+                    message
+            );
+
         } catch (Exception e) {
-            log.error("Fehler beim Senden der Email an " + toEmail, e);
-            throw new RuntimeException("Email-Versand fehlgeschlagen!");
+
+            log.error(
+                    "Fehler beim E-Mail Versand",
+                    e
+            );
+
+            throw new RuntimeException(
+                    "E-Mail Versand fehlgeschlagen."
+            );
+
         }
+
     }
+
+    public void sendWelcomeEmail(
+
+            String toEmail,
+
+            String login
+
+    ) {
+
+        try {
+
+            SimpleMailMessage message =
+                    new SimpleMailMessage();
+
+            message.setFrom(
+                    "noreply@it-portal.de"
+            );
+
+            message.setTo(
+                    toEmail
+            );
+
+            message.setSubject(
+                    "Willkommen im IT-Portal"
+            );
+
+            String emailText =
+
+                    "Willkommen im IT-Portal.\n\n"
+
+                    + "Ihr Kundenkonto wurde erfolgreich erstellt.\n\n"
+
+                    + "Login: "
+                    + login
+                    + "\n\n"
+
+                    + "Startguthaben: 10.000 €\n\n"
+
+                    + "Sie können sich jetzt anmelden und Produkte bestellen.\n\n"
+
+                    + "Mit freundlichen Grüßen\n"
+
+                    + "Ihr IT-Portal Team";
+
+            message.setText(
+                    emailText
+            );
+
+            mailSender.send(
+                    message
+            );
+
+            log.info(
+                    "Welcome-Mail an {} gesendet.",
+                    toEmail
+            );
+
+        } catch (Exception e) {
+
+            log.error(
+                    "Fehler beim Versand der Welcome-Mail",
+                    e
+            );
+
+        }
+
+    }
+
 }

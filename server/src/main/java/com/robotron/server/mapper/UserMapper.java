@@ -10,21 +10,45 @@ public class UserMapper {
     private UserMapper() {
     }
 
-    public static UserResponse toResponse(User user) {
+    public static UserResponse toResponse(
+            User user
+    ) {
 
-        String role = user.getRoles()
-                .stream()
-                .findFirst()
-                .map(Role::getName)
-                .orElse(SecurityRoles.CUSTOMER);
+        String role =
+                user.getRoles()
+                        .stream()
+                        .findFirst()
+                        .map(Role::getName)
+                        .orElse(
+                                SecurityRoles.CUSTOMER
+                        );
 
         return new UserResponse(
+
                 user.getId(),
+
                 user.getLogin(),
+
                 user.getEmail(),
+
                 role,
+
                 user.isActive(),
-                user.getCreatedAt()
+
+                user.getCreatedAt(),
+
+                user.getCustomerType() != null
+                        ? user.getCustomerType().name()
+                        : null,
+
+                user.getCompanyName(),
+
+                user.getUstIdnr(),
+
+                user.getAccountBalance()
+
         );
+
     }
+
 }
