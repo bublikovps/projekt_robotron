@@ -1,0 +1,274 @@
+terraform {
+  required_version = ">= 1.6.0"
+  required_providers {
+    azurerm = {
+      source  = "hashicorp/azurerm"
+      version = "~> 4.0"
+    }
+    random = {
+      source  = "hashicorp/random"
+      version = "~> 3.6"
+    }
+  }
+
+  backend "azurerm" {
+    resource_group_name  = "rg-terraform-state"
+    storage_account_name = "sttfstaterobotron01"
+    container_name       = "tfstate"
+    key                  = "robotron.terraform.tfstate"
+    use_oidc             = true
+  }
+}
+
+provider "azurerm" {
+  features {}
+}
+
+resource "random_string" "suffix" {
+  length  = 6
+  special = false
+  upper   = false
+}
+
+# 1. Resource Group
+resource "azurerm_resource_group" "rg" {
+  name     = "rg-${var.project_name}-demo"
+  location = var.location
+}
+
+# 2. Container Registry (ACR Basic)
+resource "azurerm_container_registry" "acr" {
+  name                = "acr${var.project_name}${random_string.suffix.result}"
+  resource_group_name = azurerm_resource_group.rg.name
+  location            = azurerm_resource_group.rg.location
+  sku                 = "Basic"
+  admin_enabled       = true
+}
+
+# 3. Storage Account & File Share für persistente PostgreSQL-Daten
+resource "azurerm_storage_account" "storage" {
+  name                     = "st${var.project_name}${random_string.suffix.result}"
+  resource_group_name      = azurerm_resource_group.rg.name
+  location                 = azurerm_resource_group.rg.location
+  account_tier             = "Standard"
+  account_replication_type = "LRS"
+}
+
+resource "azurerm_storage_share" "pgdata" {
+  name               = "pgdata"
+  storage_account_id = azurerm_storage_account.storage.id
+  quota              = 1
+}
+
+# 4. Log Analytics & Container Apps Environment
+resource "azurerm_log_analytics_workspace" "logs" {
+  name                = "law-${var.project_name}-${random_string.suffix.result}"
+  location            = azurerm_resource_group.rg.location
+  resource_group_name = azurerm_resource_group.rg.name
+  sku                 = "PerGB2018"
+  retention_in_days   = 30
+}
+
+resource "azurerm_container_app_environment" "env" {
+  name                       = "cae-${var.project_name}"
+  location                   = azurerm_resource_group.rg.location
+  resource_group_name        = azurerm_resource_group.rg.name
+  log_analytics_workspace_id = azurerm_log_analytics_workspace.logs.id
+}
+
+resource "azurerm_container_app_environment_storage" "pg_storage" {
+  name                         = "pgstorage"
+  container_app_environment_id = azurerm_container_app_environment.env.id
+  account_name                 = azurerm_storage_account.storage.name
+  share_name                   = azurerm_storage_share.pgdata.name
+  access_key                   = azurerm_storage_account.storage.primary_access_key
+  access_mode                  = "ReadWrite"
+}
+
+# 5. PostgreSQL Container App (Nur intern erreichbar)
+resource "azurerm_container_app" "postgres" {
+  name                         = "postgres-db"
+  container_app_environment_id = azurerm_container_app_environment.env.id
+  resource_group_name          = azurerm_resource_group.rg.name
+  revision_mode                = "Single"
+
+  template {
+    min_replicas = 1
+    max_replicas = 1
+
+    container {
+      name   = "postgres"
+      image  = "postgres:15-alpine"
+      cpu    = 0.25
+      memory = "0.5Gi"
+
+      env {
+        name  = "POSTGRES_USER"
+        value = "postgres"
+      }
+      env {
+        name  = "POSTGRES_PASSWORD"
+        value = var.db_password
+      }
+      env {
+        name  = "POSTGRES_DB"
+        value = "robotron_db"
+      }
+      env {
+        name  = "PGDATA"
+        value = "/var/lib/postgresql/data/pgdata"
+      }
+
+      volume_mounts {
+        name = "pgdata-vol"
+        path = "/var/lib/postgresql/data"
+      }
+    }
+
+    volume {
+      name         = "pgdata-vol"
+      storage_name = azurerm_container_app_environment_storage.pg_storage.name
+      storage_type = "AzureFile"
+    }
+  }
+
+  ingress {
+    external_enabled = false
+    target_port      = 5432
+    transport        = "tcp"
+    traffic_weight {
+      percentage      = 100
+      latest_revision = true
+    }
+  }
+}
+
+# 6. Spring Boot Backend Container App (Nur intern erreichbar)
+resource "azurerm_container_app" "backend" {
+  name                         = "robotron-backend"
+  container_app_environment_id = azurerm_container_app_environment.env.id
+  resource_group_name          = azurerm_resource_group.rg.name
+  revision_mode                = "Single"
+
+  registry {
+    server               = azurerm_container_registry.acr.login_server
+    username             = azurerm_container_registry.acr.admin_username
+    password_secret_name = "acr-password"
+  }
+
+  secret {
+    name  = "acr-password"
+    value = azurerm_container_registry.acr.admin_password
+  }
+
+  secret {
+    name  = "db-password"
+    value = var.db_password
+  }
+
+  secret {
+    name  = "jwt-secret"
+    value = var.jwt_secret
+  }
+
+  template {
+    min_replicas = 1
+    max_replicas = 1
+
+    container {
+      name   = "backend"
+      image  = "${azurerm_container_registry.acr.login_server}/robotron-backend:${var.image_tag}"
+      cpu    = 0.5
+      memory = "1Gi"
+
+      env {
+        name  = "DB_URL"
+        value = "jdbc:postgresql://postgres-db:5432/robotron_db"
+      }
+      env {
+        name  = "DB_USERNAME"
+        value = "postgres"
+      }
+      env {
+        name        = "DB_PASSWORD"
+        secret_name = "db-password"
+      }
+      env {
+        name        = "JWT_SECRET"
+        secret_name = "jwt-secret"
+      }
+      env {
+        name  = "MAIL_HOST"
+        value = "localhost"
+      }
+      env {
+        name  = "MAIL_PORT"
+        value = "1025"
+      }
+    }
+  }
+
+  ingress {
+    external_enabled = false
+    target_port      = 8080
+    transport        = "http"
+    traffic_weight {
+      percentage      = 100
+      latest_revision = true
+    }
+  }
+
+  depends_on = [azurerm_container_app.postgres]
+}
+
+# 7. Angular SSR Frontend Container App (Öffentlich über HTTPS erreichbar)
+resource "azurerm_container_app" "frontend" {
+  name                         = "robotron-frontend"
+  container_app_environment_id = azurerm_container_app_environment.env.id
+  resource_group_name          = azurerm_resource_group.rg.name
+  revision_mode                = "Single"
+
+  registry {
+    server               = azurerm_container_registry.acr.login_server
+    username             = azurerm_container_registry.acr.admin_username
+    password_secret_name = "acr-password"
+  }
+
+  secret {
+    name  = "acr-password"
+    value = azurerm_container_registry.acr.admin_password
+  }
+
+  template {
+    min_replicas = 1
+    max_replicas = 1
+
+    container {
+      name   = "frontend"
+      image  = "${azurerm_container_registry.acr.login_server}/robotron-frontend:${var.image_tag}"
+      cpu    = 0.5
+      memory = "1Gi"
+
+      env {
+        name  = "PORT"
+        value = "4000"
+      }
+      env {
+        name  = "BACKEND_URL"
+        value = "http://robotron-backend:8080"
+      }
+    }
+  }
+
+  ingress {
+    external_enabled = true
+    target_port      = 4000
+    transport        = "http"
+    traffic_weight {
+      percentage      = 100
+      latest_revision = true
+    }
+  }
+
+  depends_on = [azurerm_container_app.backend]
+}
