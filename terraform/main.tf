@@ -60,7 +60,7 @@ resource "azurerm_storage_share" "pgdata" {
   quota              = 1
 }
 
-# 4. Log Analytics & Container Apps Environment
+# 4. Log Analytics & Container Apps Environment (Consumption Profile für Storage-Support)
 resource "azurerm_log_analytics_workspace" "logs" {
   name                = "law-${var.project_name}-${random_string.suffix.result}"
   location            = azurerm_resource_group.rg.location
@@ -74,6 +74,11 @@ resource "azurerm_container_app_environment" "env" {
   location                   = azurerm_resource_group.rg.location
   resource_group_name        = azurerm_resource_group.rg.name
   log_analytics_workspace_id = azurerm_log_analytics_workspace.logs.id
+
+  workload_profile {
+    name                  = "Consumption"
+    workload_profile_type = "Consumption"
+  }
 }
 
 resource "azurerm_container_app_environment_storage" "pg_storage" {
@@ -91,6 +96,7 @@ resource "azurerm_container_app" "postgres" {
   container_app_environment_id = azurerm_container_app_environment.env.id
   resource_group_name          = azurerm_resource_group.rg.name
   revision_mode                = "Single"
+  workload_profile_name        = "Consumption"
 
   template {
     min_replicas = 1
@@ -149,6 +155,7 @@ resource "azurerm_container_app" "backend" {
   container_app_environment_id = azurerm_container_app_environment.env.id
   resource_group_name          = azurerm_resource_group.rg.name
   revision_mode                = "Single"
+  workload_profile_name        = "Consumption"
 
   registry {
     server               = azurerm_container_registry.acr.login_server
@@ -227,6 +234,7 @@ resource "azurerm_container_app" "frontend" {
   container_app_environment_id = azurerm_container_app_environment.env.id
   resource_group_name          = azurerm_resource_group.rg.name
   revision_mode                = "Single"
+  workload_profile_name        = "Consumption"
 
   registry {
     server               = azurerm_container_registry.acr.login_server
