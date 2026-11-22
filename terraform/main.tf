@@ -45,22 +45,7 @@ resource "azurerm_container_registry" "acr" {
   admin_enabled       = true
 }
 
-# 3. Storage Account & File Share für persistente PostgreSQL-Daten
-resource "azurerm_storage_account" "storage" {
-  name                     = "st${var.project_name}${random_string.suffix.result}"
-  resource_group_name      = azurerm_resource_group.rg.name
-  location                 = azurerm_resource_group.rg.location
-  account_tier             = "Standard"
-  account_replication_type = "LRS"
-}
-
-resource "azurerm_storage_share" "pgdata" {
-  name               = "pgdata"
-  storage_account_id = azurerm_storage_account.storage.id
-  quota              = 1
-}
-
-# 4. Log Analytics & Container Apps Environment (Consumption Profile für Storage-Support)
+# 3. Log Analytics & Container Apps Environment
 resource "azurerm_log_analytics_workspace" "logs" {
   name                = "law-${var.project_name}-${random_string.suffix.result}"
   location            = azurerm_resource_group.rg.location
@@ -74,29 +59,14 @@ resource "azurerm_container_app_environment" "env" {
   location                   = azurerm_resource_group.rg.location
   resource_group_name        = azurerm_resource_group.rg.name
   log_analytics_workspace_id = azurerm_log_analytics_workspace.logs.id
-
-  workload_profile {
-    name                  = "Consumption"
-    workload_profile_type = "Consumption"
-  }
 }
 
-resource "azurerm_container_app_environment_storage" "pg_storage" {
-  name                         = "pgstorage"
-  container_app_environment_id = azurerm_container_app_environment.env.id
-  account_name                 = azurerm_storage_account.storage.name
-  share_name                   = azurerm_storage_share.pgdata.name
-  access_key                   = azurerm_storage_account.storage.primary_access_key
-  access_mode                  = "ReadWrite"
-}
-
-# 5. PostgreSQL Container App (Nur intern erreichbar)
+# 4. PostgreSQL Container App (Nur intern erreichbar, Flyway initialisiert Schema)
 resource "azurerm_container_app" "postgres" {
   name                         = "postgres-db"
   container_app_environment_id = azurerm_container_app_environment.env.id
   resource_group_name          = azurerm_resource_group.rg.name
   revision_mode                = "Single"
-  workload_profile_name        = "Consumption"
 
   template {
     min_replicas = 1
@@ -120,21 +90,6 @@ resource "azurerm_container_app" "postgres" {
         name  = "POSTGRES_DB"
         value = "robotron_db"
       }
-      env {
-        name  = "PGDATA"
-        value = "/var/lib/postgresql/data/pgdata"
-      }
-
-      volume_mounts {
-        name = "pgdata-vol"
-        path = "/var/lib/postgresql/data"
-      }
-    }
-
-    volume {
-      name         = "pgdata-vol"
-      storage_name = azurerm_container_app_environment_storage.pg_storage.name
-      storage_type = "AzureFile"
     }
   }
 
@@ -149,13 +104,12 @@ resource "azurerm_container_app" "postgres" {
   }
 }
 
-# 6. Spring Boot Backend Container App (Nur intern erreichbar)
+# 5. Spring Boot Backend Container App (Nur intern erreichbar)
 resource "azurerm_container_app" "backend" {
   name                         = "robotron-backend"
   container_app_environment_id = azurerm_container_app_environment.env.id
   resource_group_name          = azurerm_resource_group.rg.name
   revision_mode                = "Single"
-  workload_profile_name        = "Consumption"
 
   registry {
     server               = azurerm_container_registry.acr.login_server
@@ -228,13 +182,12 @@ resource "azurerm_container_app" "backend" {
   depends_on = [azurerm_container_app.postgres]
 }
 
-# 7. Angular SSR Frontend Container App (Öffentlich über HTTPS erreichbar)
+# 6. Angular SSR Frontend Container App (Öffentlich über HTTPS erreichbar)
 resource "azurerm_container_app" "frontend" {
   name                         = "robotron-frontend"
   container_app_environment_id = azurerm_container_app_environment.env.id
   resource_group_name          = azurerm_resource_group.rg.name
   revision_mode                = "Single"
-  workload_profile_name        = "Consumption"
 
   registry {
     server               = azurerm_container_registry.acr.login_server
