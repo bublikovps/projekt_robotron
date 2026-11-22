@@ -39,7 +39,7 @@ from '../models/reset-password-request.model';
 export class AuthService {
 
   private apiUrl =
-    'http://localhost:8080/api/auth';
+    '/api/auth';
 
   private currentUserSubject =
     new BehaviorSubject<

@@ -22,7 +22,7 @@ export class SoftwareLicenseService {
     inject(HttpClient);
 
   private readonly apiUrl =
-    'http://localhost:8080/api/software-licenses';
+    '/api/software-licenses';
 
   getAllLicenses():
     Observable<

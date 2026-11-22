@@ -20,7 +20,7 @@ from '../models/employee-update-request.model';
 export class EmployeeService {
 
   private readonly apiUrl =
-    'http://localhost:8080/api/employees';
+    '/api/employees';
 
   constructor(
     private http: HttpClient

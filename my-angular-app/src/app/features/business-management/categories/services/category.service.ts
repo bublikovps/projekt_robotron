@@ -21,7 +21,7 @@ from '../models/category-update-request.model';
 export class CategoryService {
 
   private readonly apiUrl =
-    'http://localhost:8080/api/categories';
+    '/api/categories';
 
   constructor(
     private http: HttpClient
