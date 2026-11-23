@@ -17,7 +17,8 @@ const angularApp = new AngularNodeAppEngine();
  * Proxy-Konfiguration für API-Anfragen an das Spring-Boot-Backend.
  * Die Ziel-URL wird über die Umgebungsvariable BACKEND_URL gesteuert.
  */
-const backendUrl = process.env['BACKEND_URL'] || '';
+const backendUrl = process.env['BACKEND_URL'] || 'http://localhost:8080';
+
 
 app.use(
   '/api',
