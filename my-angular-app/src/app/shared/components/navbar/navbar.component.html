@@ -48,6 +48,27 @@
           <a routerLink="/register" class="nav-item reg-btn">Registrieren</a>
         </ng-container>
 
+        @if (canUseCart()) {
+
+          <a
+            routerLink="/cart"
+            class="nav-item cart-link">
+
+            🛒 Warenkorb
+
+            <span
+              *ngIf="cartItemCount() > 0"
+              class="cart-badge">
+
+              {{ cartItemCount() }}
+
+            </span>
+
+          </a>
+
+        }
+
+
         <ng-container *ngIf="isLoggedIn()">
           <div class="user-menu">
             <button class="user-menu-button" (click)="toggleUserMenu()">
@@ -67,8 +88,8 @@
                   <span>{{ getRoleDisplayName() }}</span>
                 </div>
               </div>
-              <a routerLink="/dashboard" class="user-dropdown-item">Arbeitsbereich</a>
-              <a routerLink="/profile" class="user-dropdown-item">Mein Profil</a>
+              <a routerLink="/dashboard" class="user-dropdown-item" (click)="closeUserMenu()">Arbeitsbereich</a>
+              <a routerLink="/profile" class="user-dropdown-item" (click)="closeUserMenu()">Mein Profil</a>
               <div class="dropdown-divider"></div>
               <a class="user-dropdown-item logout-item" (click)="onLogout()">Abmelden</a>
             </div>

@@ -1,0 +1,177 @@
+<div class="customer-container page-content">
+
+  <div class="workspace-header">
+
+    <h1>
+
+      Kundenbereich
+
+    </h1>
+
+  </div>
+
+  <div class="workspace-tabs">
+
+    <button
+      class="workspace-tab"
+      [class.active]="
+        selectedArea === 'documents'
+      "
+      (click)="
+        selectArea('documents')
+      ">
+
+      Dokumente
+
+    </button>
+
+    <button
+      class="workspace-tab"
+      [class.active]="
+        selectedArea === 'account'
+      "
+      (click)="
+        selectArea('account')
+      ">
+
+      Konto
+
+    </button>
+
+  </div>
+
+  @if (
+    selectedArea === 'documents'
+  ) {
+
+    <div class="module-tabs">
+
+      <button
+        class="module-tab"
+        [class.active]="
+          selectedModule === 'orders'
+        "
+        (click)="
+          selectModule('orders')
+        ">
+
+        Bestellungen
+
+      </button>
+
+      <button
+        class="module-tab"
+        [class.active]="
+          selectedModule === 'invoices'
+        "
+        (click)="
+          selectModule('invoices')
+        ">
+
+        Rechnungen
+
+      </button>
+
+      <button
+        class="module-tab"
+        [class.active]="
+          selectedModule ===
+          'delivery-notes'
+        "
+        (click)="
+          selectModule(
+            'delivery-notes'
+          )
+        ">
+
+        Lieferscheine
+
+      </button>
+
+    </div>
+
+  }
+
+  @if (
+    selectedArea === 'account'
+  ) {
+
+    <div class="module-tabs">
+
+      <button
+        class="module-tab active">
+
+        Kontostand
+
+      </button>
+
+    </div>
+
+  }
+
+  <app-breadcrumb
+    [items]="breadcrumbItems">
+  </app-breadcrumb>
+
+  <div class="workspace-content">
+
+    @if (
+      selectedModule === 'orders'
+    ) {
+
+      <app-my-orders />
+
+    }
+
+    @if (
+      selectedModule === 'invoices'
+    ) {
+
+      <app-my-invoices />
+
+    }
+
+    @if (
+      selectedModule ===
+      'delivery-notes'
+    ) {
+
+      <app-my-delivery-notes />
+
+    }
+
+    @if (
+      selectedModule ===
+      'balance'
+    ) {
+
+      <div class="balance-card">
+
+        <h3>
+          Kundenkonto
+        </h3>
+
+        <div class="balance-value">
+
+          {{
+            accountBalance
+              | number:'1.2-2'
+          }}
+          €
+
+        </div>
+
+        <p>
+
+          Verfügbares Guthaben
+          Ihres Kundenkontos.
+
+        </p>
+
+      </div>
+
+    }
+
+  </div>
+
+</div>

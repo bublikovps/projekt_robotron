@@ -1,0 +1,137 @@
+<div class="enterprise-page">
+
+  <div class="page-header">
+
+    <h2>
+      Meine Lieferscheine
+    </h2>
+
+    <p>
+      Übersicht Ihrer Lieferungen.
+    </p>
+
+  </div>
+
+  @if (isLoading) {
+
+    <div class="empty-state">
+
+      Lieferscheine werden geladen...
+
+    </div>
+
+  }
+  @else if (
+    deliveryNotes.length === 0
+  ) {
+
+    <div class="empty-state">
+
+      Noch keine Lieferscheine vorhanden.
+
+    </div>
+
+  }
+  @else {
+
+    <div class="enterprise-table-card">
+
+      <table
+        class="enterprise-table">
+
+        <thead>
+
+          <tr>
+
+            <th>
+              Lieferschein
+            </th>
+
+            <th>
+              Bestellung
+            </th>
+
+            <th>
+              Tracking
+            </th>
+
+            <th>
+              Versanddatum
+            </th>
+
+            <th>
+              Dokument
+            </th>
+
+          </tr>
+
+        </thead>
+
+        <tbody>
+
+          @for (
+            note of deliveryNotes;
+            track note.deliveryNumber
+          ) {
+
+            <tr>
+
+              <td>
+
+                {{ note.deliveryNumber }}
+
+              </td>
+
+              <td>
+
+                {{ note.orderNumber }}
+
+              </td>
+
+              <td>
+
+                {{ note.trackingNumber }}
+
+              </td>
+
+              <td>
+
+                {{
+                  note.createdAt
+                  | date:'dd.MM.yyyy'
+                }}
+
+              </td>
+
+              <td>
+
+                <button
+                  class="
+                    enterprise-btn
+                    enterprise-btn-secondary
+                  "
+                  (click)="
+                    downloadDeliveryNote(
+                      note.deliveryNumber
+                    )
+                  ">
+
+                  PDF
+
+                </button>
+
+              </td>
+
+            </tr>
+
+          }
+
+        </tbody>
+
+      </table>
+
+    </div>
+
+  }
+
+</div>

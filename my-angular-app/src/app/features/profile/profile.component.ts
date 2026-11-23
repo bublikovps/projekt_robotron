@@ -12,26 +12,40 @@ import {
   FormsModule
 } from '@angular/forms';
 
-import { AuthService }
-from '../../core/services/auth.service';
+import {
+  AuthService
+} from '../../core/services/auth.service';
 
-import { UserProfileResponse }
-from '../../core/models/user-profile-response.model';
+import {
+  UserProfileResponse
+} from '../../core/models/user-profile-response.model';
+
+import {
+  CustomerProfileUpdateRequest
+} from '../../core/models/customer-profile-update-request.model';
 
 @Component({
   selector: 'app-profile',
+
   standalone: true,
+
   imports: [
     CommonModule,
     FormsModule
   ],
-  templateUrl: './profile.component.html',
-  styleUrls: ['./profile.component.css']
+
+  templateUrl:
+    './profile.component.html',
+
+  styleUrls: [
+    './profile.component.css'
+  ]
 })
 export class ProfileComponent
 implements OnInit {
 
-  user: UserProfileResponse | null = null;
+  user: UserProfileResponse | null =
+    null;
 
   errorMessage = '';
 
@@ -41,17 +55,52 @@ implements OnInit {
 
   isEnforcedChange = false;
 
+  isSavingProfile = false;
+
+  currentRole = '';
+
+  profileData:
+    CustomerProfileUpdateRequest = {
+
+      customerType: 'PRIVATE',
+
+      vorname: '',
+
+      nachname: '',
+
+      companyName: '',
+
+      ustIdnr: '',
+
+      defaultShippingAddress: ''
+
+    };
+
   pwdData = {
+
     oldPassword: '',
+
     newPassword: ''
+
   };
 
   constructor(
-    private authService: AuthService,
-    private cdr: ChangeDetectorRef
+
+    private authService:
+      AuthService,
+
+    private cdr:
+      ChangeDetectorRef
+
   ) {}
 
   ngOnInit(): void {
+
+    this.loadProfile();
+
+  }
+
+  loadProfile(): void {
 
     this.authService
       .getCurrentUser()
@@ -59,51 +108,140 @@ implements OnInit {
 
         next: currentUser => {
 
+          this.currentRole =
+            currentUser.role;
+
           this.authService
             .getProfile()
             .subscribe({
 
-              next: (data: UserProfileResponse) => {
+              next: profile => {
 
-                this.user = data;
+                this.user =
+                  profile;
 
-                this.isLoading = false;
+                this.profileData = {
+
+                  customerType:
+
+                    (
+                      profile.customerType as
+                      'PRIVATE'
+                      | 'BUSINESS'
+                    )
+
+                    || 'PRIVATE',
+
+                  vorname:
+                    profile.vorname || '',
+
+                  nachname:
+                    profile.nachname || '',
+
+                  companyName:
+                    profile.companyName || '',
+
+                  ustIdnr:
+                    profile.ustIdnr || '',
+
+                  defaultShippingAddress:
+                    profile.defaultShippingAddress || ''
+
+                };
+
+                this.isLoading =
+                  false;
 
                 if (
-                  data.passwordChangeRequired
+                  profile.passwordChangeRequired
                 ) {
 
-                  this.isEnforcedChange = true;
+                  this.isEnforcedChange =
+                    true;
 
                   this.errorMessage =
-                    'Erstanmeldung erkannt! Bitte ändern Sie Ihr temporäres Passwort, um Ihr Konto zu aktivieren.';
+                    'Erstanmeldung erkannt. Bitte ändern Sie Ihr Passwort.';
+
                 }
 
                 this.cdr.detectChanges();
+
               },
 
               error: () => {
 
-                this.isLoading = false;
+                this.isLoading =
+                  false;
 
                 this.errorMessage =
-                  'Fehler beim Laden des Profils vom Server.';
+                  'Fehler beim Laden des Profils.';
 
                 this.cdr.detectChanges();
+
               }
+
             });
+
         },
 
         error: () => {
 
-          this.isLoading = false;
+          this.isLoading =
+            false;
 
           this.errorMessage =
             'Sie sind nicht eingeloggt.';
 
           this.cdr.detectChanges();
+
         }
+
       });
+
+  }
+
+  onSaveProfile(): void {
+
+    this.successMessage = '';
+
+    this.errorMessage = '';
+
+    this.isSavingProfile =
+      true;
+
+    this.authService
+      .updateProfile(
+        this.profileData
+      )
+      .subscribe({
+
+        next: response => {
+
+          this.successMessage =
+            response.message;
+
+          this.isSavingProfile =
+            false;
+
+          this.loadProfile();
+
+        },
+
+        error: err => {
+
+          this.errorMessage =
+            err.error?.error
+            || 'Profil konnte nicht gespeichert werden.';
+
+          this.isSavingProfile =
+            false;
+
+          this.cdr.detectChanges();
+
+        }
+
+      });
+
   }
 
   onChangePassword(): void {
@@ -120,40 +258,41 @@ implements OnInit {
 
           const requestData = {
 
-            login: currentUser.login,
+            login:
+              currentUser.login,
 
             oldPassword:
               this.pwdData.oldPassword,
 
             newPassword:
               this.pwdData.newPassword
+
           };
 
           this.authService
-            .changePassword(requestData)
+            .changePassword(
+              requestData
+            )
             .subscribe({
 
               next: () => {
 
                 this.successMessage =
-                  'Passwort erfolgreich geändert! Ihr Konto ist nun vollständig aktiv.';
+                  'Passwort erfolgreich geändert.';
 
-                this.errorMessage = '';
-
-                this.isEnforcedChange = false;
-
-                if (this.user) {
-
-                  this.user.passwordChangeRequired =
-                    false;
-                }
+                this.isEnforcedChange =
+                  false;
 
                 this.pwdData = {
+
                   oldPassword: '',
+
                   newPassword: ''
+
                 };
 
                 this.cdr.detectChanges();
+
               },
 
               error: err => {
@@ -163,17 +302,105 @@ implements OnInit {
                   'Fehler beim Ändern des Passworts.';
 
                 this.cdr.detectChanges();
+
               }
+
             });
-        },
 
-        error: () => {
-
-          this.errorMessage =
-            'Sitzung abgelaufen. Bitte neu einloggen.';
-
-          this.cdr.detectChanges();
         }
+
       });
+
   }
+
+  isCustomer(): boolean {
+
+    return this.currentRole ===
+      'ROLE_CUSTOMER';
+
+  }
+
+  isManager(): boolean {
+
+    return this.currentRole ===
+      'ROLE_MANAGER';
+
+  }
+
+  isAdmin(): boolean {
+
+    return this.currentRole ===
+      'ROLE_ADMIN';
+
+  }
+
+  isDirector(): boolean {
+
+    return this.currentRole ===
+      'ROLE_DIRECTOR';
+
+  }
+
+  isEmployee(): boolean {
+
+    return !this.isCustomer();
+
+  }
+
+  getRoleLabel(): string {
+
+    switch (this.currentRole) {
+
+      case 'ROLE_CUSTOMER':
+        return 'Kunde';
+
+      case 'ROLE_MANAGER':
+        return 'Manager';
+
+      case 'ROLE_ADMIN':
+        return 'Administrator';
+
+      case 'ROLE_DIRECTOR':
+        return 'Direktor';
+
+      default:
+        return '-';
+
+    }
+
+  }
+
+  getCustomerTypeLabel(): string {
+
+    switch (
+      this.profileData.customerType
+    ) {
+
+      case 'BUSINESS':
+        return 'Geschäftskunde';
+
+      case 'PRIVATE':
+        return 'Privatkunde';
+
+      default:
+        return '-';
+
+    }
+
+  }
+
+  getAccountBalance(): string {
+
+    if (
+      this.user?.accountBalance == null
+    ) {
+
+      return '0 €';
+
+    }
+
+    return `${this.user.accountBalance} €`;
+
+  }
+
 }

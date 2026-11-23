@@ -9,6 +9,9 @@ from '../categories/components/categories.component';
 import { ProductsComponent }
 from '../products/components/products.component';
 
+import { OrdersComponent }
+from '../orders/components/orders.component';
+
 import { InventoryValueComponent }
 from '../reports/inventory-value/inventory-value.component';
 
@@ -36,6 +39,7 @@ import {
 
     CategoriesComponent,
     ProductsComponent,
+    OrdersComponent,
 
     InventoryValueComponent,
     LowStockComponent,
@@ -53,6 +57,7 @@ export class BusinessManagementComponent {
 
   selectedArea:
     | 'master-data'
+    | 'sales'
     | 'analytics'
     =
     'master-data';
@@ -60,6 +65,7 @@ export class BusinessManagementComponent {
   selectedModule:
     | 'categories'
     | 'products'
+    | 'orders'
     | 'inventory-value'
     | 'low-stock'
     | 'product-margin'
@@ -70,6 +76,7 @@ export class BusinessManagementComponent {
   selectArea(
     area:
       | 'master-data'
+      | 'sales'
       | 'analytics'
   ): void {
 
@@ -84,19 +91,29 @@ export class BusinessManagementComponent {
 
         break;
 
+      case 'sales':
+
+        this.selectedModule =
+          'orders';
+
+        break;
+
       case 'analytics':
 
         this.selectedModule =
           'inventory-value';
 
         break;
+
     }
+
   }
 
   selectModule(
     module:
       | 'categories'
       | 'products'
+      | 'orders'
       | 'inventory-value'
       | 'low-stock'
       | 'product-margin'
@@ -104,6 +121,7 @@ export class BusinessManagementComponent {
   ): void {
 
     this.selectedModule = module;
+
   }
 
   get breadcrumbItems():
@@ -130,26 +148,37 @@ export class BusinessManagementComponent {
 
     ];
 
-    if (
-      this.selectedArea ===
-      'master-data'
+    switch (
+      this.selectedArea
     ) {
 
-      items.push({
+      case 'master-data':
 
-        label:
-          'Master Data'
+        items.push({
+          label:
+            'Master Data'
+        });
 
-      });
+        break;
 
-    } else {
+      case 'sales':
 
-      items.push({
+        items.push({
+          label:
+            'Sales'
+        });
 
-        label:
-          'Analytics'
+        break;
 
-      });
+      case 'analytics':
+
+        items.push({
+          label:
+            'Analytics'
+        });
+
+        break;
+
     }
 
     switch (
@@ -170,6 +199,15 @@ export class BusinessManagementComponent {
         items.push({
           label:
             'Products'
+        });
+
+        break;
+
+      case 'orders':
+
+        items.push({
+          label:
+            'Orders'
         });
 
         break;
@@ -209,8 +247,11 @@ export class BusinessManagementComponent {
         });
 
         break;
+
     }
 
     return items;
+
   }
+
 }

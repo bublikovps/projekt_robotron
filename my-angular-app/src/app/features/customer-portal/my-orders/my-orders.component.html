@@ -1,0 +1,318 @@
+<div class="enterprise-page">
+
+  <div class="page-header">
+
+    <h2>
+
+      Meine Bestellungen
+
+    </h2>
+
+    <p>
+
+      Übersicht Ihrer Bestellungen.
+
+    </p>
+
+  </div>
+
+  <div class="search-toolbar">
+
+    <input
+      type="text"
+      placeholder="Bestellnummer suchen..."
+      [(ngModel)]="searchTerm"
+      (input)="applySearch()">
+
+  </div>
+
+  @if (isLoading) {
+
+    <div class="empty-state">
+
+      Bestellungen werden geladen...
+
+    </div>
+
+  }
+  @else if (
+    filteredOrders.length === 0
+  ) {
+
+    <div class="empty-state">
+
+      Keine Bestellungen gefunden.
+
+    </div>
+
+  }
+  @else {
+
+    <div class="enterprise-table-card">
+
+      <table
+        class="enterprise-table">
+
+        <thead>
+
+          <tr>
+
+            <th>
+              Bestellung
+            </th>
+
+            <th>
+              Status
+            </th>
+
+            <th>
+              Betrag
+            </th>
+
+            <th>
+              Datum
+            </th>
+
+            <th>
+              Aktionen
+            </th>
+
+          </tr>
+
+        </thead>
+
+        <tbody>
+
+          @for (
+            order of filteredOrders;
+            track order.orderNumber
+          ) {
+
+            <tr
+              class="order-row"
+              (click)="
+                toggleDetails(
+                  order.orderNumber
+                )
+              ">
+
+              <td>
+
+                {{ order.orderNumber }}
+
+              </td>
+
+              <td>
+
+                {{ order.status }}
+
+              </td>
+
+              <td>
+
+                {{ order.totalPrice }}
+                €
+
+              </td>
+
+              <td>
+
+                {{
+                  order.createdAt
+                  | date:'dd.MM.yyyy'
+                }}
+
+              </td>
+
+              <td>
+
+                @if (
+                  order.status === 'PENDING_PAYMENT'
+                ) {
+
+                  <button
+                    class="btn-pay"
+                    (click)="
+                      $event.stopPropagation();
+                      payOrder(order)
+                    ">
+
+                    Jetzt bezahlen
+
+                  </button>
+
+                }
+
+              </td>
+
+            </tr>
+
+          }
+
+        </tbody>
+
+      </table>
+
+    </div>
+
+  }
+
+  @if (selectedOrder) {
+
+    <div class="details-card">
+
+      <h3>
+
+        Bestelldetails
+
+      </h3>
+
+      <div class="details-grid">
+
+        <div>
+
+          <strong>
+            Bestellung
+          </strong>
+
+          <p>
+            {{ selectedOrder.orderNumber }}
+          </p>
+
+        </div>
+
+        <div>
+
+          <strong>
+            Status
+          </strong>
+
+          <p>
+            {{ selectedOrder.status }}
+          </p>
+
+        </div>
+
+        <div>
+
+          <strong>
+            Rechnung
+          </strong>
+
+          <p>
+            {{ selectedOrder.invoiceNumber }}
+          </p>
+
+        </div>
+
+        <div>
+
+          <strong>
+            Lieferschein
+          </strong>
+
+          <p>
+            {{ selectedOrder.deliveryNumber }}
+          </p>
+
+        </div>
+
+      </div>
+
+      <div class="address-box">
+
+        <strong>
+
+          Lieferadresse
+
+        </strong>
+
+        <div>
+
+          {{ selectedOrder.shippingAddress }}
+
+        </div>
+
+      </div>
+
+      <table
+        class="
+          enterprise-table
+          detail-table
+        ">
+
+        <thead>
+
+          <tr>
+
+            <th>SKU</th>
+
+            <th>Produkt</th>
+
+            <th>Menge</th>
+
+            <th>Netto</th>
+
+            <th>Brutto</th>
+
+          </tr>
+
+        </thead>
+
+        <tbody>
+
+          @for (
+            item of selectedOrder.items;
+            track item.sku
+          ) {
+
+            <tr>
+
+              <td>
+                {{ item.sku }}
+              </td>
+
+              <td>
+                {{ item.productName }}
+              </td>
+
+              <td>
+                {{ item.quantity }}
+              </td>
+
+              <td>
+                {{ item.unitPriceNet }}
+              </td>
+
+              <td>
+                {{ item.unitPriceGross }}
+              </td>
+
+            </tr>
+
+          }
+
+        </tbody>
+
+      </table>
+
+      <div class="total-box">
+
+        Gesamtbetrag:
+
+        <strong>
+
+          {{
+            selectedOrder.totalPrice
+          }}
+          €
+
+        </strong>
+
+      </div>
+
+    </div>
+
+  }
+
+</div>

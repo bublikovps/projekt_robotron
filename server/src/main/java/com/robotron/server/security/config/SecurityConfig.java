@@ -423,6 +423,61 @@ public class SecurityConfig {
                                 SecurityPermissions.LICENSE_ASSIGNMENT_REVOKE
                         )
 
+                                                // ==================================================
+                        // SALES / ORDER-TO-CASH
+                        // ==================================================
+
+                        .requestMatchers(
+                                HttpMethod.GET,
+                                "/api/orders/**"
+                        ).hasAuthority(
+                                SecurityPermissions.ORDER_READ
+                        )
+
+                        .requestMatchers(
+                                HttpMethod.POST,
+                                "/api/orders"
+                        ).hasAuthority(
+                                SecurityPermissions.ORDER_CREATE
+                        )
+
+                        .requestMatchers(
+                                HttpMethod.POST,
+                                "/api/orders/payment"
+                        ).hasAuthority(
+                                SecurityPermissions.ORDER_CREATE
+                        )
+
+                        .requestMatchers(
+                                HttpMethod.POST,
+                                "/api/orders/ship"
+                        ).hasAuthority(
+                                SecurityPermissions.ORDER_SHIP
+                        )
+
+                        .requestMatchers(
+                                HttpMethod.GET,
+                                "/api/invoices/**"
+                        ).hasAuthority(
+                                SecurityPermissions.INVOICE_READ
+                        )
+
+                        .requestMatchers(
+                                HttpMethod.POST,
+                                "/api/returns"
+                        ).hasAuthority(
+                                SecurityPermissions.RETURN_CREATE
+                        )
+
+                        .requestMatchers(
+                                HttpMethod.PUT,
+                                "/api/returns/**"
+                        ).hasAuthority(
+                                SecurityPermissions.RETURN_PROCESS
+                        )
+
+
+
                         // ==================================================
                         // ADMIN USERS
                         // ==================================================
@@ -460,6 +515,13 @@ public class SecurityConfig {
                                 "/api/admin/users/*/unblock"
                         ).hasAuthority(
                                 SecurityPermissions.USER_UNBLOCK
+                        )
+
+                        .requestMatchers(
+                                HttpMethod.PUT,
+                                "/api/admin/users/*/anonymize"
+                        ).hasAuthority(
+                                SecurityPermissions.USER_ANONYMIZE
                         )
 
                         .requestMatchers(
