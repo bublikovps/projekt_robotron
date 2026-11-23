@@ -18,6 +18,8 @@ import com.robotron.server.dto.auth.ChangePasswordRequest;
 import com.robotron.server.dto.auth.CurrentUserResponse;
 import com.robotron.server.dto.auth.ForgotPasswordRequest;
 import com.robotron.server.dto.auth.ResetPasswordRequest;
+import com.robotron.server.dto.user.CustomerProfileUpdateRequest;
+import com.robotron.server.dto.user.UserProfileResponse;
 import com.robotron.server.service.SecurityService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -75,7 +77,7 @@ public class AuthController {
     @PostMapping("/register")
     public ResponseEntity<?> registerUser(@RequestBody RegisterRequest request) {
         
-        // --- ВАЛИДАЦИЯ: ЛОГИН ---
+         
         if (request.getLogin() == null || request.getLogin().trim().length() < 4) {
             log.warn("Registrierung abgelehnt: Login zu kurz oder leer.");
             return ResponseEntity.badRequest().body(Map.of("error", "Der Benutzername (Login) muss mindestens 4 Zeichen lang sein!"));
@@ -85,21 +87,21 @@ public class AuthController {
             return ResponseEntity.badRequest().body(Map.of("error", "Der Benutzername darf nur из букв и цифр состоять (без пробелов и спецсимволов)!"));
         }
 
-        // --- ВАЛИДАЦИЯ: EMAIL (RFC-5322) ---
+         
         String emailRegex = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,6}$";
         if (request.getEmail() == null || !request.getEmail().matches(emailRegex)) {
             log.warn("Registrierung abgelehnt: Ungültiges E-Mail-Format: {}", request.getEmail());
             return ResponseEntity.badRequest().body(Map.of("error", "Bitte geben Sie eine gültige E-Mail-Adresse ein!"));
         }
 
-        // --- ВАЛИДАЦИЯ: СЛОЖНОСТЬ ПАРОЛЯ ---
+         
         String passwordRegex = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$";
         if (request.getPassword() == null || !request.getPassword().matches(passwordRegex)) {
             log.warn("Registrierung fehlgeschlagen: Passwortrichtlinien nicht erfüllt für {}", request.getLogin());
             return ResponseEntity.badRequest().body(Map.of("error", "Das Passwort muss mindestens 8 Zeichen lang sein, einen Großbuchstaben, einen Kleinbuchstaben, eine Zahl und ein Sonderzeichen enthalten!"));
         }
 
-        // --- ПРОВЕРКА УНИКАЛЬНОСТИ В СУБД ---
+         
         if (userRepository.findByLogin(request.getLogin()).isPresent()) {
             log.warn("Registrierung fehlgeschlagen: Login {} ist bereits vergeben", request.getLogin());
             return ResponseEntity.badRequest().body(Map.of("error", "Benutzername (Login) ist bereits vergeben!"));
@@ -110,24 +112,63 @@ public class AuthController {
             return ResponseEntity.badRequest().body(Map.of("error", "E-Mail-Adresse wird bereits verwendet!"));
         }
 
-        // --- НОРМАЛИЗАЦИЯ И СОХРАНЕНИЕ ---
+        
         User user = new User();
         user.setLogin(request.getLogin().trim());
-        user.setEmail(request.getEmail().trim().toLowerCase()); // В базу сохраняем строго строчными!
+        user.setEmail(request.getEmail().trim().toLowerCase());  
         user.setPasswordHash(passwordEncoder.encode(request.getPassword()));
+
+        user.setPasswordChangeRequired(
+                false
+        );
+
+        user.setAccountBalance(
+                java.math.BigDecimal.valueOf(
+                        10000
+                )
+        );
 
         Role customerRole = roleRepository.findByName(SecurityRoles.CUSTOMER)
                 .orElseThrow(() -> new RuntimeException("Fehler: Standardrolle ROLE_CUSTOMER nicht in der Datenbank gefunden!"));
         user.setRoles(new java.util.HashSet<>(java.util.List.of(customerRole)));
 
-        User savedUser = userRepository.save(user);
-        log.info("Benutzer erfolgreich registriert mit ID: {}", savedUser.getId());
+        User savedUser =
+                userRepository.save(
+                        user
+                );
 
-        return ResponseEntity.ok(Map.of("message", "Registrierung erfolgreich!"));
+        log.info(
+                "Benutzer erfolgreich registriert mit ID: {}",
+                savedUser.getId()
+        );
+
+        try {
+
+        emailService.sendWelcomeEmail(
+
+                savedUser.getEmail(),
+
+                savedUser.getLogin()
+
+        );
+
+        } catch (Exception ignored) {
+
+        log.warn(
+                "Welcome-Mail konnte nicht versendet werden."
+        );
+
+        }
+
+        return ResponseEntity.ok(
+                Map.of(
+                        "message",
+                        "Registrierung erfolgreich!"
+                )
+        );
     }
 
-    // 2. СТРОГО ТИПИЗИРОВАННЫЙ ВХОД (СОВМЕСТИМОСТЬ С SWAGGER UI)
-    // 2. ВХОД В СИСТЕМУ С УЧЕТОМ ФЛАГА ПЕРВОГО ВХОДА
+     
     @Operation(
         summary = "Benutzer anmelden",
         description = "Authentifiziert den Benutzer und liefert einen JWT-Token zurück."
@@ -251,10 +292,12 @@ public class AuthController {
                 );
     }
 
-    // 3. ПОЛУЧЕНИЕ ПРОФИЛЯ
     @Operation(
-        summary = "Eigenes Profil laden",
-        description = "Lädt das Profil des aktuell angemeldeten Benutzers anhand des JWT-Tokens."
+            summary = "Eigenes Profil laden",
+            description = """
+                    Lädt das vollständige Kundenprofil
+                    des aktuell angemeldeten Benutzers.
+                    """
     )
     @GetMapping("/profile")
     public ResponseEntity<?> getUserProfile() {
@@ -264,32 +307,164 @@ public class AuthController {
                         .getContext()
                         .getAuthentication();
 
-        String login = auth.getName();
+        String login =
+                auth.getName();
 
-        var userOpt = userRepository.findByLogin(login);
+        User user =
+                userRepository
+                        .findByLogin(login)
+                        .orElse(null);
 
-        if (userOpt.isEmpty()) {
-            log.warn("Profilabfrage fehlgeschlagen: Benutzer {} nicht gefunden", login);
+        if (user == null) {
 
-            return ResponseEntity.status(404).body(
-                    Map.of("error", "Benutzer nicht gefunden!")
-            );
+            return ResponseEntity
+                    .status(404)
+                    .body(
+                            Map.of(
+                                    "error",
+                                    "Benutzer nicht gefunden."
+                            )
+                    );
         }
 
-        User user = userOpt.get();
+        UserProfileResponse response =
+                new UserProfileResponse();
 
-        user.setPasswordHash(null);
+        response.setId(
+                user.getId()
+        );
 
-        return ResponseEntity.ok(user);
+        response.setLogin(
+                user.getLogin()
+        );
+
+        response.setEmail(
+                user.getEmail()
+        );
+
+        response.setCustomerType(
+                user.getCustomerType()
+        );
+
+        response.setVorname(
+                user.getVorname()
+        );
+
+        response.setNachname(
+                user.getNachname()
+        );
+
+        response.setCompanyName(
+                user.getCompanyName()
+        );
+
+        response.setUstIdnr(
+                user.getUstIdnr()
+        );
+
+        response.setDefaultShippingAddress(
+                user.getDefaultShippingAddress()
+        );
+
+        response.setAccountBalance(
+                user.getAccountBalance()
+        );
+
+        response.setCreatedAt(
+                user.getCreatedAt()
+        );
+
+        response.setPasswordChangeRequired(
+                user.isPasswordChangeRequired()
+        );
+
+        return ResponseEntity.ok(
+                response
+        );
     }
 
-    // 4. СМЕНА ПАРОЛЯ ВНУТРИ ЛИЧНОГО КАБИНЕТА + ФОРСИРОВАННАЯ ТРАНЗАКЦИЯ ДЛЯ СУБД
+    @Operation(
+            summary = "Eigenes Profil aktualisieren",
+            description = """
+                    Aktualisiert die Stammdaten
+                    des aktuell angemeldeten Kunden.
+                    """
+    )
+    @PutMapping("/profile")
+    public ResponseEntity<?> updateProfile(
+            @RequestBody
+            CustomerProfileUpdateRequest request
+    ) {
+
+        Authentication auth =
+                SecurityContextHolder
+                        .getContext()
+                        .getAuthentication();
+
+        String login =
+                auth.getName();
+
+        User user =
+                userRepository
+                        .findByLogin(login)
+                        .orElse(null);
+
+        if (user == null) {
+
+            return ResponseEntity
+                    .status(404)
+                    .body(
+                            Map.of(
+                                    "error",
+                                    "Benutzer nicht gefunden."
+                            )
+                    );
+        }
+
+        user.setCustomerType(
+                request.getCustomerType()
+        );
+
+        user.setVorname(
+                request.getVorname()
+        );
+
+        user.setNachname(
+                request.getNachname()
+        );
+
+        user.setCompanyName(
+                request.getCompanyName()
+        );
+
+        user.setUstIdnr(
+                request.getUstIdnr()
+        );
+
+        user.setDefaultShippingAddress(
+                request.getDefaultShippingAddress()
+        );
+
+        userRepository.save(
+                user
+        );
+
+        return ResponseEntity.ok(
+                Map.of(
+                        "message",
+                        "Profil erfolgreich aktualisiert."
+                )
+        );
+    }
+
+
+    
     @Operation(
         summary = "Passwort ändern",
         description = "Ändert das Passwort des aktuell bekannten Benutzers nach Prüfung des alten Passworts."
     )
     @PutMapping("/change-password")
-    @org.springframework.transaction.annotation.Transactional // ➕ КРИТИЧЕСКИЙ ФИКС: Гарантирует запись флага в PostgreSQL!
+    @org.springframework.transaction.annotation.Transactional  
     public ResponseEntity<?> changePassword(@RequestBody ChangePasswordRequest request) {
         String login = request.getLogin();
         String oldPassword = request.getOldPassword();
@@ -310,11 +485,11 @@ public class AuthController {
             return ResponseEntity.badRequest().body(Map.of("error", "Das neue Passwort erfuellt nicht die Sicherheitsanforderungen!"));
         }
 
-        // 🛠️ Обновляем данные внутри активной транзакции
+         
         user.setPasswordHash(passwordEncoder.encode(newPassword));
-        user.setPasswordChangeRequired(false); // Принудительно сбрасываем флаг в false
+        user.setPasswordChangeRequired(false);  
         
-        // Форсируем сохранение в СУБД
+         
         userRepository.saveAndFlush(user); 
         
         User checkUser = userRepository.findByLogin(login).orElse(null);
@@ -343,7 +518,7 @@ public class AuthController {
     }
 
     
-    // 5. ЗАПРОС ССЫЛКИ СБРОСА ПАРОЛЯ (ВСТРОЕННАЯ ЗАЩИТА ОТ ENUMERATION ATTACK)
+     
     @Operation(
         summary = "Passwort vergessen",
         description = "Erzeugt einen einmaligen Passwort-Reset-Link und versendet ihn per E-Mail."
@@ -355,7 +530,7 @@ public class AuthController {
 
         var userOpt = userRepository.findByEmail(email);
         if (userOpt.isEmpty()) {
-            // Защита IHK: имитируем успех, чтобы хакер не узнал, какие email есть в БД
+             
             log.warn("Passwort-Reset abgelehnt: Email {} nicht gefunden", email);
             return ResponseEntity.ok(Map.of("message", "Wenn die E-Mail-Adresse existiert, wurde eine Nachricht gesendet."));
         }
@@ -372,7 +547,7 @@ public class AuthController {
         return ResponseEntity.ok(Map.of("message", "Wenn die E-Mail-Adresse existiert, wurde eine Nachricht gesendet."));
     }
 
-    // 6. ФИНАЛЬНЫЙ СБРОС ПАРОЛЯ ПО ОДНОРАЗОВОМУ ТОКЕНУ С ВАЛИДАЦИЕЙ СРОКА
+     
     @Operation(
         summary = "Passwort zurücksetzen",
         description = "Setzt das Passwort mit einem gültigen Reset-Token zurück."
@@ -401,7 +576,7 @@ public class AuthController {
         user.setPasswordHash(passwordEncoder.encode(newPassword));
         user.setPasswordChangeRequired(false);
         userRepository.save(user);
-        tokenRepository.delete(resetToken); // Удаляем токен после успешного использования
+        tokenRepository.delete(resetToken);  
         log.info("Passwort erfolgreich zurueckgesetzt fuer User-ID: {}", user.getId());
         return ResponseEntity.ok(Map.of("message", "Passwort erfolgreich zurueckgesetzt!"));
     }

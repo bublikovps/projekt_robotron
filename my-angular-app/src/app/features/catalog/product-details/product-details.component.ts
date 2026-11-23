@@ -19,6 +19,12 @@ from '../services/catalog.service';
 import { CatalogProductResponse }
 from '../models/catalog-product-response.model';
 
+import { CartService }
+from '../../../core/services/cart.service';
+
+import { AuthService }
+from '../../../core/services/auth.service';
+
 @Component({
   selector: 'app-product-details',
   standalone: true,
@@ -38,13 +44,26 @@ implements OnInit {
 
   errorMessage = '';
 
+  currentRole = '';
+
   constructor(
     private route: ActivatedRoute,
     private catalogService: CatalogService,
+    private cartService: CartService,
+    private authService: AuthService,
     private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
+
+    this.authService
+      .currentUser$
+      .subscribe(user => {
+
+        this.currentRole =
+          user?.role ?? '';
+
+      });
 
     this.route.paramMap
       .subscribe(params => {
@@ -64,10 +83,13 @@ implements OnInit {
           this.cdr.markForCheck();
 
           return;
+
         }
 
         this.loadProduct(id);
+
       });
+
   }
 
   private loadProduct(
@@ -91,6 +113,7 @@ implements OnInit {
           this.isLoading = false;
 
           this.cdr.markForCheck();
+
         },
 
         error: () => {
@@ -101,9 +124,11 @@ implements OnInit {
           this.isLoading = false;
 
           this.cdr.markForCheck();
+
         }
 
       });
+
   }
 
   addToCart(): void {
@@ -111,10 +136,26 @@ implements OnInit {
     if (!this.product) {
 
       return;
+
     }
 
-    alert(
-      `${this.product.name} wurde zum Warenkorb hinzugefügt.`
+    this.cartService.addToCart(
+      this.product
     );
+
   }
+
+  canUseCart(): boolean {
+
+    return this.currentRole !==
+           'ROLE_MANAGER'
+         &&
+         this.currentRole !==
+           'ROLE_ADMIN'
+         &&
+         this.currentRole !==
+           'ROLE_DIRECTOR';
+
+  }
+
 }

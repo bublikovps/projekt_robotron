@@ -199,4 +199,22 @@ public class AdminController {
                 )
         );
     }
+
+    @PutMapping("/{userId}/anonymize")
+        public ResponseEntity<?> anonymizeUser(
+                @PathVariable Long userId
+        ) {
+
+        userService.anonymizeUser(
+                userId
+        );
+
+        return ResponseEntity.ok(
+                Map.of(
+                        "message",
+                        "Benutzer wurde DSGVO-konform anonymisiert."
+                )
+        );
+
+        }
 }

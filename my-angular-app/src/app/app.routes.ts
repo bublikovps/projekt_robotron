@@ -31,6 +31,9 @@ import { SupportComponent } from './features/support/support.component';
 
 import { LEGAL_ROUTES } from './features/legal/legal.routes';
 
+import { CART_ROUTES } from './features/cart/cart.routes';
+import { CUSTOMER_PORTAL_ROUTES } from './features/customer-portal/customer-portal.routes';
+
 export const routes: Routes = [
 
   {
@@ -86,7 +89,9 @@ export const routes: Routes = [
   ...BUSINESS_MANAGEMENT_ROUTES,
   ...ASSET_MANAGEMENT_ROUTES,
   ...CATALOG_ROUTES,
+  ...CART_ROUTES,
   ...LEGAL_ROUTES,
+  ...CUSTOMER_PORTAL_ROUTES,
 
   {
     path: '**',

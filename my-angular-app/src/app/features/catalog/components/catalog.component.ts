@@ -31,6 +31,12 @@ from '../services/catalog.service';
 import { CatalogProductResponse }
 from '../models/catalog-product-response.model';
 
+import { CartService }
+from '../../../core/services/cart.service';
+
+import { AuthService }
+from '../../../core/services/auth.service';
+
 @Component({
   selector: 'app-catalog',
   standalone: true,
@@ -60,6 +66,12 @@ implements OnInit {
   private readonly searchSubject =
     new Subject<string>();
 
+  private readonly cartService =
+    inject(CartService);
+
+  private readonly authService =
+    inject(AuthService);
+
   categories =
     this.catalogService.categories;
 
@@ -73,7 +85,18 @@ implements OnInit {
 
   isLoading = true;
 
+  currentRole = '';
+
   ngOnInit(): void {
+
+    this.authService
+      .currentUser$
+      .subscribe(user => {
+
+        this.currentRole =
+          user?.role ?? '';
+
+      });
 
     this.catalogService
       .loadCategoriesIfNeeded();
@@ -86,6 +109,7 @@ implements OnInit {
       .subscribe(() => {
 
         this.loadProducts();
+
       });
 
     this.route.queryParamMap
@@ -100,7 +124,9 @@ implements OnInit {
             : null;
 
         this.loadProducts();
+
       });
+
   }
 
   loadProducts(): void {
@@ -121,6 +147,7 @@ implements OnInit {
           this.isLoading = false;
 
           this.cdr.detectChanges();
+
         },
 
         error: () => {
@@ -130,9 +157,11 @@ implements OnInit {
           this.isLoading = false;
 
           this.cdr.detectChanges();
+
         }
 
       });
+
   }
 
   onSearch(): void {
@@ -140,6 +169,7 @@ implements OnInit {
     this.searchSubject.next(
       this.searchTerm
     );
+
   }
 
   clearSearch(): void {
@@ -147,6 +177,7 @@ implements OnInit {
     this.searchTerm = '';
 
     this.loadProducts();
+
   }
 
   selectCategory(
@@ -164,6 +195,7 @@ implements OnInit {
             : {}
       }
     );
+
   }
 
   trackByProductId(
@@ -172,5 +204,30 @@ implements OnInit {
   ): number {
 
     return product.id;
+
   }
+
+  addToCart(
+    product: CatalogProductResponse
+  ): void {
+
+    this.cartService.addToCart(
+      product
+    );
+
+  }
+
+  canUseCart(): boolean {
+
+    return this.currentRole !==
+           'ROLE_MANAGER'
+         &&
+         this.currentRole !==
+           'ROLE_ADMIN'
+         &&
+         this.currentRole !==
+           'ROLE_DIRECTOR';
+
+  }
+
 }

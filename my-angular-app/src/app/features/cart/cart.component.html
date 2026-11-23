@@ -1,0 +1,218 @@
+<div class="cart-container">
+
+  <div class="cart-header">
+
+    <h1>Warenkorb</h1>
+
+    <span class="cart-count">
+      {{ itemCount() }} Artikel
+    </span>
+
+  </div>
+
+  <div
+    *ngIf="items().length === 0"
+    class="empty-cart">
+
+    <div class="empty-cart-icon">
+
+    🛒
+
+    </div>
+
+    <h2>
+      Ihr Warenkorb ist leer
+    </h2>
+
+    <p>
+      Fügen Sie Produkte aus dem Katalog hinzu.
+    </p>
+
+    <a
+      routerLink="/catalog"
+      class="continue-shopping">
+
+      Zum Katalog
+
+    </a>
+
+  </div>
+
+  <div
+    *ngIf="items().length > 0"
+    class="cart-layout">
+
+    <!-- LEFT COLUMN -->
+
+    <div class="cart-items">
+
+      <div
+        class="cart-item"
+        *ngFor="let item of items()">
+
+        <div class="cart-image">
+
+          <img
+            *ngIf="item.imageUrl"
+            [src]="item.imageUrl"
+            [alt]="item.name">
+
+          <div
+            *ngIf="!item.imageUrl"
+            class="product-image-placeholder">
+
+            📦
+
+          </div>
+
+        </div>
+
+        <div class="cart-details">
+
+          <h3>
+            {{ item.name }}
+          </h3>
+
+          <p>
+            {{ item.manufacturer }}
+          </p>
+
+          <span class="enterprise-stock-badge">
+            Lagerbestand:
+            {{ item.availableStock }}
+          </span>
+
+          <div class="quantity-controls">
+
+            <button
+              type="button"
+              (click)="decrease(item.productId)">
+
+              -
+
+            </button>
+
+            <span>
+              {{ item.quantity }}
+            </span>
+
+            <button
+              type="button"
+              (click)="increase(item.productId)">
+
+              +
+
+            </button>
+
+          </div>
+
+        </div>
+
+        <div class="cart-price">
+
+          <div class="item-total">
+
+            {{
+              item.price *
+              item.quantity
+              | number:'1.2-2'
+            }} €
+
+          </div>
+
+          <button
+            type="button"
+            class="remove-btn"
+            (click)="remove(item.productId)">
+
+            Entfernen
+
+          </button>
+
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- RIGHT COLUMN -->
+
+    <div class="summary-card">
+
+      <h2>
+        Bestellübersicht
+      </h2>
+
+      <div class="summary-row">
+
+        <span>Artikel</span>
+
+        <strong>
+          {{ itemCount() }}
+        </strong>
+
+      </div>
+
+      <div class="summary-row">
+
+        <span>Netto</span>
+
+        <strong>
+
+          {{ netTotal() | number:'1.2-2' }}
+
+        </strong>
+
+      </div>
+
+      <div class="summary-row">
+
+        <span>MwSt. (19%)</span>
+
+        <strong>
+
+          {{ vatTotal() | number:'1.2-2' }}
+
+        </strong>
+
+      </div>
+
+      <div class="summary-row summary-total">
+
+        <span>Brutto</span>
+
+        <strong>
+
+          {{ grossTotal() | number:'1.2-2' }}
+
+        </strong>
+
+      </div>
+
+      <div class="cart-actions">
+
+        <button
+          type="button"
+          class="checkout-btn"
+          routerLink="/checkout">
+
+          Zur Kasse
+
+        </button>
+
+        <button
+          type="button"
+          class="clear-cart-btn"
+          (click)="clearCart()">
+
+          Warenkorb leeren
+
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>

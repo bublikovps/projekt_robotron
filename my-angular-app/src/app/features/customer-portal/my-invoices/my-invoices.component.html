@@ -1,0 +1,135 @@
+<div class="enterprise-page">
+
+  <div class="page-header">
+
+    <h2>
+      Meine Rechnungen
+    </h2>
+
+    <p>
+      Übersicht Ihrer Rechnungen.
+    </p>
+
+  </div>
+
+  @if (isLoading) {
+
+    <div class="empty-state">
+
+      Rechnungen werden geladen...
+
+    </div>
+
+  }
+  @else if (invoices.length === 0) {
+
+    <div class="empty-state">
+
+      Noch keine Rechnungen vorhanden.
+
+    </div>
+
+  }
+  @else {
+
+    <div class="enterprise-table-card">
+
+      <table
+        class="enterprise-table">
+
+        <thead>
+
+          <tr>
+
+            <th>
+              Rechnung
+            </th>
+
+            <th>
+              Bestellung
+            </th>
+
+            <th>
+              Betrag
+            </th>
+
+            <th>
+              Datum
+            </th>
+
+            <th>
+              Dokument
+            </th>
+
+          </tr>
+
+        </thead>
+
+        <tbody>
+
+          @for (
+            invoice of invoices;
+            track invoice.invoiceNumber
+          ) {
+
+            <tr>
+
+              <td>
+
+                {{ invoice.invoiceNumber }}
+
+              </td>
+
+              <td>
+
+                {{ invoice.orderNumber }}
+
+              </td>
+
+              <td>
+
+                {{ invoice.totalGross }} €
+
+              </td>
+
+              <td>
+
+                {{
+                  invoice.createdAt
+                  | date:'dd.MM.yyyy'
+                }}
+
+              </td>
+
+              <td>
+
+                <button
+                  class="
+                    enterprise-btn
+                    enterprise-btn-secondary
+                  "
+                  (click)="
+                    downloadInvoice(
+                      invoice.invoiceNumber
+                    )
+                  ">
+
+                  PDF
+
+                </button>
+
+              </td>
+
+            </tr>
+
+          }
+
+        </tbody>
+
+      </table>
+
+    </div>
+
+  }
+
+</div>
