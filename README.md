@@ -334,6 +334,9 @@ Master Data
 ├── Categories
 └── Products
 
+Sales
+└── Orders
+
 Analytics
 ├── Inventory Value
 ├── Low Stock
@@ -357,6 +360,29 @@ Analytics
 - Suche
 - Filterung
 - Kategorien
+
+### Orders Management
+
+Enterprise Order-to-Cash Verwaltung.
+
+Funktionen:
+
+- Bestellübersicht
+- Statusverwaltung
+- Auftragsinformationen
+- KPI Dashboard
+- Revenue Analyse
+- Exportfunktionen
+- Suchfunktion
+- Statusfilter
+
+KPIs:
+
+- Total Orders
+- Pending Payment
+- Paid Orders
+- Shipped Orders
+- Revenue
 
 ### Reporting
 
