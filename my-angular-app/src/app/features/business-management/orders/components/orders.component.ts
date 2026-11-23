@@ -421,6 +421,55 @@ implements OnInit {
 
   }
 
+  shipSelectedOrder(): void {
+
+    if (
+      !this.selectedOrder
+    ) {
+      return;
+    }
+
+    this.http
+      .post(
+        'http://localhost:8080/api/orders/ship',
+        {
+
+          orderId:
+            this.selectedOrder.id,
+
+          shippedByUserId:
+            3,
+
+          trackingNumber:
+            'DHL-' +
+            Date.now()
+
+        }
+      )
+      .subscribe({
+
+        next: () => {
+
+          this.loadDashboard();
+
+          this.loadOrders();
+
+          this.loadOrderDetails(
+            this.selectedOrder!.orderNumber
+          );
+
+        },
+
+        error: error => {
+
+          console.error(error);
+
+        }
+
+      });
+
+  }
+
   openInvoice(): void {
 
     if (

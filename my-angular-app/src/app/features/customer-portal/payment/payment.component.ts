@@ -21,6 +21,10 @@ import {
   AuthService
 } from '../../../core/services/auth.service';
 
+import {
+  ChangeDetectorRef
+} from '@angular/core';
+
 @Component({
   selector: 'app-payment',
 
@@ -51,6 +55,9 @@ implements OnInit {
 
   private readonly authService =
     inject(AuthService);
+
+  private readonly cdr =
+  inject(ChangeDetectorRef);
 
   orderId = 0;
 
@@ -98,8 +105,15 @@ implements OnInit {
 
         next: profile => {
 
+
           this.accountBalance =
-            profile.accountBalance ?? 0;
+            Number(
+              profile.accountBalance
+            ) || 0;
+
+          this.cdr.detectChanges();
+
+
 
         }
 
@@ -147,7 +161,7 @@ implements OnInit {
           setTimeout(() => {
 
             this.router.navigate([
-              '/my-orders'
+              '/customer-portal'
             ]);
 
           }, 1500);

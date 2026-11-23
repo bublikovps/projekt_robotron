@@ -113,14 +113,18 @@
 
           </a>
 
-          <button
-            type="button"
-            class="add-to-cart-btn"
-            (click)="addToCart(product)">
+          @if (canUseCart()) {
 
-            🛒 In den Warenkorb
+            <button
+              type="button"
+              class="add-to-cart-btn"
+              (click)="addToCart(product)">
 
-          </button>
+              🛒 In den Warenkorb
+
+            </button>
+
+          }
 
         </div>
 

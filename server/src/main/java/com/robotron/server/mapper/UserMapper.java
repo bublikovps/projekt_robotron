@@ -11,7 +11,8 @@ public class UserMapper {
     }
 
     public static UserResponse toResponse(
-            User user
+            User user,
+            boolean canDelete
     ) {
 
         String role =
@@ -22,6 +23,9 @@ public class UserMapper {
                         .orElse(
                                 SecurityRoles.CUSTOMER
                         );
+
+        boolean anonymized =
+                user.getAnonymizedAt() != null;
 
         return new UserResponse(
 
@@ -45,7 +49,11 @@ public class UserMapper {
 
                 user.getUstIdnr(),
 
-                user.getAccountBalance()
+                user.getAccountBalance(),
+
+                canDelete,
+
+                anonymized
 
         );
 

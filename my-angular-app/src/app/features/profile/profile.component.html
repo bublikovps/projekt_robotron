@@ -11,7 +11,7 @@
       <p>
 
         Verwalten Sie Ihre persönlichen Daten,
-        Kundendaten und Sicherheitseinstellungen.
+        Kontoeinstellungen und Sicherheit.
 
       </p>
 
@@ -36,6 +36,62 @@
   </div>
 
   @if (user && !isLoading) {
+
+    <div class="profile-summary">
+
+      <div class="summary-card">
+
+        <div class="summary-label">
+          Benutzer
+        </div>
+
+        <div class="summary-value">
+          {{ user.login }}
+        </div>
+
+      </div>
+
+      <div class="summary-card">
+
+        <div class="summary-label">
+          Rolle
+        </div>
+
+        <div class="summary-value">
+          {{ getRoleLabel() }}
+        </div>
+
+      </div>
+
+      <div class="summary-card">
+
+        <div class="summary-label">
+          Registriert
+        </div>
+
+        <div class="summary-value">
+          {{ user.createdAt | date:'dd.MM.yyyy' }}
+        </div>
+
+      </div>
+
+      @if (isCustomer()) {
+
+        <div class="summary-card">
+
+          <div class="summary-label">
+            Kontostand
+          </div>
+
+          <div class="summary-value">
+            {{ getAccountBalance() }}
+          </div>
+
+        </div>
+
+      }
+
+    </div>
 
     <div class="profile-grid">
 
@@ -103,126 +159,109 @@
 
       </div>
 
-      <!-- KUNDENTYP -->
+      <!-- CUSTOMER BEREICH -->
 
-      <div class="profile-card">
+      @if (isCustomer()) {
 
-        <h3>
-          Kundentyp
-        </h3>
+        <div class="profile-card">
 
-        <div class="form-grid">
+          <h3>
+            Kundentyp
+          </h3>
 
-          <div class="form-field">
+          <div class="form-grid">
 
-            <label>
-              Kundentyp
-            </label>
+            <div class="form-field">
 
-            <select
-              [(ngModel)]="profileData.customerType">
+              <label>
+                Kundentyp
+              </label>
 
-              <option
-                value="PRIVATE">
+              <select
+                [(ngModel)]="profileData.customerType">
 
-                Privatkunde
+                <option value="PRIVATE">
+                  Privatkunde
+                </option>
 
-              </option>
+                <option value="BUSINESS">
+                  Geschäftskunde
+                </option>
 
-              <option
-                value="BUSINESS">
+              </select>
 
-                Geschäftskunde
+            </div>
 
-              </option>
+            <div class="form-field">
 
-            </select>
+              <label>
+                Kunde seit
+              </label>
 
-          </div>
+              <input
+                type="text"
+                [value]="user.createdAt | date:'dd.MM.yyyy'"
+                disabled>
 
-          <div class="form-field">
-
-            <label>
-              Kunde seit
-            </label>
-
-            <input
-              type="text"
-              [value]="
-                user.createdAt
-                | date:'dd.MM.yyyy'
-              "
-              disabled>
+            </div>
 
           </div>
 
         </div>
 
-      </div>
+        <div class="profile-card">
 
-      <!-- FIRMENDATEN -->
+          <h3>
+            Firmendaten
+          </h3>
 
-      <div class="profile-card">
+          <div class="form-grid">
 
-        <h3>
-          Firmendaten
-        </h3>
+            <div class="form-field">
 
-        <div class="form-grid">
+              <label>
+                Firmenname
+              </label>
 
-          <div class="form-field">
+              <input
+                type="text"
+                [(ngModel)]="profileData.companyName">
 
-            <label>
-              Firmenname
-            </label>
+            </div>
 
-            <input
-              type="text"
-              [(ngModel)]="profileData.companyName">
+            <div class="form-field">
 
-          </div>
+              <label>
+                USt-IdNr.
+              </label>
 
-          <div class="form-field">
+              <input
+                type="text"
+                [(ngModel)]="profileData.ustIdnr">
 
-            <label>
-              USt-IdNr.
-            </label>
-
-            <input
-              type="text"
-              [(ngModel)]="profileData.ustIdnr">
+            </div>
 
           </div>
 
         </div>
 
-      </div>
+        <div class="profile-card profile-address">
 
-      <!-- LIEFERADRESSE -->
+          <h3>
+            Standard-Lieferadresse
+          </h3>
 
-      <div class="profile-card">
-
-        <h3>
-          Standard-Lieferadresse
-        </h3>
-
-        <div class="form-grid">
-
-          <div
-            class="
-              form-field
-              form-field-full
-            ">
+          <div class="form-field">
 
             <label>
               Lieferadresse
             </label>
 
             <textarea
-              rows="5"
               [(ngModel)]="
                 profileData.defaultShippingAddress
-              ">
+              "
+              rows="8">
 
             </textarea>
 
@@ -230,48 +269,55 @@
 
         </div>
 
-      </div>
+      }
 
-      <!-- AKTIONEN -->
+      <!-- EMPLOYEE BEREICH -->
 
-      <div class="profile-card">
+      @if (isEmployee()) {
 
-        <h3>
-          Kundendaten speichern
-        </h3>
+        <div class="profile-card">
 
-        <p>
+          <h3>
+            Mitarbeiterprofil
+          </h3>
 
-          Diese Daten werden zukünftig
-          automatisch im Checkout,
-          bei Bestellungen,
-          Rechnungen und Lieferscheinen
-          verwendet.
+          <div class="form-grid">
 
-        </p>
+            <div class="form-field">
 
-        <button
-          type="button"
-          class="
-            enterprise-btn
-            enterprise-btn-primary
-          "
-          [disabled]="isSavingProfile"
-          (click)="onSaveProfile()">
+              <label>
+                Rolle
+              </label>
 
-          {{
-            isSavingProfile
-              ? 'Profil wird gespeichert...'
-              : 'Profil speichern'
-          }}
+              <input
+                type="text"
+                [value]="getRoleLabel()"
+                disabled>
 
-        </button>
+            </div>
 
-      </div>
+            <div class="form-field">
+
+              <label>
+                Systemstatus
+              </label>
+
+              <input
+                type="text"
+                value="Aktiv"
+                disabled>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      }
 
       <!-- SICHERHEIT -->
 
-      <div class="profile-card">
+      <div class="profile-card security-card">
 
         <h3>
           Kontosicherheit
@@ -281,7 +327,7 @@
           (ngSubmit)="onChangePassword()"
           #pwdForm="ngForm">
 
-          <div class="form-grid">
+          <div class="security-form">
 
             <div class="form-field">
 
@@ -323,15 +369,47 @@
               enterprise-btn
               enterprise-btn-secondary
             "
-            [disabled]="
-              !pwdForm.form.valid
-            ">
+            [disabled]="!pwdForm.form.valid">
 
             Passwort ändern
 
           </button>
 
         </form>
+
+      </div>
+
+      <!-- SPEICHERN -->
+
+      <div class="profile-card save-card">
+
+        <h3>
+          Änderungen speichern
+        </h3>
+
+        <p>
+
+          Speichern Sie Ihre aktuellen
+          Profileinstellungen.
+
+        </p>
+
+        <button
+          type="button"
+          class="
+            enterprise-btn
+            enterprise-btn-primary
+          "
+          [disabled]="isSavingProfile"
+          (click)="onSaveProfile()">
+
+          {{
+            isSavingProfile
+              ? 'Profil wird gespeichert...'
+              : 'Profil speichern'
+          }}
+
+        </button>
 
       </div>
 

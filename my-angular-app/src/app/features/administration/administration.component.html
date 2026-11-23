@@ -3,15 +3,11 @@
   <div class="workspace-header">
 
     <h1>
-
       Administration
-
     </h1>
 
     <p>
-
       Benutzer-, Kunden- und Mitarbeiterverwaltung.
-
     </p>
 
   </div>
@@ -47,55 +43,156 @@
 
   </div>
 
-  <div class="toolbar">
+  <div class="report-toolbar">
 
     <input
       type="text"
+      class="
+        enterprise-search
+        report-search
+      "
       placeholder="Suchen..."
       [(ngModel)]="searchTerm"
       (input)="filterUsers()">
 
-  </div>
+    @if (selectedArea === 'employees') {
 
-  @if (selectedArea === 'employees') {
-
-    <div class="employee-card">
-
-      <h3>
-
-        Neuen Mitarbeiter anlegen
-
-      </h3>
-
-      <div class="employee-grid">
-
-        <input
-          placeholder="Login"
-          [(ngModel)]="newEmployee.login">
-
-        <input
-          placeholder="E-Mail"
-          [(ngModel)]="newEmployee.email">
-
-        <select
-          [(ngModel)]="newEmployee.role">
-
-          <option
-            value="ROLE_MANAGER">
-
-            Manager
-
-          </option>
-
-        </select>
+      <div
+        class="enterprise-toolbar-right">
 
         <button
-          class="create-btn"
-          (click)="onCreateEmployee()">
+          class="
+            enterprise-btn
+            enterprise-btn-primary
+          "
+          (click)="openCreateEmployeeDialog()">
 
-          Anlegen
+          + Mitarbeiter
 
         </button>
+
+      </div>
+
+    }
+
+  </div>
+
+  @if (showCreateEmployeeDialog) {
+
+    <div
+      class="
+        enterprise-dialog-overlay
+      "
+      (click)="closeCreateEmployeeDialog()">
+
+      <div
+        class="
+          enterprise-dialog
+        "
+        (click)="$event.stopPropagation()">
+
+        <h2>
+
+          Neuer Mitarbeiter
+
+        </h2>
+
+        <form
+          class="
+            enterprise-form-grid
+          ">
+
+          <div class="form-field">
+
+            <label>
+
+              Login
+
+            </label>
+
+            <input
+              type="text"
+              [(ngModel)]="
+                newEmployee.login
+              "
+              name="employeeLogin">
+
+          </div>
+
+          <div class="form-field">
+
+            <label>
+
+              E-Mail
+
+            </label>
+
+            <input
+              type="email"
+              [(ngModel)]="
+                newEmployee.email
+              "
+              name="employeeEmail">
+
+          </div>
+
+          <div class="form-field">
+
+            <label>
+
+              Rolle
+
+            </label>
+
+            <select
+              [(ngModel)]="
+                newEmployee.role
+              "
+              name="employeeRole">
+
+              <option
+                value="ROLE_MANAGER">
+
+                Manager
+
+              </option>
+
+            </select>
+
+          </div>
+
+        </form>
+
+        <div
+          class="
+            enterprise-dialog-footer
+          ">
+
+          <button
+            type="button"
+            class="
+              enterprise-btn
+              enterprise-btn-secondary
+            "
+            (click)="closeCreateEmployeeDialog()">
+
+            Abbrechen
+
+          </button>
+
+          <button
+            type="button"
+            class="
+              enterprise-btn
+              enterprise-btn-primary
+            "
+            (click)="onCreateEmployee()">
+
+            Mitarbeiter erstellen
+
+          </button>
+
+        </div>
 
       </div>
 
@@ -134,35 +231,26 @@
           <tr>
 
             <th>ID</th>
-
             <th>Login</th>
-
             <th>Firma</th>
-
             <th>USt-ID</th>
-
             <th>Kontostand</th>
-
             <th>Status</th>
+            <th>Aktionen</th>
 
           </tr>
 
-        }
-        @else {
+        } @else {
 
           <tr>
 
             <th>ID</th>
-
             <th>Login</th>
-
             <th>E-Mail</th>
-
             <th>Rolle</th>
-
             <th>Status</th>
-
             <th>Registriert</th>
+            <th>Aktionen</th>
 
           </tr>
 
@@ -200,35 +288,100 @@
               </td>
 
               <td>
+                {{ user.accountBalance }} €
+              </td>
 
-                {{
-                  user.accountBalance
-                }}
-                €
+              <td>
+
+                <span
+                  class="enterprise-badge"
+                  [class.enterprise-badge-success]="user.active">
+
+                  {{ getStatusLabel(user) }}
+
+                </span>
 
               </td>
 
               <td>
 
-                @if (
-                  user.active
-                ) {
+                <div class="enterprise-actions">
 
-                  Aktiv
+                  @if (!user.anonymized) {
 
-                }
-                @else {
+                    @if (user.active) {
 
-                  Gesperrt
+                      <button
+                        class="
+                          enterprise-btn
+                          enterprise-btn-secondary
+                        "
+                        (click)="onBlockUser(user.id)">
 
-                }
+                        Sperren
+
+                      </button>
+
+                    } @else {
+
+                      <button
+                        class="
+                          enterprise-btn
+                          enterprise-btn-secondary
+                        "
+                        (click)="onUnblockUser(user.id)">
+
+                        Entsperren
+
+                      </button>
+
+                    }
+
+                  }
+
+                  @if (
+                    canAnonymize(user)
+                  ) {
+
+                    <button
+                      class="
+                        enterprise-btn
+                        enterprise-btn-warning
+                      "
+                      (click)="onAnonymizeUser(user.id)">
+
+                      DSGVO
+
+                    </button>
+
+                  }
+
+                  @if (
+                    isDirector()
+                    &&
+                    canDelete(user)
+                  ) {
+
+                    <button
+                      class="
+                        enterprise-btn
+                        enterprise-btn-danger
+                      "
+                      (click)="onDeleteUser(user.id)">
+
+                      Löschen
+
+                    </button>
+
+                  }
+
+                </div>
 
               </td>
 
             </tr>
 
-          }
-          @else {
+          } @else {
 
             <tr>
 
@@ -245,23 +398,34 @@
               </td>
 
               <td>
-                {{ user.role }}
+
+                <button
+                  class="
+                    enterprise-btn
+                    enterprise-btn-secondary
+                  "
+                  (click)="
+                    onChangeRole(
+                      user.id,
+                      user.role
+                    )
+                  ">
+
+                  {{ getRoleLabel(user.role) }}
+
+                </button>
+
               </td>
 
               <td>
 
-                @if (
-                  user.active
-                ) {
+                <span
+                  class="enterprise-badge"
+                  [class.enterprise-badge-success]="user.active">
 
-                  Aktiv
+                  {{ getStatusLabel(user) }}
 
-                }
-                @else {
-
-                  Gesperrt
-
-                }
+                </span>
 
               </td>
 
@@ -269,9 +433,67 @@
 
                 {{
                   user.createdAt
-                  | date:
-                  'dd.MM.yyyy'
+                  | date:'dd.MM.yyyy'
                 }}
+
+              </td>
+
+              <td>
+
+                <div class="enterprise-actions">
+
+                  @if (!user.anonymized) {
+
+                    @if (user.active) {
+
+                      <button
+                        class="
+                          enterprise-btn
+                          enterprise-btn-secondary
+                        "
+                        (click)="onBlockUser(user.id)">
+
+                        Sperren
+
+                      </button>
+
+                    } @else {
+
+                      <button
+                        class="
+                          enterprise-btn
+                          enterprise-btn-secondary
+                        "
+                        (click)="onUnblockUser(user.id)">
+
+                        Entsperren
+
+                      </button>
+
+                    }
+
+                  }
+
+                  @if (
+                    isDirector()
+                    &&
+                    canDelete(user)
+                  ) {
+
+                    <button
+                      class="
+                        enterprise-btn
+                        enterprise-btn-danger
+                      "
+                      (click)="onDeleteUser(user.id)">
+
+                      Löschen
+
+                    </button>
+
+                  }
+
+                </div>
 
               </td>
 

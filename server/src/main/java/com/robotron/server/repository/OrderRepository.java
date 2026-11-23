@@ -32,4 +32,8 @@ public interface OrderRepository
                 User user
         );
 
+    boolean existsByUser(
+                User user
+        );
+
 }

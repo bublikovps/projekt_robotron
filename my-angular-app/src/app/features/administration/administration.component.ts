@@ -63,6 +63,10 @@ implements OnInit {
 
   isLoading = false;
 
+  showCreateEmployeeDialog = false;
+
+  currentRole = '';
+
   newEmployee = {
 
     login: '',
@@ -74,6 +78,7 @@ implements OnInit {
   };
 
   constructor(
+
     private adminService:
       AdminService,
 
@@ -82,6 +87,7 @@ implements OnInit {
 
     private cdr:
       ChangeDetectorRef
+
   ) {}
 
   ngOnInit(): void {
@@ -92,11 +98,19 @@ implements OnInit {
 
         next: user => {
 
+          this.currentRole =
+            user.role;
+
           if (
+
             user.role ===
-              'ROLE_ADMIN' ||
+              'ROLE_ADMIN'
+
+            ||
+
             user.role ===
               'ROLE_DIRECTOR'
+
           ) {
 
             this.loadUsers();
@@ -208,10 +222,13 @@ implements OnInit {
       result =
         result.filter(
           user =>
+
             user.login
               .toLowerCase()
               .includes(term)
+
             ||
+
             user.email
               .toLowerCase()
               .includes(term)
@@ -237,16 +254,19 @@ implements OnInit {
           this.successMessage =
             res.message;
 
+          this.errorMessage = '';
+
           this.newEmployee = {
 
             login: '',
 
             email: '',
 
-            role:
-              'ROLE_MANAGER'
+            role: 'ROLE_MANAGER'
 
           };
+
+          this.closeCreateEmployeeDialog();
 
           this.loadUsers();
 
@@ -255,9 +275,54 @@ implements OnInit {
         error: err => {
 
           this.errorMessage =
-            err.error?.error
-            ||
-            'Fehler';
+            err.error?.error ||
+            'Fehler beim Anlegen.';
+
+        }
+
+      });
+
+  }
+
+  onBlockUser(
+    userId: number
+  ): void {
+
+    this.adminService
+      .blockUser(userId)
+      .subscribe({
+
+        next: () => {
+
+          this.successMessage =
+            'Benutzer wurde gesperrt.';
+
+          this.errorMessage = '';
+
+          this.loadUsers();
+
+        }
+
+      });
+
+  }
+
+  onUnblockUser(
+    userId: number
+  ): void {
+
+    this.adminService
+      .unblockUser(userId)
+      .subscribe({
+
+        next: () => {
+
+          this.successMessage =
+            'Benutzer wurde entsperrt.';
+
+          this.errorMessage = '';
+
+          this.loadUsers();
 
         }
 
@@ -271,7 +336,7 @@ implements OnInit {
 
     if (
       !confirm(
-        'Benutzer löschen?'
+        'Benutzer endgültig löschen?'
       )
     ) {
       return;
@@ -283,7 +348,64 @@ implements OnInit {
 
         next: () => {
 
+          this.successMessage =
+            'Benutzer gelöscht.';
+
+          this.errorMessage = '';
+
           this.loadUsers();
+
+        },
+
+        error: err => {
+
+          this.errorMessage =
+            err.error?.error ||
+            'Löschen fehlgeschlagen.';
+
+        }
+
+      });
+
+  }
+
+  onAnonymizeUser(
+    userId: number
+  ): void {
+
+    if (
+      !confirm(
+        'Benutzer DSGVO-konform anonymisieren?'
+      )
+    ) {
+      return;
+    }
+
+    this.adminService
+      .anonymizeUser(
+        userId
+      )
+      .subscribe({
+
+        next: res => {
+
+          this.successMessage =
+            res.message;
+
+          this.errorMessage = '';
+
+          this.loadUsers();
+
+        },
+
+        error: err => {
+
+          this.errorMessage =
+            err.error?.error
+            ||
+            'Anonymisierung fehlgeschlagen.';
+
+          this.cdr.detectChanges();
 
         }
 
@@ -310,11 +432,97 @@ implements OnInit {
 
         next: () => {
 
+          this.successMessage =
+            'Rolle geändert.';
+
+          this.errorMessage = '';
+
           this.loadUsers();
 
         }
 
       });
+
+  }
+
+  isDirector(): boolean {
+
+    return this.currentRole ===
+      'ROLE_DIRECTOR';
+
+  }
+
+  canAnonymize(
+    user: AdminUserData
+  ): boolean {
+
+    return user.role ===
+      'ROLE_CUSTOMER'
+      &&
+      !user.anonymized;
+
+  }
+
+  canDelete(
+    user: AdminUserData
+  ): boolean {
+
+    return user.canDelete;
+
+  }
+
+  getStatusLabel(
+    user: AdminUserData
+  ): string {
+
+    if (
+      user.anonymized
+    ) {
+
+      return 'Anonymisiert';
+
+    }
+
+    return user.active
+      ? 'Aktiv'
+      : 'Gesperrt';
+
+  }
+
+  getRoleLabel(
+    role: string
+  ): string {
+
+    switch (role) {
+
+      case 'ROLE_DIRECTOR':
+        return 'Direktor';
+
+      case 'ROLE_ADMIN':
+        return 'Administrator';
+
+      case 'ROLE_MANAGER':
+        return 'Manager';
+
+      case 'ROLE_CUSTOMER':
+        return 'Kunde';
+
+      default:
+        return role;
+
+    }
+
+  }
+
+  openCreateEmployeeDialog(): void {
+
+    this.showCreateEmployeeDialog = true;
+
+  }
+
+  closeCreateEmployeeDialog(): void {
+
+    this.showCreateEmployeeDialog = false;
 
   }
 

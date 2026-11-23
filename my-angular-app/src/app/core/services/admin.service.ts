@@ -32,6 +32,10 @@ export interface AdminUserData {
 
   accountBalance?: number | null;
 
+  canDelete: boolean;
+
+  anonymized: boolean;
+
 }
 
 @Injectable({
@@ -60,6 +64,24 @@ export class AdminService {
 
   }
 
+  createEmployee(
+    employeeData: {
+      login: string;
+      email: string;
+      role: string;
+    }
+  ): Observable<any> {
+
+    return this.http.post<any>(
+      this.apiUrl,
+      employeeData,
+      {
+        withCredentials: true
+      }
+    );
+
+  }
+
   changeUserRole(
     userId: number,
     newRoleName: string
@@ -81,6 +103,60 @@ export class AdminService {
 
   }
 
+  blockUser(
+    userId: number
+  ): Observable<any> {
+
+    return this.http.put(
+
+      `${this.apiUrl}/${userId}/block`,
+
+      {},
+
+      {
+        withCredentials: true
+      }
+
+    );
+
+  }
+
+  unblockUser(
+    userId: number
+  ): Observable<any> {
+
+    return this.http.put(
+
+      `${this.apiUrl}/${userId}/unblock`,
+
+      {},
+
+      {
+        withCredentials: true
+      }
+
+    );
+
+  }
+
+  anonymizeUser(
+    userId: number
+  ): Observable<any> {
+
+    return this.http.put(
+
+      `${this.apiUrl}/${userId}/anonymize`,
+
+      {},
+
+      {
+        withCredentials: true
+      }
+
+    );
+
+  }
+
   deleteUser(
     userId: number
   ): Observable<any> {
@@ -93,26 +169,6 @@ export class AdminService {
         withCredentials: true
       }
 
-    );
-
-  }
-
-  createEmployee(
-    employeeData: {
-      login: string;
-      email: string;
-      role: string;
-    }
-  ): Observable<any> {
-
-    return this.http.post<any>(
-      this.apiUrl,
-
-      employeeData,
-
-      {
-        withCredentials: true
-      }
     );
 
   }

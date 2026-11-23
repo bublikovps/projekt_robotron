@@ -25,6 +25,10 @@ public class UserResponse {
 
     private BigDecimal accountBalance;
 
+    private boolean canDelete;
+
+    private boolean anonymized;
+
     public UserResponse() {
     }
 
@@ -38,7 +42,9 @@ public class UserResponse {
             String customerType,
             String companyName,
             String ustIdnr,
-            BigDecimal accountBalance
+            BigDecimal accountBalance,
+            boolean canDelete,
+            boolean anonymized
     ) {
 
         this.id = id;
@@ -52,6 +58,8 @@ public class UserResponse {
         this.companyName = companyName;
         this.ustIdnr = ustIdnr;
         this.accountBalance = accountBalance;
+        this.canDelete = canDelete;
+        this.anonymized = anonymized;
 
     }
 
@@ -151,6 +159,26 @@ public class UserResponse {
             BigDecimal accountBalance
     ) {
         this.accountBalance = accountBalance;
+    }
+
+    public boolean isCanDelete() {
+        return canDelete;
+    }
+
+    public void setCanDelete(
+            boolean canDelete
+    ) {
+        this.canDelete = canDelete;
+    }
+
+    public boolean isAnonymized() {
+        return anonymized;
+    }
+
+    public void setAnonymized(
+            boolean anonymized
+    ) {
+        this.anonymized = anonymized;
     }
 
 }

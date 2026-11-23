@@ -17,6 +17,10 @@ import {
   HttpClient
 } from '@angular/common/http';
 
+import {
+  Router
+} from '@angular/router';
+
 interface OrderListItem {
 
   id: number;
@@ -108,6 +112,9 @@ implements OnInit {
 
   private readonly cdr =
     inject(ChangeDetectorRef);
+
+  private readonly router =
+  inject(Router);
 
   orders: OrderListItem[] = [];
 
@@ -241,5 +248,30 @@ implements OnInit {
       });
 
   }
+
+  payOrder(
+    order: OrderListItem
+  ): void {
+
+    this.router.navigate(
+      ['/payment'],
+      {
+        queryParams: {
+
+          orderId:
+            order.id,
+
+          orderNumber:
+            order.orderNumber,
+
+          totalPrice:
+            order.totalPrice
+
+        }
+      }
+    );
+
+  }
+
 
 }

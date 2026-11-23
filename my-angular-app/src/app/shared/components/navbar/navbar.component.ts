@@ -110,6 +110,13 @@ implements OnInit {
       !this.isUserMenuOpen;
   }
 
+  closeUserMenu(): void {
+
+    this.isUserMenuOpen = false;
+
+  }
+
+
   isLoggedIn(): boolean {
 
     return !!this.currentUser();
@@ -205,5 +212,16 @@ implements OnInit {
     return login
       .charAt(0)
       .toUpperCase();
+  }
+
+  canUseCart(): boolean {
+
+    const role =
+    this.currentUser()?.role ?? '';
+
+  return role !== 'ROLE_MANAGER'
+      && role !== 'ROLE_ADMIN'
+      && role !== 'ROLE_DIRECTOR';
+
   }
 }

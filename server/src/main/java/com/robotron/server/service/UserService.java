@@ -1,6 +1,7 @@
 package com.robotron.server.service;
 
 import com.robotron.server.repository.UserRepository;
+import com.robotron.server.repository.OrderRepository;
 import com.robotron.server.repository.RoleRepository;
 import com.robotron.server.dto.admin.EmployeeCreateRequest;
 import com.robotron.server.dto.user.UserResponse;
@@ -32,6 +33,7 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
+    private final OrderRepository orderRepository;
     private final PasswordEncoder passwordEncoder;
     private final EmailService emailService;
 
@@ -44,11 +46,13 @@ public class UserService {
     public UserService(
             UserRepository userRepository,
             RoleRepository roleRepository,
+            OrderRepository orderRepository,
             PasswordEncoder passwordEncoder,
             EmailService emailService) {
 
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
+        this.orderRepository = orderRepository;
         this.passwordEncoder = passwordEncoder;
         this.emailService = emailService;
     }
@@ -180,15 +184,30 @@ public class UserService {
 
         for (User u : rawUsers) {
 
-            mappedUsers.add(
-                    UserMapper.toResponse(
-                            u
-                    )
-            );
+                boolean hasOrders =
+                        orderRepository.existsByUser(
+                                u
+                        );
+
+                boolean canDelete =
+                        !hasOrders
+                        &&
+                        u.getAnonymizedAt() == null;
+
+                mappedUsers.add(
+
+                        UserMapper.toResponse(
+                                u,
+                                canDelete
+                        )
+
+                );
+
         }
 
         return mappedUsers;
-    }
+
+        }
 
     public void blockUser(
             Long userId
@@ -423,8 +442,23 @@ public class UserService {
             );
         }
 
-        userRepository.deleteById(
-                userId
+        boolean hasOrders =
+                orderRepository.existsByUser(
+                        user
+                );
+
+        if (hasOrders) {
+
+        throw new BusinessException(
+
+                "Benutzer besitzt Bestellungen oder Rechnungen. Verwenden Sie DSGVO-Anonymisierung."
+
+        );
+
+        }
+
+        userRepository.delete(
+                user
         );
     }
 
@@ -456,6 +490,22 @@ public class UserService {
 
         String originalEmail =
                 user.getEmail();
+
+                try {
+
+            emailService
+                    .sendAnonymizationConfirmationEmail(
+                            originalEmail
+                    );
+
+        } catch (Exception e) {
+
+            log.error(
+                    "DSGVO Mail konnte nicht versendet werden.",
+                    e
+            );
+
+        }
 
         user.setLogin(
                 "deleted-user-" + user.getId()

@@ -39,23 +39,25 @@ public class OrderService {
 
     private final UserRepository userRepository;
 
-    public OrderService(
-            OrderRepository orderRepository,
-            ProductRepository productRepository,
-            PaymentRepository paymentRepository,
-            InvoiceRepository invoiceRepository,
-            DeliveryNoteRepository deliveryNoteRepository,
-            UserRepository userRepository
-    ) {
+    private final EmailService emailService;
 
+    public OrderService(
+                OrderRepository orderRepository,
+                ProductRepository productRepository,
+                PaymentRepository paymentRepository,
+                InvoiceRepository invoiceRepository,
+                DeliveryNoteRepository deliveryNoteRepository,
+                UserRepository userRepository,
+                EmailService emailService
+        ) {
         this.orderRepository = orderRepository;
         this.productRepository = productRepository;
         this.paymentRepository = paymentRepository;
         this.invoiceRepository = invoiceRepository;
         this.deliveryNoteRepository = deliveryNoteRepository;
         this.userRepository = userRepository;
-
-    }
+        this.emailService = emailService;
+        }
 
     @Transactional
 public OrderResponse createOrder(
@@ -94,14 +96,15 @@ public OrderResponse createOrder(
         ) {
 
         userRepository
-                .findByLogin(
-                        auth.getName()
-                )
-                .ifPresent(
-                        order::setUser
-                );
+        .findByLogin(
+                auth.getName()
+        )
+        .ifPresent(
+                order::setUser
+        );
 
-        }
+   }
+
 
     order.setOrderNumber(
             generateOrderNumber()
@@ -268,32 +271,69 @@ public OrderResponse createOrder(
                     order
             );
 
+     if (
+                savedOrder.getUser() != null
+        ) {
+
+        User customer =
+                savedOrder.getUser();
+
+        customer.setCustomerType(
+                request.getCustomerType()
+        );
+
+        customer.setVorname(
+                request.getVorname()
+        );
+
+        customer.setNachname(
+                request.getNachname()
+        );
+
+        customer.setCompanyName(
+                request.getCompanyName()
+        );
+
+        customer.setUstIdnr(
+                request.getUstIdnr()
+        );
+
+        customer.setDefaultShippingAddress(
+                request.getShippingAddress()
+        );
+
+        userRepository.saveAndFlush(
+                customer
+        );
+
+        }
+
     OrderResponse response =
-            new OrderResponse();
+                new OrderResponse();
 
-    response.setId(
-            savedOrder.getId()
-    );
+        response.setId(
+                savedOrder.getId()
+        );
 
-    response.setOrderNumber(
-            savedOrder.getOrderNumber()
-    );
+        response.setOrderNumber(
+                savedOrder.getOrderNumber()
+        );
 
-    response.setStatus(
-            savedOrder.getStatus()
-    );
+        response.setStatus(
+                savedOrder.getStatus()
+        );
 
-    response.setTotalPrice(
-            savedOrder.getTotalPrice()
-    );
+        response.setTotalPrice(
+                savedOrder.getTotalPrice()
+        );
 
-    response.setCreatedAt(
-            savedOrder.getCreatedAt()
-    );
+        response.setCreatedAt(
+                savedOrder.getCreatedAt()
+        );
 
-    return response;
+        return response;
 
-}
+        }
     @Transactional
     public PaymentResponse processPayment(
             PaymentRequest request
@@ -464,6 +504,28 @@ public OrderResponse createOrder(
                 order
         );
 
+                try {
+
+            emailService.sendPaymentConfirmationEmail(
+
+                    customer.getEmail(),
+
+                    order.getOrderNumber(),
+
+                    invoice.getInvoiceNumber(),
+
+                    order.getTotalPrice(),
+
+                    customer.getAccountBalance()
+
+            );
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+
+        }
+
         PaymentResponse response =
                 new PaymentResponse();
 
@@ -578,6 +640,35 @@ public OrderResponse createOrder(
         orderRepository.save(
                 order
         );
+
+                if (
+                order.getUser() != null
+        ) {
+
+            try {
+
+                emailService.sendShipmentConfirmationEmail(
+
+                        order.getUser()
+                                .getEmail(),
+
+                        order.getOrderNumber(),
+
+                        deliveryNote.getDeliveryNumber(),
+
+                        deliveryNote.getTrackingNumber(),
+
+                        order.getShippingAddress()
+
+                );
+
+            } catch (Exception e) {
+
+                e.printStackTrace();
+
+            }
+
+        }
 
         ShipOrderResponse response =
                 new ShipOrderResponse();

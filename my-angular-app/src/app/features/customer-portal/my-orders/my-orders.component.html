@@ -73,6 +73,10 @@
               Datum
             </th>
 
+            <th>
+              Aktionen
+            </th>
+
           </tr>
 
         </thead>
@@ -117,6 +121,27 @@
                   order.createdAt
                   | date:'dd.MM.yyyy'
                 }}
+
+              </td>
+
+              <td>
+
+                @if (
+                  order.status === 'PENDING_PAYMENT'
+                ) {
+
+                  <button
+                    class="btn-pay"
+                    (click)="
+                      $event.stopPropagation();
+                      payOrder(order)
+                    ">
+
+                    Jetzt bezahlen
+
+                  </button>
+
+                }
 
               </td>
 

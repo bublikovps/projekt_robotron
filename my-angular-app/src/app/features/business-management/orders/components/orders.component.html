@@ -290,7 +290,8 @@
 
                     'enterprise-badge-success':
                       order.status === 'PAID'
-                      || order.status === 'DELIVERED',
+                      || order.status === 'DELIVERED'
+                      || order.status === 'SHIPPED',
 
                     'enterprise-badge-warning':
                       order.status === 'PENDING_PAYMENT'
@@ -362,7 +363,8 @@
 
             'enterprise-badge-success':
               selectedOrder.status === 'PAID'
-              || selectedOrder.status === 'DELIVERED',
+              || selectedOrder.status === 'DELIVERED'
+              || selectedOrder.status === 'SHIPPED',
 
             'enterprise-badge-warning':
               selectedOrder.status === 'PENDING_PAYMENT'
@@ -410,10 +412,12 @@
               </span>
 
               <span class="value">
+
                 {{
                   selectedOrder.invoiceNumber
                   || '-'
                 }}
+
               </span>
 
             </div>
@@ -425,10 +429,12 @@
               </span>
 
               <span class="value">
+
                 {{
                   selectedOrder.deliveryNumber
                   || '-'
                 }}
+
               </span>
 
             </div>
@@ -440,10 +446,12 @@
               </span>
 
               <span class="value">
+
                 {{
                   selectedOrder.trackingNumber
                   || '-'
                 }}
+
               </span>
 
             </div>
@@ -455,8 +463,10 @@
               </span>
 
               <span class="value">
+
                 {{ selectedOrder.totalPrice }}
                 €
+
               </span>
 
             </div>
@@ -478,7 +488,9 @@
               </span>
 
               <span class="value">
+
                 {{ selectedOrder.customerName }}
+
               </span>
 
             </div>
@@ -490,10 +502,12 @@
               </span>
 
               <span class="value">
+
                 {{
                   selectedOrder.companyName
                   || '-'
                 }}
+
               </span>
 
             </div>
@@ -505,10 +519,12 @@
               </span>
 
               <span class="value">
+
                 {{
                   selectedOrder.ustIdnr
                   || '-'
                 }}
+
               </span>
 
             </div>
@@ -519,17 +535,34 @@
 
             <h4>
 
-              Documents
+              Actions
 
             </h4>
 
             <div
-              class="document-actions">
+              class="enterprise-actions">
+
+              @if (
+                selectedOrder.status === 'PAID'
+              ) {
+
+                <button
+                  class="
+                    enterprise-btn
+                    enterprise-btn-primary
+                  "
+                  (click)="shipSelectedOrder()">
+
+                  Versenden
+
+                </button>
+
+              }
 
               <button
                 class="
                   enterprise-btn
-                  enterprise-btn-primary
+                  enterprise-btn-secondary
                 "
                 (click)="openInvoice()">
 
@@ -612,9 +645,11 @@
                   </td>
 
                   <td>
+
                     <strong>
                       {{ item.productName }}
                     </strong>
+
                   </td>
 
                   <td>

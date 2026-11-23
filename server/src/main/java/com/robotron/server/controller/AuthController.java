@@ -77,7 +77,7 @@ public class AuthController {
     @PostMapping("/register")
     public ResponseEntity<?> registerUser(@RequestBody RegisterRequest request) {
         
-        // --- ВАЛИДАЦИЯ: ЛОГИН ---
+         
         if (request.getLogin() == null || request.getLogin().trim().length() < 4) {
             log.warn("Registrierung abgelehnt: Login zu kurz oder leer.");
             return ResponseEntity.badRequest().body(Map.of("error", "Der Benutzername (Login) muss mindestens 4 Zeichen lang sein!"));
@@ -87,14 +87,14 @@ public class AuthController {
             return ResponseEntity.badRequest().body(Map.of("error", "Der Benutzername darf nur из букв и цифр состоять (без пробелов и спецсимволов)!"));
         }
 
-        // --- ВАЛИДАЦИЯ: EMAIL (RFC-5322) ---
+         
         String emailRegex = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,6}$";
         if (request.getEmail() == null || !request.getEmail().matches(emailRegex)) {
             log.warn("Registrierung abgelehnt: Ungültiges E-Mail-Format: {}", request.getEmail());
             return ResponseEntity.badRequest().body(Map.of("error", "Bitte geben Sie eine gültige E-Mail-Adresse ein!"));
         }
 
-        // --- ВАЛИДАЦИЯ: СЛОЖНОСТЬ ПАРОЛЯ ---
+         
         String passwordRegex = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$";
         if (request.getPassword() == null || !request.getPassword().matches(passwordRegex)) {
             log.warn("Registrierung fehlgeschlagen: Passwortrichtlinien nicht erfüllt für {}", request.getLogin());
@@ -117,6 +117,10 @@ public class AuthController {
         user.setLogin(request.getLogin().trim());
         user.setEmail(request.getEmail().trim().toLowerCase());  
         user.setPasswordHash(passwordEncoder.encode(request.getPassword()));
+
+        user.setPasswordChangeRequired(
+                false
+        );
 
         user.setAccountBalance(
                 java.math.BigDecimal.valueOf(

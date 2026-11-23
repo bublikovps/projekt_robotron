@@ -26,13 +26,20 @@ import {
 
 @Component({
   selector: 'app-profile',
+
   standalone: true,
+
   imports: [
     CommonModule,
     FormsModule
   ],
-  templateUrl: './profile.component.html',
-  styleUrls: ['./profile.component.css']
+
+  templateUrl:
+    './profile.component.html',
+
+  styleUrls: [
+    './profile.component.css'
+  ]
 })
 export class ProfileComponent
 implements OnInit {
@@ -50,22 +57,24 @@ implements OnInit {
 
   isSavingProfile = false;
 
+  currentRole = '';
+
   profileData:
     CustomerProfileUpdateRequest = {
 
-    customerType: 'PRIVATE',
+      customerType: 'PRIVATE',
 
-    vorname: '',
+      vorname: '',
 
-    nachname: '',
+      nachname: '',
 
-    companyName: '',
+      companyName: '',
 
-    ustIdnr: '',
+      ustIdnr: '',
 
-    defaultShippingAddress: ''
+      defaultShippingAddress: ''
 
-  };
+    };
 
   pwdData = {
 
@@ -76,8 +85,13 @@ implements OnInit {
   };
 
   constructor(
-    private authService: AuthService,
-    private cdr: ChangeDetectorRef
+
+    private authService:
+      AuthService,
+
+    private cdr:
+      ChangeDetectorRef
+
   ) {}
 
   ngOnInit(): void {
@@ -92,7 +106,10 @@ implements OnInit {
       .getCurrentUser()
       .subscribe({
 
-        next: () => {
+        next: currentUser => {
+
+          this.currentRole =
+            currentUser.role;
 
           this.authService
             .getProfile()
@@ -106,10 +123,13 @@ implements OnInit {
                 this.profileData = {
 
                   customerType:
+
                     (
                       profile.customerType as
-                      'PRIVATE' | 'BUSINESS'
+                      'PRIVATE'
+                      | 'BUSINESS'
                     )
+
                     || 'PRIVATE',
 
                   vorname:
@@ -290,6 +310,96 @@ implements OnInit {
         }
 
       });
+
+  }
+
+  isCustomer(): boolean {
+
+    return this.currentRole ===
+      'ROLE_CUSTOMER';
+
+  }
+
+  isManager(): boolean {
+
+    return this.currentRole ===
+      'ROLE_MANAGER';
+
+  }
+
+  isAdmin(): boolean {
+
+    return this.currentRole ===
+      'ROLE_ADMIN';
+
+  }
+
+  isDirector(): boolean {
+
+    return this.currentRole ===
+      'ROLE_DIRECTOR';
+
+  }
+
+  isEmployee(): boolean {
+
+    return !this.isCustomer();
+
+  }
+
+  getRoleLabel(): string {
+
+    switch (this.currentRole) {
+
+      case 'ROLE_CUSTOMER':
+        return 'Kunde';
+
+      case 'ROLE_MANAGER':
+        return 'Manager';
+
+      case 'ROLE_ADMIN':
+        return 'Administrator';
+
+      case 'ROLE_DIRECTOR':
+        return 'Direktor';
+
+      default:
+        return '-';
+
+    }
+
+  }
+
+  getCustomerTypeLabel(): string {
+
+    switch (
+      this.profileData.customerType
+    ) {
+
+      case 'BUSINESS':
+        return 'Geschäftskunde';
+
+      case 'PRIVATE':
+        return 'Privatkunde';
+
+      default:
+        return '-';
+
+    }
+
+  }
+
+  getAccountBalance(): string {
+
+    if (
+      this.user?.accountBalance == null
+    ) {
+
+      return '0 €';
+
+    }
+
+    return `${this.user.accountBalance} €`;
 
   }
 

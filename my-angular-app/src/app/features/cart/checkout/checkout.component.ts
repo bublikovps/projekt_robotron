@@ -293,7 +293,7 @@ implements OnInit {
           setTimeout(() => {
 
             this.router.navigate(
-              ['/order-confirmation'],
+              ['/payment'],
               {
                 queryParams: {
 
@@ -302,9 +302,6 @@ implements OnInit {
 
                   orderNumber:
                     response.orderNumber,
-
-                  status:
-                    response.status,
 
                   totalPrice:
                     response.totalPrice
