@@ -2,55 +2,145 @@
 
 ## Enterprise IT Asset & Business Management Platform
 
-Robotron ist eine moderne Full-Stack-Enterprise-Anwendung zur Verwaltung von IT-Assets, Mitarbeitern, Software-Lizenzen, Verträgen, Produkten, Lagerbeständen, Kunden, Bestellungen und Geschäftsprozessen.
+Robotron ist eine moderne Full-Stack-Unternehmensanwendung zur Verwaltung von IT-Assets, Mitarbeitern, Produkten, Lagerbeständen, Kunden, Bestellungen, Verträgen und Geschäftsprozessen.
 
-Das Projekt wird mit Angular 20, Spring Boot 3, PostgreSQL und Docker entwickelt und verfolgt einen Domain-Driven-Design-Ansatz mit klarer Trennung fachlicher Domänen, Enterprise UI Patterns und rollenbasierter Sicherheit.
+Das Projekt dient als Portfolio-, Lern- und Demonstrationsprojekt mit Fokus auf moderne Enterprise-Softwareentwicklung, Cloud-Technologien, DevOps-Praktiken und skalierbare Softwarearchitekturen.
 
-Ziel des Projekts ist die Entwicklung einer realitätsnahen Unternehmensplattform unter Anwendung moderner Methoden aus den Bereichen:
-
-- Softwarearchitektur
-- Security
-- Datenmodellierung
-- UI/UX Design
-- Full-Stack Entwicklung
-- Enterprise Application Design
+Die Anwendung wird kontinuierlich erweitert und orientiert sich an realen Anforderungen moderner Unternehmensumgebungen.
 
 ---
 
 # Projektstatus
 
-## Aktuell umgesetzt ✅
+## Aktueller Entwicklungsstand
 
-### Infrastruktur
+### Bereits umgesetzt
 
-- Docker Compose Umgebung
+- Angular 22 SSR Frontend
+- Spring Boot 3 Backend
 - PostgreSQL Datenbank
 - Flyway Migrationen
-- Mailpit SMTP Testumgebung
-- Swagger / OpenAPI Dokumentation
-
-### Backend Architektur
-
-- Spring Boot 3
-- REST API
-- DTO Layer
-- Service Layer
-- Repository Layer
-- JPA / Hibernate
-- PostgreSQL
-- Flyway
-- OpenAPI / Swagger
-
-### Security
-
-- Spring Security
 - JWT Authentication
-- Login
+- Rollenbasierte Zugriffskontrolle (RBAC)
+- Permission-System
+- Docker Containerisierung
+- Docker Compose Entwicklungsumgebung
+- Swagger / OpenAPI Dokumentation
+- GitHub Actions CI/CD
+- Terraform Infrastructure as Code
+- Azure Container Registry (ACR)
+- Azure Container Apps Deployment
+- Public Cloud Deployment
+
+### Aktuell in Entwicklung
+
+- Azure PostgreSQL Flexible Server
+- Monitoring & Observability
+- Production Cloud Architektur
+- Erweiterte Automatisierung
+
+---
+
+# Architektur
+
+## Gesamtsystem
+
+```text
+Angular SSR
+        ↓
+Spring Boot REST API
+        ↓
+PostgreSQL
+```
+
+## Cloud Architektur
+
+```text
+GitHub
+    ↓
+GitHub Actions
+    ↓
+Docker Build
+    ↓
+Azure Container Registry
+    ↓
+Azure Container Apps
+    ↓
+Frontend + Backend
+```
+
+## Lokale Entwicklungsumgebung
+
+```text
+Frontend
+    ↓
+Backend
+    ↓
+PostgreSQL
+    ↓
+Mailpit
+```
+
+---
+
+# Technologie Stack
+
+## Backend
+
+- Java 21
+- Spring Boot 3.5
+- Spring Security
+- Spring Data JPA
+- Hibernate
+- JWT
+- Flyway
+- PostgreSQL
+- Maven
+- Swagger / OpenAPI
+
+## Frontend
+
+- Angular 22
+- Angular SSR
+- TypeScript
+- RxJS
+- Angular Signals
+- Standalone Components
+
+## Datenbank
+
+- PostgreSQL
+
+## DevOps
+
+- Docker
+- Docker Compose
+- GitHub Actions
+- Terraform
+- Azure Container Registry
+- Azure Container Apps
+
+## Cloud
+
+- Microsoft Azure
+- Azure Container Apps
+- Azure Container Registry
+- Terraform Remote State
+- OIDC Authentication
+
+---
+
+# Security
+
+## Implementiert
+
+- JWT Authentication
+- Login Workflow
 - Registrierung
-- Passwort-Reset Workflow
+- Passwort Reset
 - Passwortänderung
 - Passwortänderung beim ersten Login
-- Rollenbasierte Zugriffskontrolle (RBAC)
+- Rollenbasierte Zugriffskontrolle
 - Permission-basiertes Berechtigungssystem
 - Endpoint Security
 
@@ -58,96 +148,48 @@ Ziel des Projekts ist die Entwicklung einer realitätsnahen Unternehmensplattfor
 
 # Rollenmodell
 
-## Implementierte Rollen
+## Verfügbare Rollen
 
 - ROLE_CUSTOMER
 - ROLE_MANAGER
 - ROLE_ADMIN
 - ROLE_DIRECTOR
 
-## Rollenlogik
-
 ### Customer
-
-Verwendet:
 
 - Produktkatalog
 - Warenkorb
 - Checkout
 - Kundenportal
-- Bestellungen
-- Rechnungen
 - Profilverwaltung
+- Bestellungen
 
 ### Manager
 
-Verwendet:
-
 - Dashboard
-- Business Management
 - Produkte
 - Kategorien
 - Lagerverwaltung
+- Business Management
 
 ### Administrator
 
-Verwendet:
-
-- Administration
 - Benutzerverwaltung
 - Rollenverwaltung
+- Administration
 
 ### Director
 
-Verwendet:
-
 - Unternehmenssteuerung
-- Administration
-- Business Management
 - Reporting
+- Administration
+- Analytics
 
 ---
 
-# Frontend Enterprise Architektur
+# Benutzerverwaltung
 
-## Implementierte Enterprise Patterns
-
-- Workspace Pattern
-- Enterprise Dashboard Pattern
-- Enterprise Toolbar Pattern
-- Enterprise Table Pattern
-- Enterprise KPI Pattern
-- Enterprise Badge Pattern
-- Enterprise Dropdown Pattern
-- Enterprise Actions Pattern
-- Enterprise Dialog Pattern
-- Enterprise Search Pattern
-- Enterprise Navigation Pattern
-- Responsive Enterprise Layout System
-
-### Globales Design System
-
-```text
-enterprise-tokens.css
-enterprise-layout.css
-enterprise-buttons.css
-enterprise-dropdown.css
-enterprise-table.css
-enterprise-kpi.css
-enterprise-dialog.css
-enterprise-actions.css
-enterprise-badges.css
-enterprise-breadcrumb.css
-report-enterprise.css
-```
-
----
-
-# Benutzer & Administration
-
-## Administration Workspace
-
-Bereits umgesetzt:
+## Funktionen
 
 - Benutzerverwaltung
 - Mitarbeiterverwaltung
@@ -159,71 +201,31 @@ Bereits umgesetzt:
 - Enterprise Tabellenansicht
 - Enterprise Toolbar
 
-## User Lifecycle Management
-
-### Aktiver Benutzer
-
-```text
-Aktiv
-```
-
-### Gesperrter Benutzer
-
-```text
-Aktiv
-↓
-Gesperrt
-```
-
-### DSGVO Anonymisierung
-
-```text
-Aktiv
-↓
-Anonymisiert
-```
-
-### Safe Delete
-
-Physische Löschung ist nur möglich wenn:
-
-```text
-Keine Bestellungen
-Keine Rechnungen
-Keine Geschäftsreferenzen
-```
-
-vorliegen.
-
 ---
 
-# DSGVO Funktionen
+# DSGVO-Funktionen
 
 ## Implementiert
 
 - DSGVO-konforme Anonymisierung
-- DSGVO E-Mail Benachrichtigung
+- Datenschutzkonforme Deaktivierung
+- DSGVO-Benachrichtigungen
 - Safe Delete Workflow
-- Schutz historischer Bestelldaten
-- Datenschutzkonforme Benutzerdeaktivierung
+- Schutz historischer Geschäftsdaten
 
 ---
 
 # Profilverwaltung
 
-## Role-Aware Profile
-
-### Customer Profil
+## Customer Profil
 
 - Persönliche Daten
-- Kundentyp
 - Firmendaten
-- USt-ID
 - Lieferadresse
 - Kontostand
 - Passwortverwaltung
 
-### Mitarbeiterprofil
+## Mitarbeiterprofil
 
 - Persönliche Daten
 - Rolleninformationen
@@ -232,7 +234,7 @@ vorliegen.
 
 ---
 
-# Katalog
+# Produktkatalog
 
 ## Funktionen
 
@@ -241,12 +243,10 @@ vorliegen.
 - Kategorienavigation
 - Enterprise Produktkarten
 - Suchfunktion
-- Kategorie-Filter
+- Filterfunktion
 - Query Parameter Routing
 
-## Produktsuche
-
-Unterstützt:
+### Unterstützte Suche
 
 - Produktname
 - SKU
@@ -254,23 +254,11 @@ Unterstützt:
 - Beschreibung
 - Kategorie
 
-### Routing
-
-```text
-/catalog?category=1
-```
-
-anstelle von:
-
-```text
-/catalog/category/1
-```
-
 ---
 
 # Warenkorb & Checkout
 
-## Customer Shopping Workflow
+## Workflow
 
 ```text
 Produkt
@@ -284,30 +272,13 @@ Bestellung
 Kundenportal
 ```
 
-### Funktionen
+### Implementiert
 
 - Warenkorb
 - Mengenverwaltung
 - Preisberechnung
-- Checkout
+- Checkout Prozess
 - Bestellerstellung
-
-### Rollenlogik
-
-Warenkorb und Checkout stehen ausschließlich externen Benutzern zur Verfügung:
-
-```text
-Gast
-Customer
-```
-
-Nicht verfügbar für:
-
-```text
-Manager
-Admin
-Director
-```
 
 ---
 
@@ -316,67 +287,61 @@ Director
 ## Funktionen
 
 - Meine Bestellungen
-- Zahlungsübersicht
+- Rechnungsübersicht
+- Zahlungsverlauf
 - Profilverwaltung
-- Rechnungsansicht
-- Bestellinformationen
+- Bestellhistorie
 
 ---
 
 # Business Management
 
-## Workspace Struktur
+## Bereiche
 
-```text
-Business Management
+### Master Data
 
-Master Data
-├── Categories
-└── Products
+- Categories
+- Products
 
-Sales
-└── Orders
+### Sales
 
-Analytics
-├── Inventory Value
-├── Low Stock
-├── Product Margin
-└── Supplier Inventory
-```
+- Orders
 
-### Categories
+### Analytics
 
-- CRUD Funktionen
-- Enterprise Toolbar
-- Enterprise Tabellen
-- Suchfunktionen
+- Inventory Value
+- Low Stock
+- Product Margin
+- Supplier Inventory
 
-### Products
+---
 
-- CRUD Funktionen
+## Produkte
+
+### Funktionen
+
+- CRUD Operationen
 - Enterprise Dialoge
 - Import
 - Export
 - Suche
 - Filterung
-- Kategorien
+- Kategorienverwaltung
 
-### Orders Management
+---
 
-Enterprise Order-to-Cash Verwaltung.
+## Orders
 
-Funktionen:
+### Funktionen
 
 - Bestellübersicht
 - Statusverwaltung
-- Auftragsinformationen
-- KPI Dashboard
 - Revenue Analyse
+- KPI Dashboard
 - Exportfunktionen
-- Suchfunktion
-- Statusfilter
+- Such- und Filterfunktionen
 
-KPIs:
+### KPIs
 
 - Total Orders
 - Pending Payment
@@ -384,14 +349,18 @@ KPIs:
 - Shipped Orders
 - Revenue
 
-### Reporting
+---
+
+## Reporting
+
+### Verfügbare Reports
 
 - Inventory Value
 - Low Stock
-- Product Margins
+- Product Margin
 - Supplier Inventory
 
-### Exportformate
+### Export
 
 - CSV
 - Excel
@@ -401,43 +370,33 @@ KPIs:
 
 # Asset Management
 
-## Workspace Struktur
+## Bereiche
 
-```text
-Asset Management
-
-Master Data
-├── Departments
-├── Employees
-├── Contracts
-├── Devices
-└── Software Licenses
-
-Operations
-├── Device Assignments
-└── License Assignments
-
-Analytics
-├── Asset Value
-├── Active Devices
-├── Department Assets
-└── Expiring Licenses
-```
-
-### Implementiert
+### Master Data
 
 - Departments
 - Employees
 - Contracts
 - Devices
 - Software Licenses
-- Asset Analytics
+
+### Operations
+
+- Device Assignments
+- License Assignments
+
+### Analytics
+
+- Asset Value
+- Active Devices
+- Department Assets
+- Expiring Licenses
 
 ---
 
 # Rechtliche Bereiche
 
-Implementierte Seiten:
+## Implementiert
 
 - Impressum
 - Datenschutz
@@ -449,7 +408,7 @@ Implementierte Seiten:
 
 ## PostgreSQL
 
-Wichtige Tabellen:
+### Wichtige Tabellen
 
 ```text
 users
@@ -477,7 +436,7 @@ license_assignment
 
 # Flyway Migrationen
 
-Versionierte Datenbankänderungen über Flyway.
+Versionierte Datenbankmigrationen.
 
 Beispiel:
 
@@ -492,51 +451,68 @@ Migrationen werden automatisch beim Start ausgeführt.
 
 ---
 
-# Technologie Stack
+# Enterprise UI Architektur
 
-## Backend
+## Implementierte Patterns
 
-- Java 21
-- Spring Boot 3
-- Spring Security
-- Spring Data JPA
-- Hibernate
-- JWT
-- Flyway
-- PostgreSQL
-- Maven
-- Swagger / OpenAPI
+- Workspace Pattern
+- Enterprise Dashboard Pattern
+- Enterprise Toolbar Pattern
+- Enterprise Table Pattern
+- Enterprise KPI Pattern
+- Enterprise Badge Pattern
+- Enterprise Search Pattern
+- Enterprise Navigation Pattern
+- Enterprise Dialog Pattern
+- Responsive Layout System
 
-## Frontend
+## Design System
 
-- Angular 20
-- TypeScript
-- RxJS
-- Standalone Components
-- Angular Signals
-
-## Infrastruktur
-
-- Docker
-- Docker Compose
-- PostgreSQL
-- Mailpit
+```text
+enterprise-tokens.css
+enterprise-layout.css
+enterprise-buttons.css
+enterprise-dropdown.css
+enterprise-table.css
+enterprise-kpi.css
+enterprise-dialog.css
+enterprise-actions.css
+enterprise-badges.css
+enterprise-breadcrumb.css
+report-enterprise.css
+```
 
 ---
 
-# Projektarchitektur
+# DevOps & Cloud
 
-```text
-Business Domain
-↓
-Database
-↓
-Backend
-↓
-Frontend
-```
+## Containerisierung
 
-Neue Funktionen werden grundsätzlich nach diesem Prinzip entwickelt.
+Implementiert:
+
+- Spring Boot Docker Image
+- Angular SSR Docker Image
+- Multi-Stage Docker Builds
+- Docker Compose Umgebung
+
+## CI/CD
+
+Implementiert:
+
+- GitHub Actions
+- Docker Build Pipeline
+- Docker Push Pipeline
+- Terraform Deployment
+- OIDC Authentication
+
+## Infrastructure as Code
+
+Implementiert:
+
+- Terraform
+- Azure Container Apps
+- Azure Container Registry
+- Remote Terraform State
 
 ---
 
@@ -545,11 +521,10 @@ Neue Funktionen werden grundsätzlich nach diesem Prinzip entwickelt.
 ## Voraussetzungen
 
 - Java 21
-- Maven
 - Node.js
-- Angular CLI
 - Docker Desktop
 - Git
+- Maven
 
 ---
 
@@ -590,7 +565,7 @@ http://localhost:8080
 ```bash
 cd my-angular-app
 npm install
-ng serve
+npm start
 ```
 
 Frontend:
@@ -611,7 +586,7 @@ User: postgres
 Password: mysecretpassword
 ```
 
-Alternativ über:
+Alternativ über Umgebungsvariablen:
 
 ```text
 DB_URL
@@ -648,63 +623,75 @@ http://localhost:8080/swagger-ui/index.html
 
 ---
 
+# Lernziele
+
+Im Rahmen des Projekts vertiefe ich Kenntnisse in:
+
+- Enterprise Architektur
+- Domain Driven Design
+- Spring Boot Entwicklung
+- Angular Frontend Entwicklung
+- Security Konzepte
+- PostgreSQL Datenmodellierung
+- Cloud Computing
+- Docker
+- Terraform
+- CI/CD Pipelines
+- Azure Container Apps
+- Infrastructure as Code
+
+---
+
 # Roadmap
 
-## Audit Modul
+## Geplant
 
-Geplant:
+### Cloud
+
+- Azure PostgreSQL Flexible Server
+- Monitoring & Logging
+- Production Infrastruktur
+- HTTPS Custom Domain
+
+### Audit Modul
 
 - Audit Logs
-- Benutzeraktivitäten
 - Änderungsverfolgung
 - Historisierung
+- Benutzeraktivitäten
 
-## Request Workflow
+### Workflow Engine
 
-Geplant:
+- Anfrageprozesse
+- Freigabeworkflows
+- Genehmigungsprozesse
+- Beschaffungsprozesse
 
-- Anfragekorb
-- Freigabeprozess
-- Genehmigungsworkflow
-- Beschaffungsprozess
-
-## User Preferences
-
-Geplant:
+### User Preferences
 
 - Dashboard Einstellungen
 - Tabellenpräferenzen
-- UI Einstellungen
-- Personalisierung
-
-## Cloud Deployment
-
-Geplant:
-
-- Azure App Service
-- Azure PostgreSQL Flexible Server
-- GitHub Actions
-- Terraform
-- Infrastructure as Code
+- UI Personalisierung
 
 ---
 
 # Projektziel
 
-Robotron dient als Portfolio-, Lern- und Demonstrationsprojekt für moderne Enterprise-Softwareentwicklung.
+Robotron dient als Lern-, Portfolio- und Demonstrationsprojekt für moderne Enterprise-Softwareentwicklung.
 
 Schwerpunkte:
 
-- Domain-Driven Design
-- Spring Boot Architektur
-- Angular Enterprise Frontends
-- REST APIs
-- RBAC Sicherheitskonzepte
-- PostgreSQL Datenmodellierung
-- Flyway Migrationen
-- Enterprise UI/UX
 - Full-Stack Entwicklung
-- DevOps Grundlagen
-- Cloud Deployment
+- Enterprise Architektur
+- Domain Driven Design
+- REST APIs
+- Spring Boot
+- Angular SSR
+- PostgreSQL
+- Security
+- Docker
+- Terraform
+- GitHub Actions
+- Cloud Deployment auf Microsoft Azure
 
-Das Projekt wird kontinuierlich weiterentwickelt und orientiert sich an realen Anforderungen moderner Unternehmensanwendungen.
+Das Projekt wird kontinuierlich erweitert und dient dem Aufbau praktischer Erfahrung im Bereich moderner Unternehmenssoftware und Cloud-Native Entwicklung.
