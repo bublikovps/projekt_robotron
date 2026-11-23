@@ -1,0 +1,137 @@
+/* ==========================================================
+   COMMERCE CARDS
+   ========================================================== */
+
+.enterprise-commerce-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 20px;
+  transition:
+    transform .2s ease,
+    box-shadow .2s ease,
+    border-color .2s ease;
+}
+
+.enterprise-commerce-card:hover {
+  transform: translateY(-4px);
+
+  border-color: #cbd5e1;
+
+  box-shadow:
+    0 12px 30px
+    rgba(15,23,42,.08);
+}
+
+/* ==========================================================
+   PRICE
+   ========================================================== */
+
+.enterprise-price {
+
+  font-size: 32px;
+
+  font-weight: 800;
+
+  color: #0f172a;
+
+}
+
+/* ==========================================================
+   STOCK
+   ========================================================== */
+
+.enterprise-stock-badge {
+
+  display: inline-flex;
+
+  align-items: center;
+
+  padding: 6px 12px;
+
+  margin-bottom: 20px;
+
+  border-radius: 999px;
+
+  background: #eff6ff;
+
+  color: #1e40af;
+
+  font-size: 12px;
+
+  font-weight: 700;
+
+}
+
+/* ==========================================================
+   CART BADGE
+   ========================================================== */
+
+.enterprise-cart-badge {
+
+  display: inline-flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  min-width: 22px;
+
+  height: 22px;
+
+  padding: 0 6px;
+
+  border-radius: 999px;
+
+  background: #2563eb;
+
+  color: white;
+
+  font-size: 12px;
+
+  font-weight: 700;
+
+}
+
+/* ==========================================================
+   CART PANEL
+   ========================================================== */
+
+.enterprise-summary-card {
+
+  background: white;
+
+  border: 1px solid #e2e8f0;
+
+  border-radius: 20px;
+
+  padding: 24px;
+}
+
+/* ==========================================================
+   CHECKOUT
+   ========================================================== */
+
+.enterprise-checkout-button {
+
+  width: 100%;
+
+  border: none;
+
+  border-radius: 14px;
+
+  padding: 14px 18px;
+
+  background: #2563eb;
+
+  color: white;
+
+  font-weight: 700;
+
+  cursor: pointer;
+}
+
+.enterprise-checkout-button:hover {
+
+  background: #1d4ed8;
+
+}

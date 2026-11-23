@@ -20,6 +20,9 @@ public final class SecurityPermissions {
     public static final String USER_DELETE =
             "USER_DELETE";
 
+     public static final String USER_ANONYMIZE =
+        "USER_ANONYMIZE";   
+
     public static final String USER_BLOCK =
             "USER_BLOCK";
 
@@ -100,6 +103,23 @@ public final class SecurityPermissions {
 
     public static final String ORDER_EXPORT =
             "ORDER_EXPORT";
+
+    // ORDER MANAGEMENT
+
+    public static final String ORDER_SHIP =
+        "ORDER_SHIP";
+
+        public static final String INVOICE_READ =
+                "INVOICE_READ";
+
+        public static final String RETURN_CREATE =
+                "RETURN_CREATE";
+
+        public static final String RETURN_PROCESS =
+                "RETURN_PROCESS";
+
+
+
 
     // ==================================================
     // CUSTOMER MANAGEMENT

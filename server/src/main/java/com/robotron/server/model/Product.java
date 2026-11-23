@@ -3,6 +3,7 @@ package com.robotron.server.model;
 import java.time.LocalDateTime;
 
 import jakarta.persistence.*;
+
 import java.math.BigDecimal;
 
 @Entity
@@ -14,13 +15,13 @@ public class Product {
     private Long id;
 
     @Column(nullable = false, unique = true)
-    private String sku; 
+    private String sku;
 
     @Column(nullable = false)
     private String name;
 
     @Column(nullable = false)
-    private String manufacturer; 
+    private String manufacturer;
 
     @Column(columnDefinition = "TEXT")
     private String description;
@@ -43,11 +44,14 @@ public class Product {
     @Column(nullable = false)
     private int lagerbestand;
 
+    @Column(name = "reserved_stock", nullable = false)
+    private int reservedStock = 0;
+
     @Column(nullable = false)
     private int minimumStock = 0;
 
     @Column(name = "is_active", nullable = false)
-    private boolean isActive = true; 
+    private boolean isActive = true;
 
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
@@ -64,40 +68,74 @@ public class Product {
 
         createdAt = LocalDateTime.now();
         updatedAt = LocalDateTime.now();
+
     }
 
     @PreUpdate
     protected void onUpdate() {
 
         updatedAt = LocalDateTime.now();
+
     }
 
-    public Product() {}
+    public Product() {
+    }
 
-    // --- Getters and Setters ---
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
+    public Long getId() {
+        return id;
+    }
 
-    public String getSku() { return sku; }
-    public void setSku(String sku) { this.sku = sku; }
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
+    public String getSku() {
+        return sku;
+    }
 
-    public String getManufacturer() { return manufacturer; }
-    public void setManufacturer(String manufacturer) { this.manufacturer = manufacturer; }
+    public void setSku(String sku) {
+        this.sku = sku;
+    }
 
-    public String getDescription() { return description; }
-    public void setDescription(String description) { this.description = description; }
+    public String getName() {
+        return name;
+    }
 
-    public BigDecimal getPrice() { return price; }
-    public void setPrice(BigDecimal price) { this.price = price; }
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getManufacturer() {
+        return manufacturer;
+    }
+
+    public void setManufacturer(String manufacturer) {
+        this.manufacturer = manufacturer;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public BigDecimal getPrice() {
+        return price;
+    }
+
+    public void setPrice(BigDecimal price) {
+        this.price = price;
+    }
 
     public BigDecimal getPurchasePrice() {
         return purchasePrice;
     }
 
-    public void setPurchasePrice(BigDecimal purchasePrice) {
+    public void setPurchasePrice(
+            BigDecimal purchasePrice
+    ) {
         this.purchasePrice = purchasePrice;
     }
 
@@ -105,7 +143,9 @@ public class Product {
         return salePrice;
     }
 
-    public void setSalePrice(BigDecimal salePrice) {
+    public void setSalePrice(
+            BigDecimal salePrice
+    ) {
         this.salePrice = salePrice;
     }
 
@@ -113,7 +153,9 @@ public class Product {
         return supplier;
     }
 
-    public void setSupplier(String supplier) {
+    public void setSupplier(
+            String supplier
+    ) {
         this.supplier = supplier;
     }
 
@@ -121,33 +163,76 @@ public class Product {
         return imageUrl;
     }
 
-    public void setImageUrl(String imageUrl) {
+    public void setImageUrl(
+            String imageUrl
+    ) {
         this.imageUrl = imageUrl;
     }
 
+    public int getLagerbestand() {
+        return lagerbestand;
+    }
 
-    public int getLagerbestand() { return lagerbestand; }
-    public void setLagerbestand(int lagerbestand) { this.lagerbestand = lagerbestand; }
+    public void setLagerbestand(
+            int lagerbestand
+    ) {
+        this.lagerbestand = lagerbestand;
+    }
 
-    public boolean isActive() { return isActive; }
-    public void setActive(boolean active) { isActive = active; }
+    public int getReservedStock() {
+        return reservedStock;
+    }
 
-    public Category getCategory() { return category; }
-    public void setCategory(Category category) { this.category = category; }
+    public void setReservedStock(
+            int reservedStock
+    ) {
+        this.reservedStock = reservedStock;
+    }
+
+    @Transient
+    public int getAvailableStock() {
+
+        return lagerbestand - reservedStock;
+
+    }
 
     public int getMinimumStock() {
         return minimumStock;
     }
 
-    public void setMinimumStock(int minimumStock) {
+    public void setMinimumStock(
+            int minimumStock
+    ) {
         this.minimumStock = minimumStock;
+    }
+
+    public boolean isActive() {
+        return isActive;
+    }
+
+    public void setActive(
+            boolean active
+    ) {
+        isActive = active;
+    }
+
+    public Category getCategory() {
+        return category;
+    }
+
+    public void setCategory(
+            Category category
+    ) {
+        this.category = category;
     }
 
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(LocalDateTime createdAt) {
+    public void setCreatedAt(
+            LocalDateTime createdAt
+    ) {
         this.createdAt = createdAt;
     }
 
@@ -155,7 +240,10 @@ public class Product {
         return updatedAt;
     }
 
-    public void setUpdatedAt(LocalDateTime updatedAt) {
+    public void setUpdatedAt(
+            LocalDateTime updatedAt
+    ) {
         this.updatedAt = updatedAt;
     }
+
 }

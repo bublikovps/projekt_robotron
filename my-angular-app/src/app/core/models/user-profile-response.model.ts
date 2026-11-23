@@ -6,9 +6,22 @@ export interface UserProfileResponse {
 
   email: string;
 
+  customerType?: string;
+
+  vorname?: string;
+
+  nachname?: string;
+
+  companyName?: string;
+
+  ustIdnr?: string;
+
+  defaultShippingAddress?: string;
+
+  accountBalance?: number;
+
   createdAt: string;
 
   passwordChangeRequired: boolean;
 
-  roles?: unknown[];
 }

@@ -1,0 +1,105 @@
+<div class="enterprise-page">
+
+  <div class="confirmation-card">
+
+    <div class="confirmation-icon">
+
+      ✅
+
+    </div>
+
+    <h1>
+
+      Bestellung erfolgreich erstellt
+
+    </h1>
+
+    <p class="confirmation-subtitle">
+
+      Ihre Bestellung wurde erfolgreich
+      im System erfasst.
+
+    </p>
+
+    <div class="details-grid">
+
+      <div class="detail-item">
+
+        <span class="label">
+
+          Bestellnummer
+
+        </span>
+
+        <span class="value">
+
+          {{ orderNumber }}
+
+        </span>
+
+      </div>
+
+      <div class="detail-item">
+
+        <span class="label">
+
+          Status
+
+        </span>
+
+        <span class="value status">
+
+          {{ status }}
+
+        </span>
+
+      </div>
+
+      <div class="detail-item">
+
+        <span class="label">
+
+          Gesamtbetrag
+
+        </span>
+
+        <span class="value">
+
+          {{ totalPrice }}
+          €
+
+        </span>
+
+      </div>
+
+    </div>
+
+    <div class="action-buttons">
+
+      <button
+        class="
+          enterprise-btn
+          enterprise-btn-primary
+        "
+        (click)="goToPayment()">
+
+        Jetzt bezahlen
+
+      </button>
+
+      <button
+        class="
+          enterprise-btn
+          enterprise-btn-secondary
+        "
+        (click)="goToOrders()">
+
+        Meine Bestellungen
+
+      </button>
+
+    </div>
+
+  </div>
+
+</div>

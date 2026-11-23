@@ -85,11 +85,34 @@ export class LoginComponent {
 
                   setTimeout(() => {
 
-                    this.router.navigate([
-                      '/dashboard'
-                    ]);
+  const returnUrl =
 
-                  }, 1500);
+    sessionStorage.getItem(
+      'returnUrl'
+    );
+
+  if (
+    returnUrl
+  ) {
+
+    sessionStorage.removeItem(
+      'returnUrl'
+    );
+
+    this.router.navigate([
+      returnUrl
+    ]);
+
+  }
+  else {
+
+    this.router.navigate([
+      '/dashboard'
+    ]);
+
+  }
+
+}, 1500);
                 }
               },
 

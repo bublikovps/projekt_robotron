@@ -23,6 +23,9 @@ from '../../../core/services/auth.service';
 
 import { CurrentUserResponse }
 from '../../../core/models/current-user-response.model';
+import { CartService } from '../../../core/services/cart.service';
+
+
 
 @Component({
   selector: 'app-navbar',
@@ -49,6 +52,9 @@ implements OnInit {
   private readonly cdr =
     inject(ChangeDetectorRef);
 
+  private readonly cartService =
+  inject(CartService);
+
   categories =
     this.catalogService.categories;
 
@@ -56,6 +62,9 @@ implements OnInit {
     signal<CurrentUserResponse | null>(
       null
     );
+  
+  cartItemCount =
+  this.cartService.itemCount;
 
   isMobileMenuOpen = false;
 
@@ -100,6 +109,13 @@ implements OnInit {
     this.isUserMenuOpen =
       !this.isUserMenuOpen;
   }
+
+  closeUserMenu(): void {
+
+    this.isUserMenuOpen = false;
+
+  }
+
 
   isLoggedIn(): boolean {
 
@@ -196,5 +212,16 @@ implements OnInit {
     return login
       .charAt(0)
       .toUpperCase();
+  }
+
+  canUseCart(): boolean {
+
+    const role =
+    this.currentUser()?.role ?? '';
+
+  return role !== 'ROLE_MANAGER'
+      && role !== 'ROLE_ADMIN'
+      && role !== 'ROLE_DIRECTOR';
+
   }
 }

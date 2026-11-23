@@ -1,0 +1,335 @@
+<div class="enterprise-page">
+
+  <div class="page-header">
+
+    <div>
+
+      <h2>
+        Bestellabschluss
+      </h2>
+
+      <p>
+        Prüfen Sie Ihre Bestellung und schließen Sie den Einkauf ab.
+      </p>
+
+    </div>
+
+  </div>
+
+  <div class="checkout-layout">
+
+    <div class="checkout-form-card">
+
+      <div class="form-section">
+
+        <h3>
+          Kundendaten
+        </h3>
+
+        <div class="enterprise-form-grid">
+
+          <div class="form-field">
+
+            <label>
+              Kundentyp
+            </label>
+
+            <select
+              [(ngModel)]="customerType">
+
+              <option
+                value="PRIVATE">
+
+                Privatkunde
+
+              </option>
+
+              <option
+                value="BUSINESS">
+
+                Geschäftskunde
+
+              </option>
+
+            </select>
+
+          </div>
+
+          <div class="form-field">
+
+            <label>
+              Vorname *
+            </label>
+
+            <input
+              type="text"
+              [(ngModel)]="vorname">
+
+          </div>
+
+          <div class="form-field">
+
+            <label>
+              Nachname *
+            </label>
+
+            <input
+              type="text"
+              [(ngModel)]="nachname">
+
+          </div>
+
+        </div>
+
+      </div>
+
+      <div class="form-section">
+
+        <h3>
+          Firmendaten
+        </h3>
+
+        <div class="enterprise-form-grid">
+
+          <div class="form-field">
+
+            <label>
+              Firmenname
+            </label>
+
+            <input
+              type="text"
+              [(ngModel)]="companyName">
+
+          </div>
+
+          <div class="form-field">
+
+            <label>
+              USt-IdNr.
+            </label>
+
+            <input
+              type="text"
+              [(ngModel)]="ustIdnr">
+
+          </div>
+
+        </div>
+
+      </div>
+
+      <div class="form-section">
+
+        <h3>
+          Lieferadresse
+        </h3>
+
+        <div class="enterprise-form-grid">
+
+          <div
+            class="
+              form-field
+              form-field-full
+            ">
+
+            <label>
+              Lieferadresse *
+            </label>
+
+            <textarea
+              rows="4"
+              [(ngModel)]="shippingAddress">
+
+            </textarea>
+
+          </div>
+
+        </div>
+
+      </div>
+
+      <div
+        *ngIf="errorMessage"
+        class="error-message">
+
+        {{ errorMessage }}
+
+      </div>
+
+      <div
+        *ngIf="successMessage"
+        class="success-message">
+
+        {{ successMessage }}
+
+      </div>
+
+    </div>
+
+    <div class="checkout-summary-card">
+
+      <h3>
+        Bestellübersicht
+      </h3>
+
+      <div class="enterprise-table-card">
+
+        <table
+          class="enterprise-table">
+
+          <thead>
+
+            <tr>
+
+              <th>
+                Produkt
+              </th>
+
+              <th>
+                Menge
+              </th>
+
+              <th>
+                Gesamt
+              </th>
+
+            </tr>
+
+          </thead>
+
+          <tbody>
+
+            @for (
+              item of items();
+              track item.productId
+            ) {
+
+              <tr>
+
+                <td>
+
+                  <strong>
+                    {{ item.name }}
+                  </strong>
+
+                </td>
+
+                <td>
+
+                  {{ item.quantity }}
+
+                </td>
+
+                <td>
+
+                  {{
+                    item.price *
+                    item.quantity
+                    | number:'1.2-2'
+                  }}
+                  €
+
+                </td>
+
+              </tr>
+
+            }
+
+          </tbody>
+
+        </table>
+
+      </div>
+
+      <div
+        class="summary-section">
+
+        <div class="summary-row">
+
+          <span>
+            Netto
+          </span>
+
+          <strong>
+
+            {{
+              netTotal()
+              | number:'1.2-2'
+            }}
+
+            €
+
+          </strong>
+
+        </div>
+
+        <div class="summary-row">
+
+          <span>
+            MwSt. (19%)
+          </span>
+
+          <strong>
+
+            {{
+              vatTotal()
+              | number:'1.2-2'
+            }}
+
+            €
+
+          </strong>
+
+        </div>
+
+        <div
+          class="
+            summary-row
+            summary-total
+          ">
+
+          <span>
+            Brutto
+          </span>
+
+          <strong>
+
+            {{
+              grossTotal()
+              | number:'1.2-2'
+            }}
+
+            €
+
+          </strong>
+
+        </div>
+
+      </div>
+
+      <button
+        type="button"
+        class="
+          enterprise-btn
+          enterprise-btn-primary
+          submit-order-btn
+        "
+        [disabled]="
+          isSubmitting
+        "
+        (click)="submitOrder()">
+
+        {{
+          isSubmitting
+            ? 'Bestellung wird erstellt...'
+            : 'Bestellung absenden'
+        }}
+
+      </button>
+
+    </div>
+
+  </div>
+
+</div>

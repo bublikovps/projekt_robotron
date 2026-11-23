@@ -33,6 +33,9 @@ from '../models/change-password-request.model';
 import { ResetPasswordRequest }
 from '../models/reset-password-request.model';
 
+import { CustomerProfileUpdateRequest }
+from '../models/customer-profile-update-request.model';
+
 @Injectable({
   providedIn: 'root'
 })
@@ -219,4 +222,21 @@ export class AuthService {
       }
     );
   }
+
+    updateProfile(
+    data: CustomerProfileUpdateRequest
+  ): Observable<ApiMessageResponse> {
+
+    return this.http.put<ApiMessageResponse>(
+      `${this.apiUrl}/profile`,
+      data,
+      {
+        withCredentials: true
+      }
+    );
+
+  }
+
+
+
 }

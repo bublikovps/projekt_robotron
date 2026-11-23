@@ -26,6 +26,17 @@
     <button
       class="workspace-tab"
       [class.active]="
+        selectedArea === 'sales'
+      "
+      (click)="selectArea('sales')">
+
+      Sales
+
+    </button>
+
+    <button
+      class="workspace-tab"
+      [class.active]="
         selectedArea === 'analytics'
       "
       (click)="selectArea('analytics')">
@@ -65,6 +76,29 @@
         ">
 
         Products
+
+      </button>
+
+    </div>
+
+  }
+
+  @if (
+    selectedArea === 'sales'
+  ) {
+
+    <div class="module-tabs">
+
+      <button
+        class="module-tab"
+        [class.active]="
+          selectedModule === 'orders'
+        "
+        (click)="
+          selectModule('orders')
+        ">
+
+        Orders
 
       </button>
 
@@ -161,6 +195,14 @@
     ) {
 
       <app-products />
+
+    }
+
+    @if (
+      selectedModule === 'orders'
+    ) {
+
+      <app-orders />
 
     }
 
