@@ -61,48 +61,7 @@ resource "azurerm_container_app_environment" "env" {
   log_analytics_workspace_id = azurerm_log_analytics_workspace.logs.id
 }
 
-# 4. PostgreSQL Container App (Nur intern erreichbar, Flyway initialisiert Schema)
-resource "azurerm_container_app" "postgres" {
-  name                         = "postgres-db"
-  container_app_environment_id = azurerm_container_app_environment.env.id
-  resource_group_name          = azurerm_resource_group.rg.name
-  revision_mode                = "Single"
 
-  template {
-    min_replicas = 1
-    max_replicas = 1
-
-    container {
-      name   = "postgres"
-      image  = "postgres:15-alpine"
-      cpu    = 0.25
-      memory = "0.5Gi"
-
-      env {
-        name  = "POSTGRES_USER"
-        value = "postgres"
-      }
-      env {
-        name  = "POSTGRES_PASSWORD"
-        value = var.db_password
-      }
-      env {
-        name  = "POSTGRES_DB"
-        value = "robotron_db"
-      }
-    }
-  }
-
-  ingress {
-    external_enabled = false
-    target_port      = 5432
-    transport        = "tcp"
-    traffic_weight {
-      percentage      = 100
-      latest_revision = true
-    }
-  }
-}
 
 # 5. Spring Boot Backend Container App (Nur intern erreichbar)
 resource "azurerm_container_app" "backend" {
@@ -143,9 +102,9 @@ resource "azurerm_container_app" "backend" {
       memory = "1Gi"
 
       env {
-        name  = "DB_URL"
-        value = "jdbc:postgresql://postgres-db:5432/robotron_db"
-      }
+  		name  = "DB_URL"
+  		value = "jdbc:postgresql://placeholder:5432/robotron_db"
+	}
       env {
         name  = "DB_USERNAME"
         value = "postgres"
@@ -179,7 +138,7 @@ resource "azurerm_container_app" "backend" {
     }
   }
 
-  depends_on = [azurerm_container_app.postgres]
+ 
 }
 
 # 6. Angular SSR Frontend Container App (Öffentlich über HTTPS erreichbar)
