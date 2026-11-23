@@ -131,7 +131,7 @@ implements OnInit {
 
     this.http
       .post<any>(
-        'http://localhost:8080/api/orders/payment',
+        '/api/orders/payment',
         {
 
           orderId:

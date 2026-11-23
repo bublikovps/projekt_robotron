@@ -25,7 +25,7 @@ from '../models/product-update-request.model';
 export class ProductService {
 
   private readonly apiUrl =
-    'http://localhost:8080/api/products';
+    '/api/products';
 
   constructor(
     private http: HttpClient

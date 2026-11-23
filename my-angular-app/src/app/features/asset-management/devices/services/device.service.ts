@@ -22,7 +22,7 @@ from '../models/device-update-request.model';
 export class DeviceService {
 
   private readonly apiUrl =
-    'http://localhost:8080/api/devices';
+    '/api/devices';
 
   constructor(
     private http: HttpClient

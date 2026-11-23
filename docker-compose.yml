@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   postgres-db:
     image: postgres:15-alpine
@@ -12,6 +10,11 @@ services:
       POSTGRES_DB: robotron_db
     volumes:
       - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d robotron_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   mailpit:
     image: axllent/mailpit
@@ -19,6 +22,35 @@ services:
     ports:
       - "1025:1025"
       - "8025:8025"
+
+  backend:
+    build:
+      context: ./server
+    container_name: robotron-backend
+    ports:
+      - "8080:8080"
+    environment:
+      DB_URL: jdbc:postgresql://postgres-db:5432/robotron_db
+      DB_USERNAME: postgres
+      DB_PASSWORD: mysecretpassword
+      MAIL_HOST: mailpit
+      MAIL_PORT: 1025
+      JWT_SECRET: DevelopmentLocalSecretKeyOnlyForTestingEnvironmentReplaceInProduction123!
+    depends_on:
+      postgres-db:
+        condition: service_healthy
+
+  frontend:
+    build:
+      context: ./my-angular-app
+    container_name: robotron-frontend
+    ports:
+      - "4000:4000"
+    environment:
+      PORT: 4000
+      BACKEND_URL: http://backend:8080
+    depends_on:
+      - backend
 
 volumes:
   pgdata:

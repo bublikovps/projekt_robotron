@@ -189,7 +189,7 @@ implements OnInit {
 
     this.http
       .get<OrderDashboardResponse>(
-        'http://localhost:8080/api/orders/dashboard'
+        '/api/orders/dashboard'
       )
       .subscribe({
 
@@ -217,7 +217,7 @@ implements OnInit {
 
     this.http
       .get<OrderListResponse[]>(
-        'http://localhost:8080/api/orders'
+        '/api/orders'
       )
       .subscribe({
 
@@ -275,7 +275,7 @@ implements OnInit {
 
     this.http
       .get<OrderDetailsResponse>(
-        `http://localhost:8080/api/orders/${orderNumber}`
+        `/api/orders/${orderNumber}`
       )
       .subscribe({
 
@@ -431,7 +431,7 @@ implements OnInit {
 
     this.http
       .post(
-        'http://localhost:8080/api/orders/ship',
+        '/api/orders/ship',
         {
 
           orderId:
@@ -481,7 +481,7 @@ implements OnInit {
     }
 
     window.open(
-      `http://localhost:8080/api/documents/invoices/${this.selectedOrder.invoiceNumber}/pdf`,
+      `/api/documents/invoices/${this.selectedOrder.invoiceNumber}/pdf`,
       '_blank'
     );
 
@@ -498,7 +498,7 @@ implements OnInit {
     }
 
     window.open(
-      `http://localhost:8080/api/documents/delivery-notes/${this.selectedOrder.deliveryNumber}/pdf`,
+      `/api/documents/delivery-notes/${this.selectedOrder.deliveryNumber}/pdf`,
       '_blank'
     );
 

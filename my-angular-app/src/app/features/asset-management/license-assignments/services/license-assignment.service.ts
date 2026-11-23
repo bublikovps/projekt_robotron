@@ -22,7 +22,7 @@ import {
 export class LicenseAssignmentService {
 
   private readonly apiUrl =
-    'http://localhost:8080/api/license-assignments';
+    '/api/license-assignments';
 
   constructor(
     private http: HttpClient

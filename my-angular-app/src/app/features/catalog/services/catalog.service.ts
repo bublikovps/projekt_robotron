@@ -8,20 +8,20 @@ import { CatalogCategoryResponse } from '../models/catalog-category-response.mod
   providedIn: 'root'
 })
 export class CatalogService {
-  private readonly productsApiUrl = 'http://localhost:8080/api/catalog/products';
-  private readonly categoriesApiUrl = 'http://localhost:8080/api/catalog/categories';
+  private readonly productsApiUrl = '/api/catalog/products';
+  private readonly categoriesApiUrl = '/api/catalog/categories';
 
-  
+
   private readonly categoriesSignal = signal<CatalogCategoryResponse[]>([]);
 
- 
+
   public readonly categories = this.categoriesSignal.asReadonly();
 
   constructor(private http: HttpClient) {}
- 
+
   loadCategoriesIfNeeded(): void {
     if (this.categoriesSignal().length > 0) {
-      return;  
+      return;
     }
 
     this.http.get<CatalogCategoryResponse[]>(this.categoriesApiUrl).subscribe({
@@ -54,7 +54,7 @@ export class CatalogService {
       `${this.productsApiUrl}/${id}`
     );
   }
- 
+
   getCategories(): Observable<CatalogCategoryResponse[]> {
     return this.http.get<CatalogCategoryResponse[]>(this.categoriesApiUrl);
   }

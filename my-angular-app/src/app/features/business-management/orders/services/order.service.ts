@@ -28,7 +28,7 @@ export class OrderService {
     inject(HttpClient);
 
   private readonly apiUrl =
-    'http://localhost:8080/api/orders';
+    '/api/orders';
 
   createOrder(
     request: OrderCreateRequest
