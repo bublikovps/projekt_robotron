@@ -14,7 +14,7 @@ public class PasswordResetToken {
     @Column(nullable = false, unique = true)
     private String token;
 
-    // Связь Many-to-One: у одного пользователя может быть несколько токенов сброса в истории
+     
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
@@ -27,16 +27,16 @@ public class PasswordResetToken {
     public PasswordResetToken(String token, User user, int expiryMinutes) {
         this.token = token;
         this.user = user;
-        // Токен сгорит строго через указанное количество минут (Требование безопасности IHK!)
+         
         this.expiryDate = LocalDateTime.now().plusMinutes(expiryMinutes);
     }
 
-    // Проверка: истёк ли срок действия токена?
+     
     public boolean isExpired() {
         return LocalDateTime.now().isAfter(this.expiryDate);
     }
 
-    // --- Геттеры и Сеттеры ---
+     
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
