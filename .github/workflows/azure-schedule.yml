@@ -51,6 +51,5 @@ jobs:
         run: |
           REPLICAS=${{ steps.mode.outputs.replicas }}
           echo "Setting min-replicas to $REPLICAS..."
-          az containerapp update -n postgres-db -g rg-robotron-demo --min-replicas $REPLICAS
           az containerapp update -n robotron-backend -g rg-robotron-demo --min-replicas $REPLICAS
           az containerapp update -n robotron-frontend -g rg-robotron-demo --min-replicas $REPLICAS
