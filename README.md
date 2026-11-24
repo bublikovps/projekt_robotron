@@ -31,6 +31,7 @@ Die Anwendung wird kontinuierlich erweitert und orientiert sich an realen Anford
 - Azure Container Registry (ACR)
 - Azure Container Apps Deployment
 - Public Cloud Deployment
+- Grundlagen automatisierter Tests (Backend & Frontend)
 
 ### Aktuell in Entwicklung
 
@@ -97,6 +98,7 @@ Mailpit
 - PostgreSQL
 - Maven
 - Swagger / OpenAPI
+- JUnit 5 & Mockito
 
 ## Frontend
 
@@ -106,6 +108,7 @@ Mailpit
 - RxJS
 - Angular Signals
 - Standalone Components
+- Vitest
 
 ## Datenbank
 
@@ -145,6 +148,14 @@ Mailpit
 - Endpoint Security
 
 ---
+
+# Qualitätssicherung & Testing (Lernfokus)
+
+Um die wichtigsten Sicherheits- und Geschäftsabläufe besser abzusichern und praktische Erfahrung in der Testautomatisierung zu sammeln, baue ich schrittweise eine Testbasis auf:
+
+- **Backend (JUnit 5 / Mockito):** Erste Unit- und Integrationstests für JWT-Verarbeitung, Authentifizierungs-Endpunkte sowie ausgewählte Service-Regeln.
+- **Frontend (Vitest):** Grundlagen von Unit- und Komponententests für Route Guards, HTTP-Interceptoren, zentrale Services (Auth, Warenkorb, Export, Admin) sowie Login- und Checkout-Workflows.
+
 
 # Rollenmodell
 
@@ -572,6 +583,24 @@ Frontend:
 
 ```text
 http://localhost:4200
+```
+
+---
+
+## Tests ausführen
+
+Backend-Tests starten:
+
+```bash
+cd server
+./mvnw test
+```
+
+Frontend-Tests starten:
+
+```bash
+cd my-angular-app
+npm test -- --watch=false
 ```
 
 ---
