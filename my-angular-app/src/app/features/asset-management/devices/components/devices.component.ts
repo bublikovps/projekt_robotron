@@ -79,13 +79,17 @@ implements OnInit {
 
   statuses = [
 
-    'AVAILABLE',
+    'IN_STOCK',
 
     'ASSIGNED',
 
+    'RETURNED',
+
     'REPAIR',
 
-    'RETIRED'
+    'RETIRED',
+
+    'DISPOSED'
 
   ];
 
@@ -106,7 +110,7 @@ implements OnInit {
 
     warrantyUntil: null,
 
-    status: 'AVAILABLE',
+    status: 'IN_STOCK',
 
     location: '',
 
@@ -196,37 +200,37 @@ implements OnInit {
       this.allDevices.filter(
         device =>
 
-          device.inventoryNumber
+          (device.inventoryNumber ?? '')
             .toLowerCase()
             .includes(search)
 
           ||
 
-          device.productName
+          (device.productName ?? '')
             .toLowerCase()
             .includes(search)
 
           ||
 
-          device.serialNumber
+          (device.serialNumber ?? '')
             .toLowerCase()
             .includes(search)
 
           ||
 
-          device.manufacturerAssetTag
+          (device.manufacturerAssetTag ?? '')
             .toLowerCase()
             .includes(search)
 
           ||
 
-          device.status
+          (device.status ?? '')
             .toLowerCase()
             .includes(search)
 
           ||
 
-          device.location
+          (device.location ?? '')
             .toLowerCase()
             .includes(search)
       );
@@ -647,7 +651,7 @@ implements OnInit {
 
       warrantyUntil: null,
 
-      status: 'AVAILABLE',
+      status: 'IN_STOCK',
 
       location: '',
 
