@@ -2,14 +2,13 @@ name: Azure Cost Saver Schedule
 
 on:
   schedule:
-    # Включение в 07:00 UTC (08:00 CET зимой / 09:00 CEST летом) с Пн по Пт
     - cron: '0 7 * * 1-5'
-    # Выключение в 16:00 UTC (17:00 CET зимой / 18:00 CEST летом) с Пн по Пт
     - cron: '0 16 * * 1-5'
+
   workflow_dispatch:
     inputs:
       action:
-        description: 'Ручное управление (start или stop)'
+        description: 'start or stop'
         required: true
         default: 'start'
         type: choice
@@ -24,6 +23,7 @@ permissions:
 jobs:
   manage-replicas:
     runs-on: ubuntu-latest
+
     steps:
       - name: Azure Login (OIDC)
         uses: azure/login@v2
@@ -50,7 +50,13 @@ jobs:
       - name: Scale Container Apps
         run: |
           REPLICAS=${{ steps.mode.outputs.replicas }}
-          echo "Setting min-replicas to $REPLICAS..."
-          az containerapp update -n postgres-db -g rg-robotron-demo --min-replicas $REPLICAS
-          az containerapp update -n robotron-backend -g rg-robotron-demo --min-replicas $REPLICAS
-          az containerapp update -n robotron-frontend -g rg-robotron-demo --min-replicas $REPLICAS
+
+          az containerapp update \
+            --name robotron-backend \
+            --resource-group rg-robotron-demo \
+            --min-replicas $REPLICAS
+
+          az containerapp update \
+            --name robotron-frontend \
+            --resource-group rg-robotron-demo \
+            --min-replicas $REPLICAS
