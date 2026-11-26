@@ -65,7 +65,7 @@ implements OnInit {
 
     this.http
       .get<MyDeliveryNote[]>(
-        'http://localhost:8080/api/documents/my-delivery-notes',
+        '/api/documents/my-delivery-notes',
         {
           withCredentials: true
         }
@@ -104,7 +104,7 @@ implements OnInit {
   ): void {
 
     window.open(
-      `http://localhost:8080/api/documents/delivery-notes/${deliveryNumber}/pdf`,
+      `/api/documents/delivery-notes/${deliveryNumber}/pdf`,
       '_blank'
     );
 

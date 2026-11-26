@@ -11,7 +11,7 @@ import { AdminService, AdminUserData } from './admin.service';
 describe('AdminService', () => {
   let service: AdminService;
   let httpTestingController: HttpTestingController;
-  const baseUrl = 'http://localhost:8080/api/admin/users';
+  const baseUrl = '/api/admin/users';
 
   beforeEach(() => {
     TestBed.configureTestingModule({

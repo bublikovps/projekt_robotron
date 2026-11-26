@@ -36,7 +36,7 @@ describe('jwtInterceptor', () => {
 
   it('sollte withCredentials: true für ausgehende HTTP-Anfragen aktivieren', () => {
     // Arrange
-    const testUrl = 'http://localhost:8080/api/orders';
+    const testUrl = '/api/orders';
 
     // Act
     httpClient.get(testUrl).subscribe();
@@ -50,7 +50,7 @@ describe('jwtInterceptor', () => {
 
   it('sollte bestehende Header, Query-Parameter und Body beim Klonen erhalten', () => {
     // Arrange
-    const testUrl = 'http://localhost:8080/api/products?page=1&size=20';
+    const testUrl = '/api/products?page=1&size=20';
     const customHeaders = new HttpHeaders({
       'X-Correlation-ID': 'trace-12345',
       Accept: 'application/json',
@@ -72,7 +72,7 @@ describe('jwtInterceptor', () => {
 
   it('sollte idempotent arbeiten, wenn withCredentials bereits true ist', () => {
     // Arrange
-    const testUrl = 'http://localhost:8080/api/auth/me';
+    const testUrl = '/api/auth/me';
 
     // Act
     httpClient.get(testUrl, { withCredentials: true }).subscribe();

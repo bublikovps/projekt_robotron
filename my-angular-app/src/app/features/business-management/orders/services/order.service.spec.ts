@@ -14,7 +14,7 @@ import { OrderResponse } from '../models/order-response.model';
 describe('OrderService', () => {
   let service: OrderService;
   let httpTestingController: HttpTestingController;
-  const apiUrl = 'http://localhost:8080/api/orders';
+  const apiUrl = '/api/orders';
 
   beforeEach(() => {
     TestBed.configureTestingModule({

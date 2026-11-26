@@ -140,7 +140,7 @@ implements OnInit {
 
     this.http
       .get<OrderListItem[]>(
-        'http://localhost:8080/api/orders/my',
+        '/api/orders/my',
         {
           withCredentials: true
         }
@@ -220,7 +220,7 @@ implements OnInit {
 
     this.http
       .get<OrderDetails>(
-        `http://localhost:8080/api/orders/${orderNumber}`,
+        `/api/orders/${orderNumber}`,
         {
           withCredentials: true
         }

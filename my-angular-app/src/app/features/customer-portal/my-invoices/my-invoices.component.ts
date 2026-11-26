@@ -66,7 +66,7 @@ implements OnInit {
 
     this.http
       .get<MyInvoice[]>(
-        'http://localhost:8080/api/documents/my-invoices',
+        '/api/documents/my-invoices',
         {
           withCredentials: true
         }
@@ -105,7 +105,7 @@ implements OnInit {
   ): void {
 
     window.open(
-      `http://localhost:8080/api/documents/invoices/${invoiceNumber}/pdf`,
+      `/api/documents/invoices/${invoiceNumber}/pdf`,
       '_blank'
     );
 
