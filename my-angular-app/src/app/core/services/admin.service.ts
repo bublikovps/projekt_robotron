@@ -21,7 +21,7 @@ export interface AdminUserData {
 export class AdminService {
 
   private apiUrl =
-    'http://localhost:8080/api/admin/users';
+    '/api/admin/users';
 
   constructor(
     private http: HttpClient

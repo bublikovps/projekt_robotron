@@ -25,7 +25,7 @@ export class AssetReportService {
     inject(HttpClient);
 
   private readonly apiUrl =
-    'http://localhost:8080/api/reports';
+    '/api/reports';
 
   getAssetValueReport():
     Observable<AssetValueResponse[]> {

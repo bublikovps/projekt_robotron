@@ -21,7 +21,7 @@ from '../models/employment-contract-update-request.model';
 export class EmploymentContractService {
 
   private readonly apiUrl =
-    'http://localhost:8080/api/contracts';
+    '/api/contracts';
 
   constructor(
     private http: HttpClient

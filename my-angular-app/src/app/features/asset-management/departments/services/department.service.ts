@@ -21,7 +21,7 @@ from '../../../../core/models/api-message-response.model';
 export class DepartmentService {
 
   private readonly apiUrl =
-    'http://localhost:8080/api/departments';
+    '/api/departments';
 
   constructor(
     private http: HttpClient

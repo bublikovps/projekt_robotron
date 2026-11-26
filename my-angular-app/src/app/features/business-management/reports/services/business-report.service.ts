@@ -24,7 +24,7 @@ export class BusinessReportService {
   private readonly http = inject(HttpClient);
 
   private readonly apiUrl =
-    'http://localhost:8080/api/reports';
+    '/api/reports';
 
   getInventoryValueReport():
     Observable<InventoryValueResponse[]> {

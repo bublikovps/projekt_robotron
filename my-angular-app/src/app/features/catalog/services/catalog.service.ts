@@ -8,8 +8,8 @@ import { CatalogCategoryResponse } from '../models/catalog-category-response.mod
   providedIn: 'root'
 })
 export class CatalogService {
-  private readonly productsApiUrl = 'http://localhost:8080/api/catalog/products';
-  private readonly categoriesApiUrl = 'http://localhost:8080/api/catalog/categories';
+  private readonly productsApiUrl = '/api/catalog/products';
+  private readonly categoriesApiUrl = '/api/catalog/categories';
 
   
   private readonly categoriesSignal = signal<CatalogCategoryResponse[]>([]);

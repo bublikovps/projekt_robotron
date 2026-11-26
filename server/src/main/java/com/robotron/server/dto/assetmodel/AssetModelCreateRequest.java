@@ -4,26 +4,56 @@ import jakarta.validation.constraints.NotBlank;
 
 import java.math.BigDecimal;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
+
+@Schema(
+        description = "Request for creating an asset model"
+)
 public class AssetModelCreateRequest {
 
+    @Schema(
+            example = "LAP-DELL-5540"
+    )
     @NotBlank
     private String assetCode;
 
+    @Schema(
+            example = "Dell Latitude 5540"
+    )
     @NotBlank
     private String name;
 
+    @Schema(
+            example = "Dell"
+    )
     @NotBlank
     private String manufacturer;
 
+    @Schema(
+            example = "LAPTOP"
+    )
     @NotBlank
     private String assetCategory;
 
+    @Schema(
+            example = "Business Laptop"
+    )
     private String description;
 
+    @Schema(
+            example = "1200.00"
+    )
     private BigDecimal defaultPurchasePrice;
 
+    @Schema(
+            example = "48"
+    )
     private Integer expectedLifetimeMonths;
 
+    @Schema(
+            example = "36"
+    )
     private Integer defaultWarrantyMonths;
 
     public String getAssetCode() {

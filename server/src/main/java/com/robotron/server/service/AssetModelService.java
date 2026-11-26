@@ -34,6 +34,26 @@ public class AssetModelService {
                 .toList();
     }
 
+    public List<AssetModelResponse> getAllActive() {
+
+        return assetModelRepository
+                .findByActiveTrue()
+                .stream()
+                .map(AssetModelMapper::toResponse)
+                .toList();
+
+        }
+
+        public List<AssetModelResponse> getAllArchived() {
+
+        return assetModelRepository
+                .findByActiveFalse()
+                .stream()
+                .map(AssetModelMapper::toResponse)
+                .toList();
+
+        }
+
     public AssetModelResponse create(
             AssetModelCreateRequest request
     ) {
@@ -110,19 +130,19 @@ public class AssetModelService {
                         );
 
         assetModel.setAssetCode(
-                request.getAssetCode()
+                request.getAssetCode().trim()
         );
 
         assetModel.setName(
-                request.getName()
+                request.getName().trim()
         );
 
         assetModel.setManufacturer(
-                request.getManufacturer()
+                request.getManufacturer().trim()
         );
 
         assetModel.setAssetCategory(
-                request.getAssetCategory()
+                request.getAssetCategory().trim()
         );
 
         assetModel.setDescription(

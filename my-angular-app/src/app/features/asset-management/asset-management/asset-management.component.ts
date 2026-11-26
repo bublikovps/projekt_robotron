@@ -41,6 +41,9 @@ import {
   BreadcrumbItem
 } from '../../../shared/components/breadcrumb/breadcrumb.component';
 
+import { AssetModelsComponent }
+from '../asset-models/components/asset-models.component';
+
 @Component({
   selector: 'app-asset-management',
   standalone: true,
@@ -51,6 +54,7 @@ import {
 
     DepartmentsComponent,
     EmployeesComponent,
+    AssetModelsComponent,
     ContractsComponent,
 
     DevicesComponent,
@@ -81,6 +85,7 @@ export class AssetManagementComponent {
   selectedModule:
     | 'departments'
     | 'employees'
+    | 'asset-models'
     | 'contracts'
     | 'devices'
     | 'software-licenses'
@@ -131,6 +136,7 @@ export class AssetManagementComponent {
     module:
       | 'departments'
       | 'employees'
+      | 'asset-models'
       | 'contracts'
       | 'devices'
       | 'software-licenses'
@@ -221,6 +227,17 @@ export class AssetManagementComponent {
         items.push({
           label:
             'Employees'
+        });
+
+        break;
+
+      case 'asset-models':
+
+        items.push({
+
+          label:
+            'Asset Models'
+
         });
 
         break;

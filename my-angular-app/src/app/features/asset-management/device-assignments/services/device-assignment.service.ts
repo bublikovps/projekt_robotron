@@ -22,7 +22,7 @@ import {
 export class DeviceAssignmentService {
 
   private readonly apiUrl =
-    'http://localhost:8080/api/device-assignments';
+    '/api/device-assignments';
 
   constructor(
     private http: HttpClient

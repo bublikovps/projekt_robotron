@@ -2,26 +2,64 @@ package com.robotron.server.dto.assetmodel;
 
 import java.math.BigDecimal;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import io.swagger.v3.oas.annotations.media.Schema;
+
+@Schema(
+        description = "Asset model response"
+)
 public class AssetModelResponse {
 
+    @Schema(
+            example = "1"
+    )
     private Long id;
 
+    @Schema(
+            example = "LAP-DELL-5540"
+    )
     private String assetCode;
 
+    @Schema(
+            example = "Dell Latitude 5540"
+    )
     private String name;
 
+    @Schema(
+            example = "Dell"
+    )
     private String manufacturer;
 
+    @Schema(
+            example = "LAPTOP"
+    )
     private String assetCategory;
 
+    @Schema(
+            example = "Business Laptop"
+    )
     private String description;
 
+    @Schema(
+            example = "1200.00"
+    )
     private BigDecimal defaultPurchasePrice;
 
+    @Schema(
+            example = "48"
+    )
     private Integer expectedLifetimeMonths;
 
+    @Schema(
+            example = "36"
+    )
     private Integer defaultWarrantyMonths;
 
+    @Schema(
+            example = "true"
+    )
+    @JsonProperty("active")
     private boolean active;
 
     public AssetModelResponse() {

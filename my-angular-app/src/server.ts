@@ -5,6 +5,7 @@ import {
   writeResponseToNodeResponse,
 } from '@angular/ssr/node';
 import express from 'express';
+import { createProxyMiddleware } from 'http-proxy-middleware';
 import { join } from 'node:path';
 
 const browserDistFolder = join(import.meta.dirname, '../browser');
@@ -13,19 +14,24 @@ const app = express();
 const angularApp = new AngularNodeAppEngine();
 
 /**
- * Example Express Rest API endpoints can be defined here.
- * Uncomment and define endpoints as necessary.
- *
- * Example:
- * ```ts
- * app.get('/api/{*splat}', (req, res) => {
- *   // Handle API request
- * });
- * ```
+ * Proxy-Konfiguration für API-Anfragen an das Spring-Boot-Backend.
+ * Die Ziel-URL wird über die Umgebungsvariable BACKEND_URL gesteuert.
  */
+const backendUrl = process.env['BACKEND_URL'] || 'http://localhost:8080';
+
+
+app.use(
+  '/api',
+  createProxyMiddleware({
+    target: backendUrl,
+    changeOrigin: true,
+    // Express entfernt das Präfix '/api' bei app.use('/api', ...), daher wird es hier wieder hinzugefügt
+    pathRewrite: (path) => `/api${path}`,
+  }),
+);
 
 /**
- * Serve static files from /browser
+ * Statische Dateien aus dem Verzeichnis /browser ausliefern
  */
 app.use(
   express.static(browserDistFolder, {
@@ -36,7 +42,7 @@ app.use(
 );
 
 /**
- * Handle all other requests by rendering the Angular application.
+ * Alle übrigen Anfragen über Angular Server-Side Rendering (SSR) verarbeiten
  */
 app.use((req, res, next) => {
   angularApp
@@ -46,8 +52,8 @@ app.use((req, res, next) => {
 });
 
 /**
- * Start the server if this module is the main entry point, or it is ran via PM2.
- * The server listens on the port defined by the `PORT` environment variable, or defaults to 4000.
+ * Startet den Express-Server, wenn dieses Modul der Haupteinstiegspunkt ist.
+ * Standardmäßig wird Port 4000 verwendet (überschreibbar über die Umgebungsvariable PORT).
  */
 if (isMainModule(import.meta.url) || process.env['pm_id']) {
   const port = process.env['PORT'] || 4000;
@@ -55,12 +61,11 @@ if (isMainModule(import.meta.url) || process.env['pm_id']) {
     if (error) {
       throw error;
     }
-
-  
+    console.log(`Node Express server listening on http://localhost:${port}`);
   });
 }
 
 /**
- * Request handler used by the Angular CLI (for dev-server and during build) or Firebase Cloud Functions.
+ * Request-Handler für Angular CLI (Dev-Server und Build)
  */
 export const reqHandler = createNodeRequestHandler(app);
