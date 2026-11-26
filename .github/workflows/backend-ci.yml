@@ -35,10 +35,10 @@ jobs:
         run: chmod +x mvnw
 
       - name: Compile
-        run: ./mvnw clean compile
+        run: mvnw clean compile
 
       - name: Build and Package Application
-        run: ./mvnw package -DskipTests
+        run: mvnw package -DskipTests
 
       - name: Upload JAR Artifact
         uses: actions/upload-artifact@v4
