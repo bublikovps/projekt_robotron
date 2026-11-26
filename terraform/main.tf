@@ -159,7 +159,6 @@ resource "azurerm_container_app" "backend" {
   }
 
   template {
-
     min_replicas = 0
     max_replicas = 1
 
@@ -241,8 +240,7 @@ resource "azurerm_container_app" "frontend" {
   }
 
   template {
-
-    min_replicas = 0
+    min_replicas = 0 
     max_replicas = 1
 
     container {

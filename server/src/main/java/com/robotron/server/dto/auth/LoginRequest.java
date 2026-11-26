@@ -5,7 +5,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 @Schema(description = "DTO für den Benutzer-Login")
 public class LoginRequest {
 
-    // В OpenAPI обязательность задается через Schema.RequiredMode
+     
     @Schema(description = "Eindeutiger Benutzername (Login)", example = "admin1", requiredMode = Schema.RequiredMode.REQUIRED)
     private String login;
 

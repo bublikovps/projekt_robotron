@@ -73,10 +73,7 @@ CanActivateFn = (route, state) => {
     return false;
   }
 
-  /**
-   * Пользователь ещё не загружен.
-   * Загружаем через /api/auth/me.
-   */
+   
   return authService
     .getCurrentUser()
     .pipe(
