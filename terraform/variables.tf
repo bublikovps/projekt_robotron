@@ -1,29 +1,35 @@
 variable "location" {
-  description = "Azure Region (Frankfurt)"
+  description = "Azure Region"
   type        = string
   default     = "germanywestcentral"
 }
 
+variable "postgres_location" {
+  description = "PostgreSQL Region"
+  type        = string
+  default     = "francecentral"
+}
+
 variable "project_name" {
-  description = "Projektname"
+  description = "Project Name"
   type        = string
   default     = "robotron"
 }
 
 variable "db_password" {
-  description = "PostgreSQL Passwort"
+  description = "PostgreSQL Password"
   type        = string
   sensitive   = true
 }
 
 variable "jwt_secret" {
-  description = "Spring Boot JWT Secret"
+  description = "JWT Secret"
   type        = string
   sensitive   = true
 }
 
 variable "image_tag" {
-  description = "Docker Image Tag (Git SHA)"
+  description = "Docker Image Tag"
   type        = string
   default     = "latest"
 }
