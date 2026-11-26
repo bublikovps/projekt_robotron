@@ -266,7 +266,6 @@ resource "azurerm_container_app" "frontend" {
     external_enabled = true
     target_port      = 4000
     transport        = "http"
-    allow_insecure_connections = true
 
     traffic_weight {
       percentage      = 100
