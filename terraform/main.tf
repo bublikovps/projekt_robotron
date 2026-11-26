@@ -257,7 +257,7 @@ resource "azurerm_container_app" "frontend" {
 
       env {
         name  = "BACKEND_URL"
-        value = "http://robotron-backend"
+        value = "https://${azurerm_container_app.backend.ingress.fqdn}"
       }
     }
   }
