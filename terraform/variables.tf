@@ -7,7 +7,7 @@ variable "location" {
 variable "postgres_location" {
   description = "PostgreSQL Region"
   type        = string
-  default     = "francecentral"
+  default     = "polandcentral"
 }
 
 variable "project_name" {
