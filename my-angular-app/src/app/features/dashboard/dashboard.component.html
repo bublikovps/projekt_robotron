@@ -68,6 +68,30 @@
 
       <a
         *ngIf="
+          hasRole('ROLE_CUSTOMER')
+        "
+        routerLink="/customer-portal"
+        class="quick-card">
+
+        <h3>
+
+          Kundenbereich
+
+        </h3>
+
+        <p>
+
+          Bestellungen,
+          Rechnungen,
+          Lieferscheine
+          und Kundenkonto.
+
+        </p>
+
+      </a>
+
+      <a
+        *ngIf="
           hasRole('ROLE_MANAGER')
           ||
           hasRole('ROLE_DIRECTOR')

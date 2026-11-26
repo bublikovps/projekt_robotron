@@ -1,120 +1,420 @@
-<div class="profile-container">
+<div class="enterprise-page">
 
-  <div class="profile-card profile-header">
+  <div class="page-header">
 
-    <h2>Mein Konto</h2>
+    <div>
 
-    <p *ngIf="!isEnforcedChange">
-      Verwalten Sie Ihre persönlichen Daten und Sicherheitseinstellungen.
-    </p>
+      <h2>
+        Mein Profil
+      </h2>
 
-    <p *ngIf="isEnforcedChange" class="warning-text">
-      ⚠️ Erstanmeldung erkannt. Passwortänderung erforderlich.
-    </p>
+      <p>
 
-  </div>
+        Verwalten Sie Ihre persönlichen Daten,
+        Kontoeinstellungen und Sicherheit.
 
-  <div *ngIf="successMessage" class="alert success-msg">
-    {{ successMessage }}
-  </div>
-
-  <div *ngIf="errorMessage" class="alert error-msg">
-    {{ errorMessage }}
-  </div>
-
-  <div
-    class="profile-card"
-    *ngIf="user && !isEnforcedChange">
-
-    <h3>📋 Allgemeine Stammdaten</h3>
-
-    <div class="profile-info">
-
-      <div class="info-row">
-        <span class="label">Benutzername</span>
-        <span class="value">{{ user.login }}</span>
-      </div>
-
-      <div class="info-row">
-        <span class="label">E-Mail</span>
-        <span class="value">{{ user.email }}</span>
-      </div>
-
-      <div class="info-row">
-        <span class="label">Mitglied seit</span>
-        <span class="value">
-          {{ user.createdAt | date:'dd.MM.yyyy' }}
-        </span>
-      </div>
+      </p>
 
     </div>
 
   </div>
 
   <div
-    class="profile-card"
-    *ngIf="user">
+    *ngIf="successMessage"
+    class="success-message">
 
-    <h3>🔒 Sicherheitskonfiguration</h3>
-
-    <form
-      (ngSubmit)="onChangePassword()"
-      #pwdForm="ngForm">
-
-      <div class="form-group">
-
-        <label for="oldPassword">
-          Aktuelles Passwort
-        </label>
-
-        <input
-          type="password"
-          id="oldPassword"
-          name="oldPassword"
-          [(ngModel)]="pwdData.oldPassword"
-          required
-          class="profile-input">
-
-      </div>
-
-      <div class="form-group">
-
-        <label for="newPassword">
-          Neues Passwort
-        </label>
-
-        <input
-          type="password"
-          id="newPassword"
-          name="newPassword"
-          [(ngModel)]="pwdData.newPassword"
-          required
-          class="profile-input">
-
-      </div>
-
-      <small
-        *ngIf="isEnforcedChange"
-        class="form-hint">
-
-        Mindestens 8 Zeichen,
-        Großbuchstabe,
-        Kleinbuchstabe,
-        Zahl und Sonderzeichen.
-
-      </small>
-
-      <button
-        type="submit"
-        class="btn-profile-save"
-        [disabled]="!pwdForm.form.valid">
-
-        Passwort speichern
-
-      </button>
-
-    </form>
+    {{ successMessage }}
 
   </div>
+
+  <div
+    *ngIf="errorMessage"
+    class="error-message">
+
+    {{ errorMessage }}
+
+  </div>
+
+  @if (user && !isLoading) {
+
+    <div class="profile-summary">
+
+      <div class="summary-card">
+
+        <div class="summary-label">
+          Benutzer
+        </div>
+
+        <div class="summary-value">
+          {{ user.login }}
+        </div>
+
+      </div>
+
+      <div class="summary-card">
+
+        <div class="summary-label">
+          Rolle
+        </div>
+
+        <div class="summary-value">
+          {{ getRoleLabel() }}
+        </div>
+
+      </div>
+
+      <div class="summary-card">
+
+        <div class="summary-label">
+          Registriert
+        </div>
+
+        <div class="summary-value">
+          {{ user.createdAt | date:'dd.MM.yyyy' }}
+        </div>
+
+      </div>
+
+      @if (isCustomer()) {
+
+        <div class="summary-card">
+
+          <div class="summary-label">
+            Kontostand
+          </div>
+
+          <div class="summary-value">
+            {{ getAccountBalance() }}
+          </div>
+
+        </div>
+
+      }
+
+    </div>
+
+    <div class="profile-grid">
+
+      <!-- PERSÖNLICHE DATEN -->
+
+      <div class="profile-card">
+
+        <h3>
+          Persönliche Daten
+        </h3>
+
+        <div class="form-grid">
+
+          <div class="form-field">
+
+            <label>
+              Benutzername
+            </label>
+
+            <input
+              type="text"
+              [value]="user.login"
+              disabled>
+
+          </div>
+
+          <div class="form-field">
+
+            <label>
+              E-Mail
+            </label>
+
+            <input
+              type="email"
+              [value]="user.email"
+              disabled>
+
+          </div>
+
+          <div class="form-field">
+
+            <label>
+              Vorname
+            </label>
+
+            <input
+              type="text"
+              [(ngModel)]="profileData.vorname">
+
+          </div>
+
+          <div class="form-field">
+
+            <label>
+              Nachname
+            </label>
+
+            <input
+              type="text"
+              [(ngModel)]="profileData.nachname">
+
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- CUSTOMER BEREICH -->
+
+      @if (isCustomer()) {
+
+        <div class="profile-card">
+
+          <h3>
+            Kundentyp
+          </h3>
+
+          <div class="form-grid">
+
+            <div class="form-field">
+
+              <label>
+                Kundentyp
+              </label>
+
+              <select
+                [(ngModel)]="profileData.customerType">
+
+                <option value="PRIVATE">
+                  Privatkunde
+                </option>
+
+                <option value="BUSINESS">
+                  Geschäftskunde
+                </option>
+
+              </select>
+
+            </div>
+
+            <div class="form-field">
+
+              <label>
+                Kunde seit
+              </label>
+
+              <input
+                type="text"
+                [value]="user.createdAt | date:'dd.MM.yyyy'"
+                disabled>
+
+            </div>
+
+          </div>
+
+        </div>
+
+        <div class="profile-card">
+
+          <h3>
+            Firmendaten
+          </h3>
+
+          <div class="form-grid">
+
+            <div class="form-field">
+
+              <label>
+                Firmenname
+              </label>
+
+              <input
+                type="text"
+                [(ngModel)]="profileData.companyName">
+
+            </div>
+
+            <div class="form-field">
+
+              <label>
+                USt-IdNr.
+              </label>
+
+              <input
+                type="text"
+                [(ngModel)]="profileData.ustIdnr">
+
+            </div>
+
+          </div>
+
+        </div>
+
+        <div class="profile-card profile-address">
+
+          <h3>
+            Standard-Lieferadresse
+          </h3>
+
+          <div class="form-field">
+
+            <label>
+              Lieferadresse
+            </label>
+
+            <textarea
+              [(ngModel)]="
+                profileData.defaultShippingAddress
+              "
+              rows="8">
+
+            </textarea>
+
+          </div>
+
+        </div>
+
+      }
+
+      <!-- EMPLOYEE BEREICH -->
+
+      @if (isEmployee()) {
+
+        <div class="profile-card">
+
+          <h3>
+            Mitarbeiterprofil
+          </h3>
+
+          <div class="form-grid">
+
+            <div class="form-field">
+
+              <label>
+                Rolle
+              </label>
+
+              <input
+                type="text"
+                [value]="getRoleLabel()"
+                disabled>
+
+            </div>
+
+            <div class="form-field">
+
+              <label>
+                Systemstatus
+              </label>
+
+              <input
+                type="text"
+                value="Aktiv"
+                disabled>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      }
+
+      <!-- SICHERHEIT -->
+
+      <div class="profile-card security-card">
+
+        <h3>
+          Kontosicherheit
+        </h3>
+
+        <form
+          (ngSubmit)="onChangePassword()"
+          #pwdForm="ngForm">
+
+          <div class="security-form">
+
+            <div class="form-field">
+
+              <label>
+                Aktuelles Passwort
+              </label>
+
+              <input
+                type="password"
+                name="oldPassword"
+                [(ngModel)]="
+                  pwdData.oldPassword
+                "
+                required>
+
+            </div>
+
+            <div class="form-field">
+
+              <label>
+                Neues Passwort
+              </label>
+
+              <input
+                type="password"
+                name="newPassword"
+                [(ngModel)]="
+                  pwdData.newPassword
+                "
+                required>
+
+            </div>
+
+          </div>
+
+          <button
+            type="submit"
+            class="
+              enterprise-btn
+              enterprise-btn-secondary
+            "
+            [disabled]="!pwdForm.form.valid">
+
+            Passwort ändern
+
+          </button>
+
+        </form>
+
+      </div>
+
+      <!-- SPEICHERN -->
+
+      <div class="profile-card save-card">
+
+        <h3>
+          Änderungen speichern
+        </h3>
+
+        <p>
+
+          Speichern Sie Ihre aktuellen
+          Profileinstellungen.
+
+        </p>
+
+        <button
+          type="button"
+          class="
+            enterprise-btn
+            enterprise-btn-primary
+          "
+          [disabled]="isSavingProfile"
+          (click)="onSaveProfile()">
+
+          {{
+            isSavingProfile
+              ? 'Profil wird gespeichert...'
+              : 'Profil speichern'
+          }}
+
+        </button>
+
+      </div>
+
+    </div>
+
+  }
 
 </div>

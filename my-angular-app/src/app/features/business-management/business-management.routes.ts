@@ -9,6 +9,7 @@ import { REPORTS_ROUTES } from './reports/reports.routes';
 import { roleGuard } from '../../core/guards/role.guard';
 import { passwordChangeGuard } from '../../core/guards/password-change.guard';
 import { BusinessManagementComponent } from './business-management/business-management.component';
+import { ORDERS_ROUTES }from './orders/orders.routes';
 
 export const BUSINESS_MANAGEMENT_ROUTES: Routes = [
 
@@ -34,6 +35,8 @@ export const BUSINESS_MANAGEMENT_ROUTES: Routes = [
 
   ...PRODUCTS_ROUTES,
 
-  ...REPORTS_ROUTES
+  ...REPORTS_ROUTES,
+
+  ...ORDERS_ROUTES
 
 ];

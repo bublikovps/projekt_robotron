@@ -1,0 +1,94 @@
+<div class="enterprise-page">
+
+  <div class="payment-card">
+
+    <h1>
+      Zahlung durchführen
+    </h1>
+
+    <div class="payment-grid">
+
+      <div class="payment-item">
+
+        <span class="label">
+          Bestellnummer
+        </span>
+
+        <strong>
+          {{ orderNumber }}
+        </strong>
+
+      </div>
+
+      <div class="payment-item">
+
+        <span class="label">
+          Bestellwert
+        </span>
+
+        <strong>
+          {{ totalPrice }} €
+        </strong>
+
+      </div>
+
+      <div class="payment-item">
+
+        <span class="label">
+          Kontostand
+        </span>
+
+        <strong>
+          {{ accountBalance }} €
+        </strong>
+
+      </div>
+
+      <div class="payment-item">
+
+        <span class="label">
+          Kontostand nach Zahlung
+        </span>
+
+        <strong>
+          {{
+            accountBalance -
+            totalPrice
+          }} €
+        </strong>
+
+      </div>
+
+    </div>
+
+    <div
+      *ngIf="successMessage"
+      class="success-message">
+
+      {{ successMessage }}
+
+    </div>
+
+    <div
+      *ngIf="errorMessage"
+      class="error-message">
+
+      {{ errorMessage }}
+
+    </div>
+
+    <button
+      class="
+        enterprise-btn
+        enterprise-btn-primary
+      "
+      [disabled]="isSubmitting"
+      (click)="pay()">
+
+      Jetzt bezahlen
+
+    </button>
+
+  </div>
+
+</div>

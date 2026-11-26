@@ -1,39 +1,31 @@
-import {
-  ComponentFixture,
-  TestBed
-} from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideRouter } from '@angular/router';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { describe, it, expect, beforeEach } from 'vitest';
 
-import { ForgotPasswordComponent }
-from './forgot-password.component';
+import { ForgotPasswordComponent } from './forgot-password.component';
 
 describe('ForgotPasswordComponent', () => {
-
   let component: ForgotPasswordComponent;
-
-  let fixture:
-    ComponentFixture<ForgotPasswordComponent>;
+  let fixture: ComponentFixture<ForgotPasswordComponent>;
 
   beforeEach(async () => {
-
     await TestBed.configureTestingModule({
-      imports: [ForgotPasswordComponent]
+      imports: [ForgotPasswordComponent],
+      providers: [
+        provideRouter([]),
+        provideHttpClient(),
+        provideHttpClientTesting(),
+      ],
     }).compileComponents();
 
-    fixture =
-      TestBed.createComponent(
-        ForgotPasswordComponent
-      );
-
-    component =
-      fixture.componentInstance;
-
+    fixture = TestBed.createComponent(ForgotPasswordComponent);
+    component = fixture.componentInstance;
     fixture.detectChanges();
   });
 
-  it('should create', () => {
-
+  it('sollte die Komponente erfolgreich erstellen', () => {
     expect(component).toBeTruthy();
-
   });
-
 });
