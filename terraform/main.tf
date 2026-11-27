@@ -198,6 +198,16 @@ resource "azurerm_container_app" "backend" {
         name  = "MAIL_PORT"
         value = "1025"
       }
+
+      env {
+        name  = "FRONTEND_URL"
+        value = "https://robotron-frontend.${azurerm_container_app_environment.env.default_domain}"
+      }
+
+      env {
+        name  = "CORS_ALLOWED_ORIGINS"
+        value = "https://robotron-frontend.${azurerm_container_app_environment.env.default_domain},http://localhost:4200"
+      }
     }
   }
 
