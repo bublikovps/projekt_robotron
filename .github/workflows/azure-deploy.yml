@@ -48,8 +48,8 @@ jobs:
             -target=azurerm_container_registry.acr \
             -var="db_password=${{ secrets.DB_PASSWORD }}" \
             -var="jwt_secret=${{ secrets.JWT_SECRET }}" \
-	    -var="mail_username=${{ secrets.MAIL_USERNAME }}" \
-	    -var="mail_password=${{ secrets.MAIL_PASSWORD }}" \
+	        -var="mail_username=${{ secrets.MAIL_USERNAME }}" \
+	        -var="mail_password=${{ secrets.MAIL_PASSWORD }}" \
             -var="image_tag=${{ github.sha }}"
 
       - name: Get ACR Login Server
@@ -76,6 +76,8 @@ jobs:
           terraform apply -auto-approve \
             -var="db_password=${{ secrets.DB_PASSWORD }}" \
             -var="jwt_secret=${{ secrets.JWT_SECRET }}" \
+			-var="mail_username=${{ secrets.MAIL_USERNAME }}" \
+	        -var="mail_password=${{ secrets.MAIL_PASSWORD }}" \
             -var="image_tag=${{ github.sha }}"
 
       - name: Show Application URL
