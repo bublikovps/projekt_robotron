@@ -5,7 +5,6 @@ import {
   writeResponseToNodeResponse,
 } from '@angular/ssr/node';
 import express from 'express';
-import { createProxyMiddleware } from 'http-proxy-middleware';
 import { join } from 'node:path';
 
 const browserDistFolder = join(import.meta.dirname, '../browser');
@@ -19,15 +18,47 @@ const angularApp = new AngularNodeAppEngine();
  */
 const backendUrl = process.env['BACKEND_URL'] || 'http://localhost:8080';
 
+app.use('/api', async (req, res) => {
+  try {
+    const targetUrl = `${backendUrl}${req.originalUrl}`;
+    const headers = new Headers();
 
-app.use(
-  '/api',
-  createProxyMiddleware({
-    target: backendUrl,
-    changeOrigin: true,
-    pathFilter: '/api',
-  }),
-);
+    for (const [key, value] of Object.entries(req.headers)) {
+      if (value && key.toLowerCase() !== 'host') {
+        headers.set(key, Array.isArray(value) ? value.join(', ') : value);
+      }
+    }
+
+    const hasBody = !['GET', 'HEAD'].includes(req.method.toUpperCase());
+    const bodyBuffer = hasBody
+      ? await new Promise<Buffer>((resolve, reject) => {
+          const chunks: Buffer[] = [];
+          req.on('data', (chunk) => chunks.push(Buffer.from(chunk)));
+          req.on('end', () => resolve(Buffer.concat(chunks)));
+          req.on('error', reject);
+        })
+      : undefined;
+
+    const backendResponse = await fetch(targetUrl, {
+      method: req.method,
+      headers,
+      body: bodyBuffer ? new Uint8Array(bodyBuffer) : undefined,
+    });
+
+    res.status(backendResponse.status);
+    backendResponse.headers.forEach((val, key) => {
+      if (key.toLowerCase() !== 'transfer-encoding') {
+        res.setHeader(key, val);
+      }
+    });
+
+    const responseBuffer = Buffer.from(await backendResponse.arrayBuffer());
+    res.send(responseBuffer);
+  } catch (err) {
+    console.error('[SSR API Proxy Error]:', err);
+    res.status(502).json({ error: 'Backend service unavailable' });
+  }
+});
 
 /**
  * Statische Dateien aus dem Verzeichnis /browser ausliefern
