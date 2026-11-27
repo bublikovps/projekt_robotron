@@ -25,8 +25,7 @@ app.use(
   createProxyMiddleware({
     target: backendUrl,
     changeOrigin: true,
-    // Express entfernt das Präfix '/api' bei app.use('/api', ...), daher wird es hier wieder hinzugefügt
-    pathRewrite: (path) => `/api${path}`,
+    pathFilter: '/api',
   }),
 );
 
