@@ -15,7 +15,6 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/devices")
-@CrossOrigin(origins = "http://localhost:4200")
 @Tag(
         name = "Device Management",
         description = "Verwaltung von Geräten"

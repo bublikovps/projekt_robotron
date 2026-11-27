@@ -15,7 +15,6 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/departments")
-@CrossOrigin(origins = "http://localhost:4200")
 @Tag(
         name = "Department Management",
         description = "Verwaltung von Abteilungen"

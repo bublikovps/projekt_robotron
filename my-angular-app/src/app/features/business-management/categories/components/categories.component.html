@@ -1,76 +1,60 @@
 <div class="enterprise-page">
 
+  <input
+    #fileInput
+    type="file"
+    accept=".xlsx,.xls"
+    style="display:none"
+    (change)="onFileSelected($event)">
+
   <div class="report-toolbar">
 
     <input
       type="text"
-      class="
-        enterprise-search
-        report-search
-      "
+      class="enterprise-search report-search"
       placeholder="Search categories..."
       [(ngModel)]="searchTerm"
       (input)="applyFilters()">
 
-    
-    <div
-      class="enterprise-toolbar-right">
+    <div class="enterprise-toolbar-right">
 
-      <div
-        class="enterprise-dropdown">
+      <div class="enterprise-dropdown">
 
         <button
           type="button"
-          class="
-            enterprise-dropdown-trigger
-          "
+          class="enterprise-dropdown-trigger"
           (click)="toggleExportMenu()">
 
-          <span
-            class="
-              enterprise-dropdown-label
-            ">
-
+          <span class="enterprise-dropdown-label">
             Export
-
           </span>
 
-          <span
-            class="
-              enterprise-dropdown-arrow
-            ">
-
+          <span class="enterprise-dropdown-arrow">
             ▼
-
           </span>
 
         </button>
 
         <div
           *ngIf="exportMenuOpen"
-          class="
-            enterprise-dropdown-menu
-          ">
+          class="enterprise-dropdown-menu">
 
           <button
+            type="button"
             (click)="exportAs('csv')">
-
             CSV
-
           </button>
 
           <button
+            type="button"
             (click)="exportAs('excel')">
-
             Excel
-
           </button>
 
           <button
+            type="button"
             (click)="exportAs('pdf')">
-
             PDF
-
           </button>
 
         </div>
@@ -78,21 +62,15 @@
       </div>
 
       <button
-        class="
-          enterprise-btn
-          enterprise-btn-secondary
-        "
-        (click)="importCategories()">
+        class="enterprise-btn enterprise-btn-secondary"
+        (click)="openImportDialog()">
 
         Import
 
       </button>
 
       <button
-        class="
-          enterprise-btn
-          enterprise-btn-primary
-        "
+        class="enterprise-btn enterprise-btn-primary"
         (click)="openCreateDialog()">
 
         + Category
@@ -105,61 +83,48 @@
 
   <div class="table-header">
 
-  <div class="table-info">
+    <div class="table-info">
 
-    {{
-      filteredCategories.length === 1
-        ? '1 Kategorie'
-        : filteredCategories.length +
-          ' Kategorien'
-    }}
+      {{
+        filteredCategories.length === 1
+          ? '1 Kategorie'
+          : filteredCategories.length + ' Kategorien'
+      }}
 
-  </div>
+    </div>
 
-  <div class="filter-group">
+    <div class="filter-group">
 
-    <button
-      class="filter-btn"
-      [class.active]="
-        statusFilter === 'active'
-      "
-      (click)="
-        setStatusFilter('active')
-      ">
+      <button
+        class="filter-btn"
+        [class.active]="statusFilter === 'active'"
+        (click)="setStatusFilter('active')">
 
-      Active
+        Active
 
-    </button>
+      </button>
 
-    <button
-      class="filter-btn"
-      [class.active]="
-        statusFilter === 'archived'
-      "
-      (click)="
-        setStatusFilter('archived')
-      ">
+      <button
+        class="filter-btn"
+        [class.active]="statusFilter === 'archived'"
+        (click)="setStatusFilter('archived')">
 
-      Archived
+        Archived
 
-    </button>
+      </button>
 
-    <button
-      class="filter-btn"
-      [class.active]="
-        statusFilter === 'all'
-      "
-      (click)="
-        setStatusFilter('all')
-      ">
+      <button
+        class="filter-btn"
+        [class.active]="statusFilter === 'all'"
+        (click)="setStatusFilter('all')">
 
-      All
+        All
 
-    </button>
+      </button>
+
+    </div>
 
   </div>
-
-</div>
 
   <div
     *ngIf="successMessage"
@@ -178,24 +143,80 @@
   </div>
 
   <div
+    *ngIf="filteredCategories.length === 0"
+    class="empty-state">
+
+    <h3>
+      Keine Kategorien gefunden
+    </h3>
+
+    <p>
+      Versuchen Sie andere Filter oder erstellen Sie eine neue Kategorie.
+    </p>
+
+  </div>
+
+  <div
+    *ngIf="filteredCategories.length > 0"
     class="enterprise-table-card">
 
-    <table
-      class="enterprise-table">
+    <table class="enterprise-table">
 
       <thead>
 
       <tr>
 
-        <th>ID</th>
+        <th
+          class="sortable-header"
+          (click)="sortBy('id')">
 
-        <th>Name</th>
+          ID
 
-        <th>Products</th>
+          <span *ngIf="sortColumn === 'id'">
+            {{ sortDirection === 'asc' ? '▲' : '▼' }}
+          </span>
 
-        <th>Status</th>
+        </th>
 
-        <th>Actions</th>
+        <th
+          class="sortable-header"
+          (click)="sortBy('name')">
+
+          Name
+
+          <span *ngIf="sortColumn === 'name'">
+            {{ sortDirection === 'asc' ? '▲' : '▼' }}
+          </span>
+
+        </th>
+
+        <th
+          class="sortable-header"
+          (click)="sortBy('productCount')">
+
+          Products
+
+          <span *ngIf="sortColumn === 'productCount'">
+            {{ sortDirection === 'asc' ? '▲' : '▼' }}
+          </span>
+
+        </th>
+
+        <th
+          class="sortable-header"
+          (click)="sortBy('active')">
+
+          Status
+
+          <span *ngIf="sortColumn === 'active'">
+            {{ sortDirection === 'asc' ? '▲' : '▼' }}
+          </span>
+
+        </th>
+
+        <th class="actions-cell">
+          Actions
+        </th>
 
       </tr>
 
@@ -204,19 +225,18 @@
       <tbody>
 
       <tr
-        *ngFor="
-          let category
-          of filteredCategories
-        ">
+        *ngFor="let category of filteredCategories">
 
         <td>
           {{ category.id }}
         </td>
 
         <td>
+
           <strong>
             {{ category.name }}
           </strong>
+
         </td>
 
         <td>
@@ -228,10 +248,8 @@
           <span
             class="enterprise-badge"
             [ngClass]="{
-              'enterprise-badge-success':
-                category.active,
-              'enterprise-badge-danger':
-                !category.active
+              'enterprise-badge-success': category.active,
+              'enterprise-badge-danger': !category.active
             }">
 
             {{
@@ -246,57 +264,50 @@
 
         <td>
 
-          <div
-            class="
-              enterprise-actions
-            ">
+          <div class="enterprise-actions">
 
-            @if (category.active) {
+            <button
+              class="
+              enterprise-btn
+                enterprise-btn-secondary
+                enterprise-actions-button
+              "
+              type="button"
+              (click)="toggleActionMenu(category.id)">
+
+              ⋮
+
+            </button>
+
+            <div
+              *ngIf="activeActionMenuId === category.id"
+              class="enterprise-actions-menu">
 
               <button
-                class="
-                  enterprise-btn
-                  enterprise-btn-secondary
-                "
-                (click)="
-                  editCategory(category)
-                ">
+                *ngIf="category.active"
+                (click)="editCategory(category)">
 
                 Edit
 
               </button>
 
               <button
-                class="
-                  enterprise-btn
-                  enterprise-btn-danger
-                "
-                (click)="
-                  archiveCategory(category)
-                ">
+                *ngIf="category.active"
+                (click)="archiveCategory(category)">
 
                 Archive
 
               </button>
 
-            }
-
-            @if (!category.active) {
-
               <button
-                class="
-                  enterprise-btn
-                  enterprise-btn-primary
-                "
-                (click)="
-                  restoreCategory(category)
-                ">
+                *ngIf="!category.active"
+                (click)="restoreCategory(category)">
 
                 Restore
 
               </button>
 
-            }
+            </div>
 
           </div>
 
@@ -312,14 +323,9 @@
 
   <div
     *ngIf="showDialog"
-    class="
-      enterprise-dialog-overlay
-    ">
+    class="enterprise-dialog-overlay">
 
-    <div
-      class="
-        enterprise-dialog
-      ">
+    <div class="enterprise-dialog">
 
       <h2>
 
@@ -335,25 +341,19 @@
 
         <input
           type="text"
+          name="name"
           placeholder="Category Name"
-          [(ngModel)]="
-            categoryForm.name
-          "
-          name="name">
+          [(ngModel)]="categoryForm.name">
 
       </form>
 
-      <div
-        class="
-          enterprise-dialog-footer
-        ">
+      <div class="enterprise-dialog-footer">
 
         <button
           type="button"
           class="
-            enterprise-btn
-            enterprise-btn-secondary
-          "
+          enterprise-btn 
+          enterprise-btn-secondary"
           (click)="closeDialog()">
 
           Cancel
@@ -363,9 +363,8 @@
         <button
           type="button"
           class="
-            enterprise-btn
-            enterprise-btn-primary
-          "
+          enterprise-btn 
+          enterprise-btn-primary"
           (click)="saveCategory()">
 
           {{

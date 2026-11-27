@@ -30,6 +30,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
+import org.springframework.beans.factory.annotation.Value;
 import java.util.Map;
 import java.util.UUID;
 
@@ -39,11 +40,11 @@ import java.util.UUID;
 )
 @RestController
 @RequestMapping("/api/auth")
-@CrossOrigin(origins = "http://localhost:4200",
-    allowCredentials = "true")
 public class AuthController {
 
     private static final Logger log = LoggerFactory.getLogger(AuthController.class);
+
+    @Value("${FRONTEND_URL:http://localhost:4200}") private String frontendUrl;
 
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
@@ -541,7 +542,7 @@ public class AuthController {
         PasswordResetToken resetToken = new PasswordResetToken(token, user, 15);
         tokenRepository.save(resetToken);
 
-        String resetLink = "http://localhost:4200/reset-password?token=" + token;
+        String resetLink = frontendUrl + "/reset-password?token=" + token;
         emailService.sendPasswordResetEmail(user.getEmail(), resetLink);
 
         return ResponseEntity.ok(Map.of("message", "Wenn die E-Mail-Adresse existiert, wurde eine Nachricht gesendet."));
