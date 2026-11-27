@@ -72,7 +72,9 @@
             (click)="
               selectedCategoryId =
                 category.id;
-                categoryMenuOpen = false;
+
+              categoryMenuOpen = false;
+
               applyFilters()
             ">
 
@@ -89,24 +91,18 @@
 
         <button
           type="button"
-          class="
-            enterprise-dropdown-trigger
-          "
+          class="enterprise-dropdown-trigger"
           (click)="toggleExportMenu()">
 
           <span
-            class="
-              enterprise-dropdown-label
-            ">
+            class="enterprise-dropdown-label">
 
             Export
 
           </span>
 
           <span
-            class="
-              enterprise-dropdown-arrow
-            ">
+            class="enterprise-dropdown-arrow">
 
             ▼
 
@@ -116,11 +112,10 @@
 
         <div
           *ngIf="exportMenuOpen"
-          class="
-            enterprise-dropdown-menu
-          ">
+          class="enterprise-dropdown-menu">
 
           <button
+            type="button"
             (click)="exportAs('csv')">
 
             CSV
@@ -128,6 +123,7 @@
           </button>
 
           <button
+            type="button"
             (click)="exportAs('excel')">
 
             Excel
@@ -135,6 +131,7 @@
           </button>
 
           <button
+            type="button"
             (click)="exportAs('pdf')">
 
             PDF
@@ -157,13 +154,13 @@
       </button>
 
       <input
-      id="product-import-file"
-      type="file"
-      accept=".xlsx"
-      style="display:none"
-      (change)="
-        onImportFileSelected($event)
-      ">
+        id="product-import-file"
+        type="file"
+        accept=".xlsx"
+        style="display:none"
+        (change)="
+          onImportFileSelected($event)
+        ">
 
       <button
         class="
@@ -186,9 +183,9 @@
 
       {{
         filteredProducts.length === 1
-          ? '1 Produkt'
+          ? '1 Product'
           : filteredProducts.length +
-            ' Produkte'
+            ' Products'
       }}
 
     </div>
@@ -239,34 +236,93 @@
   </div>
 
   <div
-    class="
-      enterprise-table-card
-    ">
+    *ngIf="successMessage"
+    class="success-message">
+
+    {{ successMessage }}
+
+  </div>
+
+  <div
+    *ngIf="errorMessage"
+    class="error-message">
+
+    {{ errorMessage }}
+
+  </div>
+
+  <div
+    class="enterprise-table-card">
 
     <table
-      class="
-        enterprise-table
-      ">
+      class="enterprise-table">
 
       <thead>
 
       <tr>
 
-        <th>SKU</th>
+        <th
+          class="sortable-column"
+          (click)="sortBy('sku')">
 
-        <th>Name</th>
+          SKU
+          {{ getSortIcon('sku') }}
 
-        <th>Category</th>
+        </th>
 
-        <th>Supplier</th>
+        <th
+          class="sortable-column"
+          (click)="sortBy('name')">
 
-        <th>Price</th>
+          Name
+          {{ getSortIcon('name') }}
 
-        <th>Stock</th>
+        </th>
 
-        <th>Status</th>
+        <th>
 
-        <th>Actions</th>
+          Category
+
+        </th>
+
+        <th
+          class="sortable-column"
+          (click)="sortBy('supplier')">
+
+          Supplier
+          {{ getSortIcon('supplier') }}
+
+        </th>
+
+        <th
+          class="sortable-column"
+          (click)="sortBy('price')">
+
+          Price
+          {{ getSortIcon('price') }}
+
+        </th>
+
+        <th
+          class="sortable-column"
+          (click)="sortBy('lagerbestand')">
+
+          Stock
+          {{ getSortIcon('lagerbestand') }}
+
+        </th>
+
+        <th>
+
+          Status
+
+        </th>
+
+        <th>
+
+          Actions
+
+        </th>
 
       </tr>
 
@@ -277,7 +333,7 @@
       <tr
         *ngFor="
           let product
-          of filteredProducts
+          of sortedProducts
         ">
 
         <td>
@@ -323,9 +379,7 @@
         <td>
 
           <span
-            class="
-              enterprise-badge
-            "
+            class="enterprise-badge"
             [ngClass]="{
               'enterprise-badge-success':
                 product.active,
@@ -335,28 +389,41 @@
 
             {{
               product.active
-                ? 'Aktiv'
-                : 'Archiviert'
+                ? 'Active'
+                : 'Archived'
             }}
 
           </span>
 
         </td>
 
-        <td>
+        <td
+          class="actions-cell">
 
           <div
-            class="
-              enterprise-actions
-            ">
+            class="enterprise-actions">
 
-            @if (product.active) {
+            <button
+              class="
+                enterprise-btn
+                enterprise-btn-secondary
+                enterprise-actions-button
+              "
+              (click)="toggleMenu(product.id)">
+
+              ⋮
+
+            </button>
+
+            <div
+              *ngIf="
+                openMenuId === product.id
+              "
+              class="
+                enterprise-actions-menu
+              ">
 
               <button
-                class="
-                  enterprise-btn
-                  enterprise-btn-secondary
-                "
                 (click)="
                   editProduct(product)
                 ">
@@ -366,9 +433,8 @@
               </button>
 
               <button
-                class="
-                  enterprise-btn
-                  enterprise-btn-secondary
+                *ngIf="
+                  product.active
                 "
                 (click)="
                   openCatalogView(product)
@@ -379,9 +445,8 @@
               </button>
 
               <button
-                class="
-                  enterprise-btn
-                  enterprise-btn-danger
+                *ngIf="
+                  product.active
                 "
                 (click)="
                   archiveProduct(product)
@@ -391,14 +456,9 @@
 
               </button>
 
-            }
-
-            @if (!product.active) {
-
               <button
-                class="
-                  enterprise-btn
-                  enterprise-btn-primary
+                *ngIf="
+                  !product.active
                 "
                 (click)="
                   restoreProduct(product)
@@ -408,7 +468,7 @@
 
               </button>
 
-            }
+            </div>
 
           </div>
 
@@ -419,6 +479,31 @@
       </tbody>
 
     </table>
+
+    <div
+      *ngIf="
+        filteredProducts.length === 0
+      "
+      class="empty-state">
+
+      <div>
+
+        <h3>
+
+          No products found
+
+        </h3>
+
+        <p>
+
+          Try changing the search
+          criteria.
+
+        </p>
+
+      </div>
+
+    </div>
 
   </div>
 
@@ -450,81 +535,89 @@
 
         <div class="form-field">
 
-  <label>Category</label>
+          <label>
 
-  <div
-    class="
-      enterprise-dropdown
-      dialog-category-dropdown
-    ">
+            Category
 
-    <button
-      type="button"
-      class="
-        enterprise-dropdown-trigger
-      "
-      (click)="toggleCategoryMenu()">
+          </label>
 
-      <span
-        class="
-          enterprise-dropdown-label
-        ">
+          <div
+            class="
+              enterprise-dropdown
+              dialog-category-dropdown
+            ">
 
-        {{
-          productForm.categoryId
-            ? categories.find(
-                c =>
-                  c.id ===
+            <button
+              type="button"
+              class="
+                enterprise-dropdown-trigger
+              "
+              (click)="toggleCategoryMenu()">
+
+              <span
+                class="
+                  enterprise-dropdown-label
+                ">
+
+                {{
                   productForm.categoryId
-              )?.name
-            : 'Select Category'
-        }}
+                    ? categories.find(
+                        c =>
+                          c.id ===
+                          productForm.categoryId
+                      )?.name
+                    : 'Select Category'
+                }}
 
-      </span>
+              </span>
 
-      <span
-        class="
-          enterprise-dropdown-arrow
-        ">
+              <span
+                class="
+                  enterprise-dropdown-arrow
+                ">
 
-        ▼
+                ▼
 
-      </span>
+              </span>
 
-    </button>
+            </button>
 
-    <div
-      *ngIf="categoryMenuOpen"
-      class="
-        enterprise-dropdown-menu
-      ">
+            <div
+              *ngIf="categoryMenuOpen"
+              class="
+                enterprise-dropdown-menu
+              ">
 
-      <button
-        *ngFor="
-          let category
-          of categories
-        "
-        type="button"
-        (click)="
-          productForm.categoryId =
-            category.id;
+              <button
+                *ngFor="
+                  let category
+                  of categories
+                "
+                type="button"
+                (click)="
+                  productForm.categoryId =
+                    category.id;
 
-          categoryMenuOpen = false
-        ">
+                  categoryMenuOpen = false
+                ">
 
-        {{ category.name }}
+                {{ category.name }}
 
-      </button>
+              </button>
 
-    </div>
+            </div>
 
-  </div>
+          </div>
 
-</div>
+        </div>
 
         <div class="form-field">
 
-          <label>SKU</label>
+          <label>
+
+            SKU
+
+          </label>
 
           <input
             type="text"
@@ -540,7 +633,11 @@
 
         <div class="form-field">
 
-          <label>Product Name</label>
+          <label>
+
+            Product Name
+
+          </label>
 
           <input
             type="text"
@@ -553,7 +650,11 @@
 
         <div class="form-field">
 
-          <label>Manufacturer</label>
+          <label>
+
+            Manufacturer
+
+          </label>
 
           <input
             type="text"
@@ -566,7 +667,11 @@
 
         <div class="form-field">
 
-          <label>Supplier</label>
+          <label>
+
+            Supplier
+
+          </label>
 
           <input
             type="text"
@@ -579,7 +684,11 @@
 
         <div class="form-field">
 
-          <label>Catalog Price</label>
+          <label>
+
+            Catalog Price
+
+          </label>
 
           <input
             type="number"
@@ -592,7 +701,11 @@
 
         <div class="form-field">
 
-          <label>Purchase Price</label>
+          <label>
+
+            Purchase Price
+
+          </label>
 
           <input
             type="number"
@@ -605,7 +718,11 @@
 
         <div class="form-field">
 
-          <label>Sale Price</label>
+          <label>
+
+            Sale Price
+
+          </label>
 
           <input
             type="number"
@@ -618,7 +735,11 @@
 
         <div class="form-field">
 
-          <label>Current Stock</label>
+          <label>
+
+            Current Stock
+
+          </label>
 
           <input
             type="number"
@@ -631,7 +752,11 @@
 
         <div class="form-field">
 
-          <label>Minimum Stock</label>
+          <label>
+
+            Minimum Stock
+
+          </label>
 
           <input
             type="number"
@@ -642,9 +767,17 @@
 
         </div>
 
-        <div class="form-field form-field-full">
+        <div
+          class="
+            form-field
+            form-field-full
+          ">
 
-          <label>Image URL</label>
+          <label>
+
+            Image URL
+
+          </label>
 
           <input
             type="text"
@@ -656,18 +789,27 @@
         </div>
 
         <div
-          *ngIf="productForm.imageUrl"
+          *ngIf="
+            productForm.imageUrl
+          "
           class="
             form-field
             form-field-full
           ">
 
-          <label>Image Preview</label>
+          <label>
 
-          <div class="image-preview-card">
+            Image Preview
+
+          </label>
+
+          <div
+            class="image-preview-card">
 
             <img
-              [src]="productForm.imageUrl"
+              [src]="
+                productForm.imageUrl
+              "
               alt="Product Preview"
               class="image-preview">
 
@@ -681,7 +823,11 @@
             form-field-full
           ">
 
-          <label>Description</label>
+          <label>
+
+            Description
+
+          </label>
 
           <textarea
             rows="4"
@@ -689,6 +835,7 @@
               productForm.description
             "
             name="description">
+
           </textarea>
 
         </div>

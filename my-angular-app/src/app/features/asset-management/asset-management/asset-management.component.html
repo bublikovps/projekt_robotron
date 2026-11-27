@@ -65,6 +65,15 @@
 
       <button
         class="module-tab"
+        [class.active]="selectedModule === 'asset-models'"
+        (click)="selectModule('asset-models')">
+
+        Asset Models
+
+      </button>
+
+      <button
+        class="module-tab"
         [class.active]="selectedModule === 'contracts'"
         (click)="selectModule('contracts')">
 
@@ -181,6 +190,13 @@
       <app-employees />
 
     }
+
+    @if (selectedModule === 'asset-models') {
+
+      <app-asset-models />
+
+    }
+
 
     @if (selectedModule === 'contracts') {
 

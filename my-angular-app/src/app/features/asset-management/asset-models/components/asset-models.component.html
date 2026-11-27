@@ -1,0 +1,618 @@
+<div class="enterprise-page">
+
+  <div class="report-toolbar">
+
+    <input
+      type="text"
+      class="
+        enterprise-search
+        report-search
+      "
+      placeholder="Search asset models..."
+      [(ngModel)]="searchTerm"
+      (input)="applyFilters()">
+
+    <div
+      class="enterprise-toolbar-right">
+
+      <div
+        class="enterprise-dropdown">
+
+        <button
+          type="button"
+          class="enterprise-dropdown-trigger"
+          (click)="toggleExportMenu()">
+
+          <span
+            class="enterprise-dropdown-label">
+
+            Export
+
+          </span>
+
+          <span
+            class="enterprise-dropdown-arrow">
+
+            ▼
+
+          </span>
+
+        </button>
+
+        <div
+          *ngIf="exportMenuOpen"
+          class="enterprise-dropdown-menu">
+
+          <button
+            type="button"
+            (click)="exportAs('csv')">
+
+            CSV
+
+          </button>
+
+          <button
+            type="button"
+            (click)="exportAs('excel')">
+
+            Excel
+
+          </button>
+
+          <button
+            type="button"
+            (click)="exportAs('pdf')">
+
+            PDF
+
+          </button>
+
+        </div>
+
+      </div>
+
+      <button
+        class="
+          enterprise-btn
+          enterprise-btn-secondary
+        "
+        (click)="importAssetModels()">
+
+        Import
+
+      </button>
+
+      <input
+        id="asset-model-import-file"
+        type="file"
+        accept=".xlsx"
+        style="display:none"
+        (change)="onImportFileSelected($event)">
+
+      <button
+        class="
+          enterprise-btn
+          enterprise-btn-primary
+        "
+        (click)="openCreateDialog()">
+
+        + Asset Model
+
+      </button>
+
+    </div>
+
+  </div>
+
+  <div class="table-header">
+
+    <div class="table-info">
+
+      {{ filteredAssetModels.length }}
+      asset models found
+
+    </div>
+
+    <div class="filter-group">
+
+      <button
+        class="filter-btn"
+        [class.active]="statusFilter === 'active'"
+        (click)="setStatusFilter('active')">
+
+        Active
+
+      </button>
+
+      <button
+        class="filter-btn"
+        [class.active]="statusFilter === 'archived'"
+        (click)="setStatusFilter('archived')">
+
+        Archived
+
+      </button>
+
+      <button
+        class="filter-btn"
+        [class.active]="statusFilter === 'all'"
+        (click)="setStatusFilter('all')">
+
+        All
+
+      </button>
+
+    </div>
+
+  </div>
+
+  <div
+    *ngIf="successMessage"
+    class="success-message">
+
+    {{ successMessage }}
+
+  </div>
+
+  <div
+    *ngIf="errorMessage"
+    class="error-message">
+
+    {{ errorMessage }}
+
+  </div>
+
+  <div class="enterprise-table-card">
+
+    <table
+      class="enterprise-table">
+
+      <thead>
+
+      <tr>
+
+        <th
+          class="sortable-column"
+          (click)="sortBy('assetCode')">
+
+          Asset Code
+          {{ getSortIcon('assetCode') }}
+
+        </th>
+
+        <th
+          class="sortable-column"
+          (click)="sortBy('name')">
+
+          Name
+          {{ getSortIcon('name') }}
+
+        </th>
+
+        <th
+          class="sortable-column"
+          (click)="sortBy('manufacturer')">
+
+          Manufacturer
+          {{ getSortIcon('manufacturer') }}
+
+        </th>
+
+        <th
+          class="sortable-column"
+          (click)="sortBy('assetCategory')">
+
+          Category
+          {{ getSortIcon('assetCategory') }}
+
+        </th>
+
+        <th>
+
+          Price
+
+        </th>
+
+        <th>
+
+          Lifetime
+
+        </th>
+
+        <th>
+
+          Warranty
+
+        </th>
+
+        <th>
+
+          Status
+
+        </th>
+
+        <th>
+
+          Actions
+
+        </th>
+
+      </tr>
+
+      </thead>
+
+      <tbody>
+
+      <tr
+        *ngFor="
+          let assetModel
+          of sortedAssetModels
+        ">
+
+        <td>
+
+          {{ assetModel.assetCode }}
+
+        </td>
+
+        <td>
+
+          <strong>
+
+            {{ assetModel.name }}
+
+          </strong>
+
+        </td>
+
+        <td>
+
+          {{ assetModel.manufacturer }}
+
+        </td>
+
+        <td>
+
+          {{ assetModel.assetCategory }}
+
+        </td>
+
+        <td>
+
+          {{ assetModel.defaultPurchasePrice }}
+
+        </td>
+
+        <td>
+
+          {{ assetModel.expectedLifetimeMonths }}
+          months
+
+        </td>
+
+        <td>
+
+          {{ assetModel.defaultWarrantyMonths }}
+          months
+
+        </td>
+
+        <td>
+
+          <span
+            class="enterprise-badge"
+            [ngClass]="{
+              'enterprise-badge-success':
+                assetModel.active,
+              'enterprise-badge-danger':
+                !assetModel.active
+            }">
+
+            {{
+              assetModel.active
+                ? 'Active'
+                : 'Archived'
+            }}
+
+          </span>
+
+        </td>
+
+        <td class="actions-cell">
+
+          <div
+            class="enterprise-actions">
+
+            <button
+              class="
+                enterprise-btn
+                enterprise-btn-secondary
+                enterprise-actions-button
+              "
+              (click)="toggleMenu(assetModel.id)">
+
+              ⋮
+
+            </button>
+
+            <div
+              *ngIf="
+                openMenuId === assetModel.id
+              "
+              class="
+                enterprise-actions-menu
+              ">
+
+              <button
+                (click)="
+                  editAssetModel(assetModel)
+                ">
+
+                Edit
+
+              </button>
+
+              <button
+                *ngIf="
+                  assetModel.active
+                "
+                (click)="
+                  archiveAssetModel(assetModel)
+                ">
+
+                Archive
+
+              </button>
+
+              <button
+                *ngIf="
+                  !assetModel.active
+                "
+                (click)="
+                  restoreAssetModel(assetModel)
+                ">
+
+                Restore
+
+              </button>
+
+            </div>
+
+          </div>
+
+        </td>
+
+      </tr>
+
+      </tbody>
+
+    </table>
+
+    <div
+      *ngIf="
+        filteredAssetModels.length === 0
+      "
+      class="empty-state">
+
+      <div>
+
+        <h3>
+
+          No asset models found
+
+        </h3>
+
+        <p>
+
+          Try changing the search criteria.
+
+        </p>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <div
+    *ngIf="showDialog"
+    class="enterprise-dialog-overlay">
+
+    <div
+      class="enterprise-dialog">
+
+      <h2>
+
+        {{
+          isEditMode
+            ? 'Edit Asset Model'
+            : 'New Asset Model'
+        }}
+
+      </h2>
+
+      <form
+        class="enterprise-form-grid">
+
+        <div class="form-field">
+
+          <label>
+
+            Asset Code
+
+          </label>
+
+          <input
+            type="text"
+            [(ngModel)]="
+              assetModelForm.assetCode
+            "
+            name="assetCode">
+
+        </div>
+
+        <div class="form-field">
+
+          <label>
+
+            Name
+
+          </label>
+
+          <input
+            type="text"
+            [(ngModel)]="
+              assetModelForm.name
+            "
+            name="name">
+
+        </div>
+
+        <div class="form-field">
+
+          <label>
+
+            Manufacturer
+
+          </label>
+
+          <input
+            type="text"
+            [(ngModel)]="
+              assetModelForm.manufacturer
+            "
+            name="manufacturer">
+
+        </div>
+
+        <div class="form-field">
+
+          <label>
+
+            Category
+
+          </label>
+
+          <input
+            type="text"
+            [(ngModel)]="
+              assetModelForm.assetCategory
+            "
+            name="assetCategory">
+
+        </div>
+
+        <div class="form-field">
+
+          <label>
+
+            Purchase Price
+
+          </label>
+
+          <input
+            type="number"
+            [(ngModel)]="
+              assetModelForm.defaultPurchasePrice
+            "
+            name="defaultPurchasePrice">
+
+        </div>
+
+        <div class="form-field">
+
+          <label>
+
+            Lifetime (Months)
+
+          </label>
+
+          <input
+            type="number"
+            [(ngModel)]="
+              assetModelForm.expectedLifetimeMonths
+            "
+            name="expectedLifetimeMonths">
+
+        </div>
+
+        <div class="form-field">
+
+          <label>
+
+            Warranty (Months)
+
+          </label>
+
+          <input
+            type="number"
+            [(ngModel)]="
+              assetModelForm.defaultWarrantyMonths
+            "
+            name="defaultWarrantyMonths">
+
+        </div>
+
+        <div
+          class="
+            form-field
+            form-field-full
+          ">
+
+          <label>
+
+            Description
+
+          </label>
+
+          <textarea
+            rows="4"
+            [(ngModel)]="
+              assetModelForm.description
+            "
+            name="description">
+
+          </textarea>
+
+        </div>
+
+      </form>
+
+      <div
+        class="enterprise-dialog-footer">
+
+        <button
+          type="button"
+          class="
+            enterprise-btn
+            enterprise-btn-secondary
+          "
+          (click)="closeDialog()">
+
+          Cancel
+
+        </button>
+
+        <button
+          type="button"
+          class="
+            enterprise-btn
+            enterprise-btn-primary
+          "
+          (click)="saveAssetModel()">
+
+          {{
+            isEditMode
+              ? 'Save'
+              : 'Create'
+          }}
+
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>

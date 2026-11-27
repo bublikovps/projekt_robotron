@@ -17,7 +17,7 @@ import { CustomerProfileUpdateRequest } from '../models/customer-profile-update-
 describe('AuthService', () => {
   let service: AuthService;
   let httpTestingController: HttpTestingController;
-  const baseUrl = 'http://localhost:8080/api/auth';
+  const baseUrl = '/api/auth';
 
   const mockCurrentUser = {
     id: 1,

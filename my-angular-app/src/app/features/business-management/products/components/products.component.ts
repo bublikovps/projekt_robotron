@@ -12,23 +12,33 @@ import {
   FormsModule
 } from '@angular/forms';
 
-import { ProductService }
-from '../services/product.service';
+import {
+  ProductService
+} from '../services/product.service';
 
-import { CategoryService }
-from '../../categories/services/category.service';
+import {
+  CategoryService
+} from '../../categories/services/category.service';
 
-import { ProductResponse }
-from '../models/product-response.model';
+import {
+  ExportService
+} from '../../../../shared/services/export.service';
 
-import { ProductCreateRequest }
-from '../models/product-create-request.model';
+import {
+  ProductResponse
+} from '../models/product-response.model';
 
-import { ProductUpdateRequest }
-from '../models/product-update-request.model';
+import {
+  ProductCreateRequest
+} from '../models/product-create-request.model';
 
-import { CategoryResponse }
-from '../../categories/models/category-response.model';
+import {
+  ProductUpdateRequest
+} from '../models/product-update-request.model';
+
+import {
+  CategoryResponse
+} from '../../categories/models/category-response.model';
 
 @Component({
   selector: 'app-products',
@@ -43,7 +53,8 @@ from '../../categories/models/category-response.model';
 export class ProductsComponent
 implements OnInit {
 
-  products: ProductResponse[] = [];
+  products:
+    ProductResponse[] = [];
 
   filteredProducts:
     ProductResponse[] = [];
@@ -80,6 +91,18 @@ implements OnInit {
   selectedImportFile:
     File | null = null;
 
+  selectedExportFormat = '';
+
+  openMenuId:
+    number | null = null;
+
+  sortColumn = 'sku';
+
+  sortDirection:
+    'asc'
+    | 'desc'
+    = 'asc';
+
   productForm:
     ProductCreateRequest = {
 
@@ -106,17 +129,23 @@ implements OnInit {
       minimumStock: 0,
 
       categoryId: 0
+
     };
 
   constructor(
+
     private productService:
       ProductService,
 
     private categoryService:
       CategoryService,
 
+    private exportService:
+      ExportService,
+
     private cdr:
       ChangeDetectorRef
+
   ) {}
 
   ngOnInit(): void {
@@ -124,6 +153,7 @@ implements OnInit {
     this.loadProducts();
 
     this.loadCategories();
+
   }
 
   loadProducts(): void {
@@ -132,13 +162,16 @@ implements OnInit {
       .getAllProductsForManagement()
       .subscribe({
 
-        next: data => {
+        next: (
+          data: ProductResponse[]
+        ) => {
 
           this.products = data;
 
           this.applyFilters();
 
           this.cdr.detectChanges();
+
         },
 
         error: () => {
@@ -147,9 +180,11 @@ implements OnInit {
             'Fehler beim Laden der Produkte.';
 
           this.cdr.detectChanges();
+
         }
 
       });
+
   }
 
   loadCategories(): void {
@@ -158,24 +193,28 @@ implements OnInit {
       .getAllCategories()
       .subscribe({
 
-        next: data => {
+        next: (
+          data: CategoryResponse[]
+        ) => {
 
           this.categories =
             data.filter(
               category =>
                 category.active
             );
+
         }
 
       });
+
   }
 
   applyFilters(): void {
 
     const search =
       this.searchTerm
-        .toLowerCase()
-        .trim();
+        .trim()
+        .toLowerCase();
 
     this.filteredProducts =
       this.products.filter(product => {
@@ -195,6 +234,12 @@ implements OnInit {
           ||
 
           product.manufacturer
+            .toLowerCase()
+            .includes(search)
+
+          ||
+
+          product.supplier
             .toLowerCase()
             .includes(search);
 
@@ -228,13 +273,17 @@ implements OnInit {
           );
 
         return (
+
           matchesSearch
           &&
           matchesCategory
           &&
           matchesStatus
+
         );
+
       });
+
   }
 
   setStatusFilter(
@@ -248,12 +297,291 @@ implements OnInit {
       filter;
 
     this.applyFilters();
+
   }
 
   toggleCategoryMenu(): void {
 
     this.categoryMenuOpen =
       !this.categoryMenuOpen;
+
+  }
+
+  toggleExportMenu(): void {
+
+    this.exportMenuOpen =
+      !this.exportMenuOpen;
+
+  }
+
+  toggleMenu(
+    productId: number
+  ): void {
+
+    this.openMenuId =
+      this.openMenuId === productId
+        ? null
+        : productId;
+
+  }
+
+  closeMenu(): void {
+
+    this.openMenuId = null;
+
+  }
+
+  sortBy(
+    column: string
+  ): void {
+
+    if (
+      this.sortColumn === column
+    ) {
+
+      this.sortDirection =
+        this.sortDirection === 'asc'
+          ? 'desc'
+          : 'asc';
+
+      return;
+
+    }
+
+    this.sortColumn = column;
+
+    this.sortDirection = 'asc';
+
+  }
+
+  getSortIcon(
+    column: string
+  ): string {
+
+    if (
+      this.sortColumn !== column
+    ) {
+
+      return '↕';
+
+    }
+
+    return this.sortDirection === 'asc'
+      ? '↑'
+      : '↓';
+
+  }
+
+  get sortedProducts():
+    ProductResponse[] {
+
+    const data =
+      [...this.filteredProducts];
+
+    data.sort((a, b) => {
+
+      switch (
+        this.sortColumn
+      ) {
+
+        case 'sku':
+
+          return this.compare(
+            a.sku,
+            b.sku
+          );
+
+        case 'name':
+
+          return this.compare(
+            a.name,
+            b.name
+          );
+
+        case 'supplier':
+
+          return this.compare(
+            a.supplier,
+            b.supplier
+          );
+
+        case 'price':
+
+          return this.compareNumber(
+            a.price,
+            b.price
+          );
+
+        case 'lagerbestand':
+
+          return this.compareNumber(
+            a.lagerbestand,
+            b.lagerbestand
+          );
+
+        default:
+
+          return 0;
+
+      }
+
+    });
+
+    return data;
+
+  }
+
+  exportData(): void {
+
+    const exportData =
+      this.sortedProducts.map(
+        product => ({
+
+          SKU:
+            product.sku,
+
+          Name:
+            product.name,
+
+          Category:
+            product.categoryName,
+
+          Supplier:
+            product.supplier,
+
+          Price:
+            product.price,
+
+          PurchasePrice:
+            product.purchasePrice,
+
+          SalePrice:
+            product.salePrice,
+
+          Stock:
+            product.lagerbestand,
+
+          MinimumStock:
+            product.minimumStock,
+
+          Active:
+            product.active
+              ? 'Yes'
+              : 'No'
+
+        })
+      );
+
+    switch (
+      this.selectedExportFormat
+    ) {
+
+      case 'csv':
+
+        this.exportService
+          .exportToCsv(
+            exportData,
+            'products'
+          );
+
+        break;
+
+      case 'excel':
+
+        this.exportService
+          .exportToExcel(
+            exportData,
+            'products'
+          );
+
+        break;
+
+      case 'pdf':
+
+        this.exportService
+          .exportToPdf(
+            exportData,
+            'products'
+          );
+
+        break;
+
+    }
+
+  }
+
+  exportAs(
+    format:
+      'csv'
+      | 'excel'
+      | 'pdf'
+  ): void {
+
+    this.selectedExportFormat =
+      format;
+
+    this.exportData();
+
+    this.exportMenuOpen = false;
+
+  }
+
+  importProducts(): void {
+
+    document
+      .getElementById(
+        'product-import-file'
+      )
+      ?.click();
+
+  }
+
+  onImportFileSelected(
+    event: Event
+  ): void {
+
+    const target =
+      event.target as HTMLInputElement;
+
+    if (
+      !target.files ||
+      target.files.length === 0
+    ) {
+      return;
+    }
+
+    const file =
+      target.files[0];
+
+    this.productService
+      .importProducts(file)
+      .subscribe({
+
+        next: response => {
+
+          this.successMessage =
+            response.message;
+
+          this.errorMessage = '';
+
+          this.loadProducts();
+
+          target.value = '';
+
+        },
+
+        error: error => {
+
+          this.errorMessage =
+            error.error?.message
+            || 'Import fehlgeschlagen';
+
+          target.value = '';
+
+        }
+
+      });
+
   }
 
   openCreateDialog(): void {
@@ -262,10 +590,10 @@ implements OnInit {
 
     this.isEditMode = false;
 
-    this.editingProductId =
-      null;
+    this.editingProductId = null;
 
     this.showDialog = true;
+
   }
 
   closeDialog(): void {
@@ -273,51 +601,54 @@ implements OnInit {
     this.showDialog = false;
 
     this.cancelEdit();
+
   }
 
   saveProduct(): void {
 
     if (
-      this.isEditMode &&
+      this.isEditMode
+      &&
       this.editingProductId !== null
     ) {
 
       const updateRequest:
         ProductUpdateRequest = {
 
-          name:
-            this.productForm.name,
+        name:
+          this.productForm.name,
 
-          manufacturer:
-            this.productForm.manufacturer,
+        manufacturer:
+          this.productForm.manufacturer,
 
-          description:
-            this.productForm.description,
+        description:
+          this.productForm.description,
 
-          price:
-            this.productForm.price,
+        price:
+          this.productForm.price,
 
-          purchasePrice:
-            this.productForm.purchasePrice,
+        purchasePrice:
+          this.productForm.purchasePrice,
 
-          salePrice:
-            this.productForm.salePrice,
+        salePrice:
+          this.productForm.salePrice,
 
-          supplier:
-            this.productForm.supplier,
+        supplier:
+          this.productForm.supplier,
 
-          imageUrl:
-            this.productForm.imageUrl,
+        imageUrl:
+          this.productForm.imageUrl,
 
-          lagerbestand:
-            this.productForm.lagerbestand,
+        lagerbestand:
+          this.productForm.lagerbestand,
 
-          minimumStock:
-            this.productForm.minimumStock,
+        minimumStock:
+          this.productForm.minimumStock,
 
-          categoryId:
-            this.productForm.categoryId
-        };
+        categoryId:
+          this.productForm.categoryId
+
+      };
 
       this.productService
         .updateProduct(
@@ -328,14 +659,28 @@ implements OnInit {
 
           next: () => {
 
+            this.successMessage =
+              'Produkt aktualisiert.';
+
+            this.errorMessage = '';
+
             this.closeDialog();
 
             this.loadProducts();
+
+          },
+
+          error: () => {
+
+            this.errorMessage =
+              'Fehler beim Aktualisieren.';
+
           }
 
         });
 
       return;
+
     }
 
     this.productService
@@ -346,12 +691,26 @@ implements OnInit {
 
         next: () => {
 
+          this.successMessage =
+            'Produkt erstellt.';
+
+          this.errorMessage = '';
+
           this.closeDialog();
 
           this.loadProducts();
+
+        },
+
+        error: () => {
+
+          this.errorMessage =
+            'Fehler beim Erstellen.';
+
         }
 
       });
+
   }
 
   editProduct(
@@ -400,9 +759,13 @@ implements OnInit {
 
       categoryId:
         product.categoryId
+
     };
 
     this.showDialog = true;
+
+    this.closeMenu();
+
   }
 
   archiveProduct(
@@ -410,17 +773,24 @@ implements OnInit {
   ): void {
 
     this.productService
-      .archiveProduct(
-        product.id
-      )
+      .archiveProduct(product.id)
       .subscribe({
 
-        next: () => {
+        next: response => {
+
+          this.successMessage =
+            response.message;
+
+          this.errorMessage = '';
 
           this.loadProducts();
+
+          this.closeMenu();
+
         }
 
       });
+
   }
 
   restoreProduct(
@@ -428,17 +798,24 @@ implements OnInit {
   ): void {
 
     this.productService
-      .restoreProduct(
-        product.id
-      )
+      .restoreProduct(product.id)
       .subscribe({
 
-        next: () => {
+        next: response => {
+
+          this.successMessage =
+            response.message;
+
+          this.errorMessage = '';
 
           this.loadProducts();
+
+          this.closeMenu();
+
         }
 
       });
+
   }
 
   openCatalogView(
@@ -449,79 +826,8 @@ implements OnInit {
       `/catalog/products/${product.id}`,
       '_blank'
     );
+
   }
-
-  toggleExportMenu(): void {
-
-    this.exportMenuOpen =
-      !this.exportMenuOpen;
-  }
-
-  exportAs(
-    format:
-      'csv'
-      | 'excel'
-      | 'pdf'
-  ): void {
-
-    this.exportMenuOpen = false;
-
-    alert(
-      `${format.toUpperCase()} export coming soon`
-    );
-  }
-
-  importProducts(): void {
-
-    document
-      .getElementById(
-        'product-import-file'
-      )
-      ?.click();
-  }
-
-  onImportFileSelected(
-  event: Event
-): void {
-
-  const target =
-    event.target as HTMLInputElement;
-
-  if (
-    !target.files ||
-    target.files.length === 0
-  ) {
-    return;
-  }
-
-  const file =
-    target.files[0];
-
-  this.productService
-    .importProducts(file)
-    .subscribe({
-
-      next: response => {
-
-        this.successMessage =
-          response.message;
-
-        this.loadProducts();
-
-        target.value = '';
-      },
-
-      error: error => {
-
-        this.errorMessage =
-          error.error?.message
-          || 'Import fehlgeschlagen';
-
-        target.value = '';
-      }
-
-    });
-}
 
   cancelEdit(): void {
 
@@ -531,6 +837,39 @@ implements OnInit {
       null;
 
     this.resetForm();
+
+  }
+
+  private compare(
+    a: string,
+    b: string
+  ): number {
+
+    const result =
+      (a ?? '')
+        .localeCompare(
+          b ?? ''
+        );
+
+    return this.sortDirection === 'asc'
+      ? result
+      : -result;
+
+  }
+
+  private compareNumber(
+    a: number,
+    b: number
+  ): number {
+
+    const result =
+      (a ?? 0)
+      - (b ?? 0);
+
+    return this.sortDirection === 'asc'
+      ? result
+      : -result;
+
   }
 
   private resetForm(): void {
@@ -560,7 +899,9 @@ implements OnInit {
       minimumStock: 0,
 
       categoryId: 0
+
     };
+
   }
 
 }
