@@ -42,7 +42,7 @@ public class EmailService {
                     new SimpleMailMessage();
 
             message.setFrom(
-                    "mailFrom"
+                    mailFrom
             );
 
             message.setTo(
@@ -108,7 +108,7 @@ public class EmailService {
                     new SimpleMailMessage();
 
             message.setFrom(
-                    "mailFrom"
+                    mailFrom
             );
 
             message.setTo(
@@ -185,7 +185,7 @@ public class EmailService {
                     new SimpleMailMessage();
 
             message.setFrom(
-                    "mailFrom"
+                    mailFrom
             );
 
             message.setTo(
@@ -266,7 +266,7 @@ public class EmailService {
                     new SimpleMailMessage();
 
             message.setFrom(
-                    "mailFrom"
+                    mailFrom
             );
 
             message.setTo(
@@ -339,7 +339,7 @@ public class EmailService {
                     new SimpleMailMessage();
 
             message.setFrom(
-                    "mailFrom"
+                    mailFrom
             );
 
             message.setTo(
