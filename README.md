@@ -1,254 +1,417 @@
 # Robotron
 
-## IT Resource & Asset Management Platform
+## Enterprise IT Asset & Business Management Platform
 
-Robotron ist eine Full-Stack-Webanwendung zur Verwaltung von IT-Ressourcen, Mitarbeitern, Benutzerkonten, Verträgen, Geräten, Software-Lizenzen und Berechtigungen innerhalb eines Unternehmens.
+Robotron ist eine moderne Full-Stack-Unternehmensanwendung zur Verwaltung von IT-Assets, Mitarbeitern, Produkten, Lagerbeständen, Kunden, Bestellungen, Verträgen und Geschäftsprozessen.
 
-Das Projekt verfolgt einen Domain-Driven-Ansatz und kombiniert Asset Management, Benutzerverwaltung, Sicherheitskonzepte und Business Management in einer zentralen Plattform.
+Das Projekt dient als Portfolio-, Lern- und Demonstrationsprojekt mit Fokus auf moderne Enterprise-Softwareentwicklung, Cloud-Technologien, DevOps-Praktiken und skalierbare Softwarearchitekturen.
+
+Die Anwendung wird kontinuierlich erweitert und orientiert sich an realen Anforderungen moderner Unternehmensumgebungen.
 
 ---
 
 # Projektstatus
 
-## Aktuell umgesetzt ✅
+## Aktueller Entwicklungsstand
 
-### Infrastruktur
+### Bereits umgesetzt
 
-- Docker Compose Umgebung
+- Angular 22 SSR Frontend
+- Spring Boot 3 Backend
 - PostgreSQL Datenbank
 - Flyway Migrationen
-- Mailpit SMTP Testumgebung
-
-### Security
-
-- Spring Security
 - JWT Authentication
-- Login
-- Benutzerregistrierung
-- Passwortänderung
-- Passwort-Reset Workflow
-- Passwortänderung beim ersten Login
 - Rollenbasierte Zugriffskontrolle (RBAC)
-- Rollen- und Berechtigungssystem
+- Permission-System
+- Docker Containerisierung
+- Docker Compose Entwicklungsumgebung
+- Swagger / OpenAPI Dokumentation
+- GitHub Actions CI/CD
+- Terraform Infrastructure as Code
+- Azure Container Registry (ACR)
+- Azure Container Apps Deployment
+- Public Cloud Deployment
+- Grundlagen automatisierter Tests (Backend & Frontend)
 
-### Rollenmodell
+### Aktuell in Entwicklung
+
+- Azure PostgreSQL Flexible Server
+- Monitoring & Observability
+- Production Cloud Architektur
+- Erweiterte Automatisierung
+
+---
+
+# Architektur
+
+## Gesamtsystem
+
+```text
+Angular SSR
+        ↓
+Spring Boot REST API
+        ↓
+PostgreSQL
+```
+
+## Cloud Architektur
+
+```text
+GitHub
+    ↓
+GitHub Actions
+    ↓
+Docker Build
+    ↓
+Azure Container Registry
+    ↓
+Azure Container Apps
+    ↓
+Frontend + Backend
+```
+
+## Lokale Entwicklungsumgebung
+
+```text
+Frontend
+    ↓
+Backend
+    ↓
+PostgreSQL
+    ↓
+Mailpit
+```
+
+---
+
+# Technologie Stack
+
+## Backend
+
+- Java 21
+- Spring Boot 3.5
+- Spring Security
+- Spring Data JPA
+- Hibernate
+- JWT
+- Flyway
+- PostgreSQL
+- Maven
+- Swagger / OpenAPI
+- JUnit 5 & Mockito
+
+## Frontend
+
+- Angular 22
+- Angular SSR
+- TypeScript
+- RxJS
+- Angular Signals
+- Standalone Components
+- Vitest
+
+## Datenbank
+
+- PostgreSQL
+
+## DevOps
+
+- Docker
+- Docker Compose
+- GitHub Actions
+- Terraform
+- Azure Container Registry
+- Azure Container Apps
+
+## Cloud
+
+- Microsoft Azure
+- Azure Container Apps
+- Azure Container Registry
+- Terraform Remote State
+- OIDC Authentication
+
+---
+
+# Security
+
+## Implementiert
+
+- JWT Authentication
+- Login Workflow
+- Registrierung
+- Passwort Reset
+- Passwortänderung
+- Passwortänderung beim ersten Login
+- Rollenbasierte Zugriffskontrolle
+- Permission-basiertes Berechtigungssystem
+- Endpoint Security
+
+---
+
+# Qualitätssicherung & Testing (Lernfokus)
+
+Um die wichtigsten Sicherheits- und Geschäftsabläufe besser abzusichern und praktische Erfahrung in der Testautomatisierung zu sammeln, baue ich schrittweise eine Testbasis auf:
+
+- **Backend (JUnit 5 / Mockito):** Erste Unit- und Integrationstests für JWT-Verarbeitung, Authentifizierungs-Endpunkte sowie ausgewählte Service-Regeln.
+- **Frontend (Vitest):** Grundlagen von Unit- und Komponententests für Route Guards, HTTP-Interceptoren, zentrale Services (Auth, Warenkorb, Export, Admin) sowie Login- und Checkout-Workflows.
+
+
+# Rollenmodell
+
+## Verfügbare Rollen
 
 - ROLE_CUSTOMER
 - ROLE_MANAGER
 - ROLE_ADMIN
 - ROLE_DIRECTOR
 
-### Berechtigungssystem
+### Customer
 
-- Über 80 individuelle Berechtigungen
-- Role-Permission-Mapping
-- Benutzer-Rollen-Zuordnung
-- Permission-basierte Backend-Sicherheit
-
-### Business Management
-
-- Produktverwaltung
-- Kategorienverwaltung
-- Lagerverwaltung
-- Bestellverwaltung
-
-### Asset Management
-
-- Abteilungsverwaltung
-- Mitarbeiterverwaltung
-- Arbeitsverträge
-- Geräteverwaltung
-- Software-Lizenzverwaltung
-- Gerätezuweisungen
-- Lizenzzuweisungen
-
-### Backend
-
-- REST API
-- Swagger/OpenAPI
-- DTO-basierte Datenübertragung
-- Service Layer Architektur
-- JPA/Hibernate Mapping
-
-### Frontend
-
-- Angular Architektur
-- Feature-basierte Struktur
-- Route Guards
-- JWT Session Handling
-- Authentifizierung
+- Produktkatalog
+- Warenkorb
+- Checkout
+- Kundenportal
 - Profilverwaltung
-- Administrationsbereich
-- Asset Management Bereich
+- Bestellungen
+
+### Manager
+
+- Dashboard
+- Produkte
+- Kategorien
+- Lagerverwaltung
+- Business Management
+
+### Administrator
+
+- Benutzerverwaltung
+- Rollenverwaltung
+- Administration
+
+### Director
+
+- Unternehmenssteuerung
+- Reporting
+- Administration
+- Analytics
 
 ---
 
-## Aktuell in Arbeit 🚧
+# Benutzerverwaltung
 
-### Frontend
+## Funktionen
 
-- Dashboard Erweiterungen
-- Geräteoberflächen
-- Lizenzoberflächen
-- Erweiterte Formulare
-- Berechtigungsabhängige UI-Sichtbarkeit
-
-### Datenbank
-
-- Weitere Flyway Migrationen
-- Migration bestehender Datenbankänderungen auf Flyway
-
-### Entwicklerdokumentation
-
-- Architekturdiagramme
-- Datenbankdiagramm
-- API Dokumentation vervollständigen
+- Benutzerverwaltung
+- Mitarbeiterverwaltung
+- Rollenverwaltung
+- Benutzeraktivierung
+- Benutzersperrung
+- Benutzerentsperrung
+- Rollenänderung
+- Enterprise Tabellenansicht
+- Enterprise Toolbar
 
 ---
 
-## Geplante Erweiterungen 📌
+# DSGVO-Funktionen
 
-### Reporting
+## Implementiert
 
-- Statistische Auswertungen
+- DSGVO-konforme Anonymisierung
+- Datenschutzkonforme Deaktivierung
+- DSGVO-Benachrichtigungen
+- Safe Delete Workflow
+- Schutz historischer Geschäftsdaten
+
+---
+
+# Profilverwaltung
+
+## Customer Profil
+
+- Persönliche Daten
+- Firmendaten
+- Lieferadresse
+- Kontostand
+- Passwortverwaltung
+
+## Mitarbeiterprofil
+
+- Persönliche Daten
+- Rolleninformationen
+- Sicherheitsverwaltung
+- Passwortverwaltung
+
+---
+
+# Produktkatalog
+
+## Funktionen
+
+- Produktübersicht
+- Produktdetails
+- Kategorienavigation
+- Enterprise Produktkarten
+- Suchfunktion
+- Filterfunktion
+- Query Parameter Routing
+
+### Unterstützte Suche
+
+- Produktname
+- SKU
+- Hersteller
+- Beschreibung
+- Kategorie
+
+---
+
+# Warenkorb & Checkout
+
+## Workflow
+
+```text
+Produkt
+↓
+Warenkorb
+↓
+Checkout
+↓
+Bestellung
+↓
+Kundenportal
+```
+
+### Implementiert
+
+- Warenkorb
+- Mengenverwaltung
+- Preisberechnung
+- Checkout Prozess
+- Bestellerstellung
+
+---
+
+# Customer Portal
+
+## Funktionen
+
+- Meine Bestellungen
+- Rechnungsübersicht
+- Zahlungsverlauf
+- Profilverwaltung
+- Bestellhistorie
+
+---
+
+# Business Management
+
+## Bereiche
+
+### Master Data
+
+- Categories
+- Products
+
+### Sales
+
+- Orders
+
+### Analytics
+
+- Inventory Value
+- Low Stock
+- Product Margin
+- Supplier Inventory
+
+---
+
+## Produkte
+
+### Funktionen
+
+- CRUD Operationen
+- Enterprise Dialoge
+- Import
+- Export
+- Suche
+- Filterung
+- Kategorienverwaltung
+
+---
+
+## Orders
+
+### Funktionen
+
+- Bestellübersicht
+- Statusverwaltung
+- Revenue Analyse
+- KPI Dashboard
 - Exportfunktionen
-- Management Reports
+- Such- und Filterfunktionen
 
-### Audit Modul
+### KPIs
 
-- Änderungsverfolgung
-- Ereignisprotokolle
-- Benutzeraktivitäten
-
-### Dashboard
-
-- KPIs
-- Übersichtsdaten
-- Asset Kennzahlen
-
-### Assignment Workflows
-
-- Erweiterte Asset-Prozesse
-- Historisierung
-- Nachvollziehbarkeit von Änderungen
-
-### Benachrichtigungen
-
-- Lizenzabläufe
-- Vertragsabläufe
-- Erinnerungen
+- Total Orders
+- Pending Payment
+- Paid Orders
+- Shipped Orders
+- Revenue
 
 ---
 
-# Technologie-Stack
+## Reporting
 
-## Backend
+### Verfügbare Reports
 
-- Java 21
-- Spring Boot 3
-- Spring Security
-- Spring Data JPA
-- JWT
-- Flyway
-- PostgreSQL
-- Swagger/OpenAPI
-- Maven
+- Inventory Value
+- Low Stock
+- Product Margin
+- Supplier Inventory
 
-## Frontend
+### Export
 
-- Angular
-- TypeScript
-- RxJS
-
-## Infrastruktur
-
-- Docker
-- Docker Compose
-- PostgreSQL
-- Mailpit
+- CSV
+- Excel
+- PDF
 
 ---
 
-# Architekturprinzip
+# Asset Management
 
-Das Projekt folgt konsequent dem Domain-First-Ansatz.
+## Bereiche
 
-```text
-Business Domain
-↓
-Database
-↓
-Backend
-↓
-Frontend
-```
+### Master Data
 
-Neue Funktionen werden immer in dieser Reihenfolge entwickelt.
+- Departments
+- Employees
+- Contracts
+- Devices
+- Software Licenses
 
----
+### Operations
 
-# Frontend Architektur
+- Device Assignments
+- License Assignments
 
-```text
-src/app
+### Analytics
 
-core
-shared
-features
-```
-
-## Core
-
-```text
-guards
-interceptors
-models
-services
-```
-
-## Shared
-
-```text
-components
-utils
-```
-
-## Features
-
-```text
-auth
-dashboard
-profile
-administration
-business-management
-asset-management
-```
+- Asset Value
+- Active Devices
+- Department Assets
+- Expiring Licenses
 
 ---
 
-# Asset Management Domain
+# Rechtliche Bereiche
 
-```text
-Department
-↓
-Employee
-↓
-EmploymentContract
+## Implementiert
 
-Employee
-↓
-User
-
-Product
-↓
-Device
-↓
-DeviceAssignment
-
-SoftwareLicense
-↓
-LicenseAssignment
-```
+- Impressum
+- Datenschutz
+- Nutzungsbedingungen
 
 ---
 
@@ -256,7 +419,7 @@ LicenseAssignment
 
 ## PostgreSQL
 
-Wesentliche Bereiche:
+### Wichtige Tabellen
 
 ```text
 users
@@ -284,52 +447,95 @@ license_assignment
 
 # Flyway Migrationen
 
-Flyway verwaltet zukünftige Änderungen der Datenbankstruktur.
+Versionierte Datenbankmigrationen.
 
-Aktueller Stand:
+Beispiel:
 
 ```text
 V1__baseline.sql
 V2__create_system_settings.sql
+...
+V11__user_anonymize_permission.sql
 ```
 
-Migrationen werden automatisch beim Start der Anwendung ausgeführt.
+Migrationen werden automatisch beim Start ausgeführt.
 
 ---
 
-# Docker Infrastruktur
+# Enterprise UI Architektur
 
-Starten:
+## Implementierte Patterns
 
-```bash
-docker compose up -d
-```
+- Workspace Pattern
+- Enterprise Dashboard Pattern
+- Enterprise Toolbar Pattern
+- Enterprise Table Pattern
+- Enterprise KPI Pattern
+- Enterprise Badge Pattern
+- Enterprise Search Pattern
+- Enterprise Navigation Pattern
+- Enterprise Dialog Pattern
+- Responsive Layout System
 
-Services:
+## Design System
 
-- PostgreSQL
-- Mailpit
-
-Status prüfen:
-
-```bash
-docker ps
+```text
+enterprise-tokens.css
+enterprise-layout.css
+enterprise-buttons.css
+enterprise-dropdown.css
+enterprise-table.css
+enterprise-kpi.css
+enterprise-dialog.css
+enterprise-actions.css
+enterprise-badges.css
+enterprise-breadcrumb.css
+report-enterprise.css
 ```
 
 ---
 
-# Projekt lokal starten
+# DevOps & Cloud
+
+## Containerisierung
+
+Implementiert:
+
+- Spring Boot Docker Image
+- Angular SSR Docker Image
+- Multi-Stage Docker Builds
+- Docker Compose Umgebung
+
+## CI/CD
+
+Implementiert:
+
+- GitHub Actions
+- Docker Build Pipeline
+- Docker Push Pipeline
+- Terraform Deployment
+- OIDC Authentication
+
+## Infrastructure as Code
+
+Implementiert:
+
+- Terraform
+- Azure Container Apps
+- Azure Container Registry
+- Remote Terraform State
+
+---
+
+# Lokale Entwicklung
 
 ## Voraussetzungen
 
-Installierte Software:
-
 - Java 21
-- Maven
-- Docker Desktop
 - Node.js
-- Angular CLI
+- Docker Desktop
 - Git
+- Maven
 
 ---
 
@@ -342,7 +548,7 @@ cd projekt_robotron
 
 ---
 
-## Docker starten
+## Infrastruktur starten
 
 ```bash
 docker compose up -d
@@ -352,19 +558,10 @@ docker compose up -d
 
 ## Backend starten
 
-Im Verzeichnis:
-
 ```bash
-server
-```
-
-Start:
-
-```bash
+cd server
 ./mvnw spring-boot:run
 ```
-
-oder direkt über IntelliJ IDEA.
 
 Backend:
 
@@ -376,11 +573,10 @@ http://localhost:8080
 
 ## Frontend starten
 
-Im Frontend-Verzeichnis:
-
 ```bash
+cd my-angular-app
 npm install
-ng serve
+npm start
 ```
 
 Frontend:
@@ -391,9 +587,25 @@ http://localhost:4200
 
 ---
 
-# Entwicklungsdatenbank
+## Tests ausführen
 
-Standardwerte für die lokale Entwicklungsumgebung:
+Backend-Tests starten:
+
+```bash
+cd server
+./mvnw test
+```
+
+Frontend-Tests starten:
+
+```bash
+cd my-angular-app
+npm test -- --watch=false
+```
+
+---
+
+# Entwicklungsdatenbank
 
 ```text
 Host: localhost
@@ -403,7 +615,7 @@ User: postgres
 Password: mysecretpassword
 ```
 
-Alternativ können Umgebungsvariablen verwendet werden:
+Alternativ über Umgebungsvariablen:
 
 ```text
 DB_URL
@@ -416,7 +628,7 @@ JWT_SECRET
 
 # Mail Testing
 
-Mailpit Oberfläche:
+Mailpit:
 
 ```text
 http://localhost:8025
@@ -440,18 +652,75 @@ http://localhost:8080/swagger-ui/index.html
 
 ---
 
+# Lernziele
+
+Im Rahmen des Projekts vertiefe ich Kenntnisse in:
+
+- Enterprise Architektur
+- Domain Driven Design
+- Spring Boot Entwicklung
+- Angular Frontend Entwicklung
+- Security Konzepte
+- PostgreSQL Datenmodellierung
+- Cloud Computing
+- Docker
+- Terraform
+- CI/CD Pipelines
+- Azure Container Apps
+- Infrastructure as Code
+
+---
+
+# Roadmap
+
+## Geplant
+
+### Cloud
+
+- Azure PostgreSQL Flexible Server
+- Monitoring & Logging
+- Production Infrastruktur
+- HTTPS Custom Domain
+
+### Audit Modul
+
+- Audit Logs
+- Änderungsverfolgung
+- Historisierung
+- Benutzeraktivitäten
+
+### Workflow Engine
+
+- Anfrageprozesse
+- Freigabeworkflows
+- Genehmigungsprozesse
+- Beschaffungsprozesse
+
+### User Preferences
+
+- Dashboard Einstellungen
+- Tabellenpräferenzen
+- UI Personalisierung
+
+---
+
 # Projektziel
 
-Robotron dient als Demonstration moderner Enterprise-Softwareentwicklung mit Fokus auf:
+Robotron dient als Lern-, Portfolio- und Demonstrationsprojekt für moderne Enterprise-Softwareentwicklung.
 
-- Domain-Driven Design Prinzipien
-- Backend Entwicklung mit Java und Spring Boot
-- Angular Frontend Entwicklung
-- Rollen- und Berechtigungssysteme
-- REST API Entwicklung
-- Datenbankmodellierung mit PostgreSQL
-- Datenbankmigrationen mit Flyway
-- Containerisierung mit Docker
-- Enterprise Application Architecture
+Schwerpunkte:
 
-Das Projekt wird kontinuierlich erweitert und dient als praktisches Portfolio-Projekt zur Demonstration von Full-Stack- und Backend-Entwicklung im Enterprise-Umfeld.
+- Full-Stack Entwicklung
+- Enterprise Architektur
+- Domain Driven Design
+- REST APIs
+- Spring Boot
+- Angular SSR
+- PostgreSQL
+- Security
+- Docker
+- Terraform
+- GitHub Actions
+- Cloud Deployment auf Microsoft Azure
+
+Das Projekt wird kontinuierlich erweitert und dient dem Aufbau praktischer Erfahrung im Bereich moderner Unternehmenssoftware und Cloud-Native Entwicklung.

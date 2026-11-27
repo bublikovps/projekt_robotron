@@ -1,0 +1,62 @@
+name: Azure Cost Saver Schedule
+
+on:
+  schedule:
+    - cron: '0 7 * * 1-5'
+    - cron: '0 16 * * 1-5'
+
+  workflow_dispatch:
+    inputs:
+      action:
+        description: 'start or stop'
+        required: true
+        default: 'start'
+        type: choice
+        options:
+          - start
+          - stop
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  manage-replicas:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Azure Login (OIDC)
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Determine Min Replicas
+        id: mode
+        run: |
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            if [ "${{ github.event.inputs.action }}" == "start" ]; then
+              echo "replicas=1" >> $GITHUB_OUTPUT
+            else
+              echo "replicas=0" >> $GITHUB_OUTPUT
+            fi
+          elif [ "${{ github.event.schedule }}" == "0 7 * * 1-5" ]; then
+            echo "replicas=1" >> $GITHUB_OUTPUT
+          else
+            echo "replicas=0" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Scale Container Apps
+        run: |
+          REPLICAS=${{ steps.mode.outputs.replicas }}
+
+          az containerapp update \
+            --name robotron-backend \
+            --resource-group rg-robotron-demo \
+            --min-replicas $REPLICAS
+
+          az containerapp update \
+            --name robotron-frontend \
+            --resource-group rg-robotron-demo \
+            --min-replicas $REPLICAS
