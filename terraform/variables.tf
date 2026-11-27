@@ -33,3 +33,12 @@ variable "image_tag" {
   type        = string
   default     = "latest"
 }
+
+variable "mail_username" {
+  type = string
+}
+
+variable "mail_password" {
+  type      = string
+  sensitive = true
+}

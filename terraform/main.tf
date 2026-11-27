@@ -158,6 +158,11 @@ resource "azurerm_container_app" "backend" {
     value = var.jwt_secret
   }
 
+  secret {
+    name  = "mail-password"
+    value = var.mail_password
+  }
+
   template {
     min_replicas = 0
     max_replicas = 1
@@ -191,13 +196,33 @@ resource "azurerm_container_app" "backend" {
 
       env {
         name  = "MAIL_HOST"
-        value = "localhost"
-      }
+  	value = "smtp-relay.brevo.com"
+	}
 
-      env {
-        name  = "MAIL_PORT"
-        value = "1025"
-      }
+	env {
+  	name  = "MAIL_PORT"
+  	value = "587"
+	}
+
+	env {
+  	name  = "MAIL_USERNAME"
+  	value = var.mail_username
+	}
+
+	env {
+  	name        = "MAIL_PASSWORD"
+  	secret_name = "mail-password"
+	}
+
+	env {
+  	name  = "MAIL_SMTP_AUTH"
+  	value = "true"
+	}
+
+	env {
+  	name  = "MAIL_SMTP_STARTTLS"
+  	value = "true"
+	}
 
       env {
         name  = "FRONTEND_URL"
