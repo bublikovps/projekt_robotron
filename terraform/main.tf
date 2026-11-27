@@ -198,6 +198,16 @@ resource "azurerm_container_app" "backend" {
         name  = "MAIL_PORT"
         value = "1025"
       }
+
+      env {
+        name  = "FRONTEND_URL"
+        value = "https://${azurerm_container_app.frontend.ingress[0].fqdn}"
+      }
+      
+      env {
+        name  = "CORS_ALLOWED_ORIGINS"
+        value = "https://${azurerm_container_app.frontend.ingress[0].fqdn}"
+      }
     }
   }
 
