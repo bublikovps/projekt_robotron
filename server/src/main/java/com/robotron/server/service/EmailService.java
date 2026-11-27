@@ -2,6 +2,7 @@ package com.robotron.server.service;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
@@ -10,6 +11,10 @@ import java.math.BigDecimal;
 
 @Service
 public class EmailService {
+
+    @Value("${MAIL_FROM:noreply@it-portal.de}")
+    private String mailFrom;
+
 
     private static final Logger log =
             LoggerFactory.getLogger(
@@ -37,7 +42,7 @@ public class EmailService {
                     new SimpleMailMessage();
 
             message.setFrom(
-                    "noreply@it-portal.de"
+                    "mailFrom"
             );
 
             message.setTo(
@@ -103,7 +108,7 @@ public class EmailService {
                     new SimpleMailMessage();
 
             message.setFrom(
-                    "noreply@it-portal.de"
+                    "mailFrom"
             );
 
             message.setTo(
@@ -180,7 +185,7 @@ public class EmailService {
                     new SimpleMailMessage();
 
             message.setFrom(
-                    "noreply@it-portal.de"
+                    "mailFrom"
             );
 
             message.setTo(
@@ -261,7 +266,7 @@ public class EmailService {
                     new SimpleMailMessage();
 
             message.setFrom(
-                    "noreply@it-portal.de"
+                    "mailFrom"
             );
 
             message.setTo(
@@ -334,7 +339,7 @@ public class EmailService {
                     new SimpleMailMessage();
 
             message.setFrom(
-                    "noreply@it-portal.de"
+                    "mailFrom"
             );
 
             message.setTo(

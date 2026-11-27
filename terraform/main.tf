@@ -225,6 +225,11 @@ resource "azurerm_container_app" "backend" {
 	}
 
       env {
+        name  = "MAIL_FROM"
+        value = "77pavel7@gmail.com"
+      }
+
+      env {
         name  = "FRONTEND_URL"
         value = "https://robotron-frontend.${azurerm_container_app_environment.env.default_domain}"
       }
