@@ -13,9 +13,6 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/asset-models/import")
-@CrossOrigin(
-        origins = "http://localhost:4200"
-)
 @Tag(
         name = "Asset Model Import",
         description =

@@ -1,7 +1,9 @@
 import {
   Component,
   OnInit,
-  ChangeDetectorRef
+  ChangeDetectorRef,
+  ElementRef,
+  ViewChild
 } from '@angular/core';
 
 import {
@@ -20,6 +22,9 @@ from '../models/category-response.model';
 
 import { CategoryCreateRequest }
 from '../models/category-create-request.model';
+import { ExportService } from '../../../../shared/services/export.service';
+
+
 
 @Component({
   selector: 'app-categories',
@@ -33,6 +38,9 @@ from '../models/category-create-request.model';
 })
 export class CategoriesComponent
 implements OnInit {
+
+  @ViewChild('fileInput')
+  fileInput!: ElementRef<HTMLInputElement>;
 
   categories:
     CategoryResponse[] = [];
@@ -61,6 +69,21 @@ implements OnInit {
 
   exportMenuOpen = false;
 
+  activeActionMenuId:
+    number | null = null;
+
+  sortColumn:
+    'id'
+    | 'name'
+    | 'productCount'
+    | 'active'
+    = 'name';
+
+  sortDirection:
+    'asc'
+    | 'desc'
+    = 'asc';
+
   categoryForm:
     CategoryCreateRequest = {
       name: ''
@@ -69,6 +92,9 @@ implements OnInit {
   constructor(
     private categoryService:
       CategoryService,
+
+    private exportService:
+      ExportService,
 
     private cdr:
       ChangeDetectorRef
@@ -101,7 +127,6 @@ implements OnInit {
 
           this.cdr.detectChanges();
         }
-
       });
   }
 
@@ -112,7 +137,7 @@ implements OnInit {
         .toLowerCase()
         .trim();
 
-    this.filteredCategories =
+    let result =
       this.categories.filter(category => {
 
         const matchesSearch =
@@ -141,11 +166,78 @@ implements OnInit {
           );
 
         return (
-          matchesSearch
-          &&
+          matchesSearch &&
           matchesStatus
         );
       });
+
+    result.sort((a, b) => {
+
+      let comparison = 0;
+
+      switch (
+        this.sortColumn
+      ) {
+
+        case 'id':
+          comparison =
+            a.id - b.id;
+          break;
+
+        case 'name':
+          comparison =
+            a.name.localeCompare(
+              b.name
+            );
+          break;
+
+        case 'productCount':
+          comparison =
+            a.productCount -
+            b.productCount;
+          break;
+
+        case 'active':
+          comparison =
+            Number(a.active) -
+            Number(b.active);
+          break;
+      }
+
+      return this.sortDirection === 'asc'
+        ? comparison
+        : -comparison;
+    });
+
+    this.filteredCategories =
+      result;
+  }
+
+  sortBy(
+    column:
+      'id'
+      | 'name'
+      | 'productCount'
+      | 'active'
+  ): void {
+
+    if (
+      this.sortColumn === column
+    ) {
+
+      this.sortDirection =
+        this.sortDirection === 'asc'
+          ? 'desc'
+          : 'asc';
+
+    } else {
+
+      this.sortColumn = column;
+
+      this.sortDirection = 'asc';
+    }
+
+    this.applyFilters();
   }
 
   setStatusFilter(
@@ -155,7 +247,8 @@ implements OnInit {
       | 'all'
   ): void {
 
-    this.statusFilter = filter;
+    this.statusFilter =
+      filter;
 
     this.applyFilters();
   }
@@ -204,8 +297,12 @@ implements OnInit {
             this.closeDialog();
 
             this.loadCategories();
-          }
+          },
 
+          error: () => {
+            this.errorMessage =
+              'Aktualisierung fehlgeschlagen.';
+          }
         });
 
       return;
@@ -225,8 +322,13 @@ implements OnInit {
           this.closeDialog();
 
           this.loadCategories();
-        }
+        },
 
+        error: () => {
+
+          this.errorMessage =
+            'Erstellung fehlgeschlagen.';
+        }
       });
   }
 
@@ -234,16 +336,17 @@ implements OnInit {
     category: CategoryResponse
   ): void {
 
+    this.activeActionMenuId =
+      null;
+
     this.isEditMode = true;
 
     this.editingCategoryId =
       category.id;
 
     this.categoryForm = {
-
       name:
         category.name
-
     };
 
     this.showDialog = true;
@@ -253,12 +356,14 @@ implements OnInit {
     category: CategoryResponse
   ): void {
 
+    this.activeActionMenuId =
+      null;
+
     if (
       !confirm(
         `Kategorie "${category.name}" archivieren?`
       )
     ) {
-
       return;
     }
 
@@ -270,29 +375,46 @@ implements OnInit {
 
         next: () => {
 
+          this.successMessage =
+            'Kategorie archiviert.';
+
           this.loadCategories();
         }
-
       });
   }
 
   restoreCategory(
-  category: CategoryResponse
-): void {
+    category: CategoryResponse
+  ): void {
 
-  this.categoryService
-    .restoreCategory(
-      category.id
-    )
-    .subscribe({
+    this.activeActionMenuId =
+      null;
 
-      next: () => {
+    this.categoryService
+      .restoreCategory(
+        category.id
+      )
+      .subscribe({
 
-        this.loadCategories();
-      }
+        next: () => {
 
-    });
-}
+          this.successMessage =
+            'Kategorie wiederhergestellt.';
+
+          this.loadCategories();
+        }
+      });
+  }
+
+  toggleActionMenu(
+    categoryId: number
+  ): void {
+
+    this.activeActionMenuId =
+      this.activeActionMenuId === categoryId
+        ? null
+        : categoryId;
+  }
 
   toggleExportMenu(): void {
 
@@ -309,16 +431,104 @@ implements OnInit {
 
     this.exportMenuOpen = false;
 
-    alert(
-      `${format.toUpperCase()} export coming soon`
-    );
+    const exportData =
+      this.filteredCategories.map(
+        category => ({
+
+          ID:
+            category.id,
+
+          Name:
+            category.name,
+
+          Products:
+            category.productCount,
+
+          Status:
+            category.active
+              ? 'Active'
+              : 'Archived'
+        })
+      );
+
+    switch (format) {
+
+      case 'csv':
+
+        this.exportService
+          .exportToCsv(
+            exportData,
+            'categories'
+          );
+
+        break;
+
+      case 'excel':
+
+        this.exportService
+          .exportToExcel(
+            exportData,
+            'categories'
+          );
+
+        break;
+
+      case 'pdf':
+
+        this.exportService
+          .exportToPdf(
+            exportData,
+            'categories'
+          );
+
+        break;
+    }
   }
 
-  importCategories(): void {
+  openImportDialog(): void {
 
-    alert(
-      'Import coming soon'
-    );
+    this.fileInput
+      ?.nativeElement
+      .click();
+  }
+
+  onFileSelected(
+    event: Event
+  ): void {
+
+    const input =
+      event.target as HTMLInputElement;
+
+    if (
+      !input.files ||
+      input.files.length === 0
+    ) {
+      return;
+    }
+
+    const file =
+      input.files[0];
+
+    this.categoryService
+      .importCategories(file)
+      .subscribe({
+
+        next: (response) => {
+
+          this.successMessage =
+            response.message;
+
+          this.loadCategories();
+
+          input.value = '';
+        },
+
+        error: () => {
+
+          this.errorMessage =
+            'Import fehlgeschlagen.';
+        }
+      });
   }
 
   cancelEdit(): void {
@@ -334,9 +544,7 @@ implements OnInit {
   private resetForm(): void {
 
     this.categoryForm = {
-
       name: ''
-
     };
   }
 

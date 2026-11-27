@@ -15,7 +15,6 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/employees")
-@CrossOrigin(origins = "http://localhost:4200")
 @Tag(
         name = "Employee Management",
         description = "Verwaltung von Mitarbeitern"

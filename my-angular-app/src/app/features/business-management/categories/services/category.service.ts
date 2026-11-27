@@ -23,6 +23,9 @@ export class CategoryService {
   private readonly apiUrl =
     '/api/categories';
 
+  private readonly importUrl =
+    '/api/categories/import';
+
   constructor(
     private http: HttpClient
   ) {}
@@ -94,4 +97,26 @@ export class CategoryService {
     );
   }
 
+
+  importCategories(
+    file: File
+  ): Observable<ApiMessageResponse> {
+
+    const formData =
+      new FormData();
+
+    formData.append(
+      'file',
+      file
+    );
+
+    return this.http.post<
+      ApiMessageResponse
+    >(
+      this.importUrl,
+      formData
+    );
+  }
+
 }
+

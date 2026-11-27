@@ -15,7 +15,6 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/contracts")
-@CrossOrigin(origins = "http://localhost:4200")
 @Tag(
         name = "Employment Contract Management",
         description = "Verwaltung von Arbeitsverträgen"

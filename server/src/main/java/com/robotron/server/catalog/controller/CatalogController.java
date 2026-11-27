@@ -17,9 +17,7 @@ import java.util.List;
         name = "Public Catalog",
         description = "Öffentlicher Produktkatalog"
 )
-@CrossOrigin(
-        origins = "http://localhost:4200"
-)
+
 public class CatalogController {
 
     private final CatalogService catalogService;

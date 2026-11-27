@@ -25,7 +25,6 @@ import java.util.Map;
         name = "Product Management",
         description = "Produktverwaltung für den Unternehmenskatalog"
 )
-@CrossOrigin(origins = "http://localhost:4200")
 public class ProductController {
 
     private static final Logger log =
